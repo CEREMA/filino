@@ -6,6 +6,7 @@ FILINO FIgnolage des données Lidar pour les INOdations
 
 ## Contenu
 Code source en langage R nommée FILINO_xxx.R
+voir lmes releases pour des docs de présentations
 Rapport d'étude "FILINO - FILINO Fignolage des données LIdar pour les INOdations - Juillet 2023"
 Présentation club Modélisation Juin 2023
 Vidéo Hérault
