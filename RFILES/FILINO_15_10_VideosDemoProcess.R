@@ -1,7 +1,3 @@
-library(xml2)
-library(readxl) 
-library(jpeg)
-library(png)
 # C:\QGIS\apps\qgis\pdal_wrench build_vpc --output=merged.vpc 65DN1_07.LAZ 65DN1_08.LAZ 65DN1_12.LAZ 65DN1_13.LAZ
 
 cat("\014")

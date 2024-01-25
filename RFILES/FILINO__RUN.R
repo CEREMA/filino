@@ -2,6 +2,10 @@ library(sf)
 library(dplyr)
 library(rjson)
 library(ggplot2)
+library(xml2)
+library(readxl) 
+library(jpeg)
+library(png)
 
 cat("\014") # Nettoyage de la console
 
