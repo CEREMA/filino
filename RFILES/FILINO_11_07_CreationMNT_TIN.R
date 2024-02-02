@@ -29,7 +29,7 @@ for (iTypeTIN in nTypeTIN)
   {
     Masques2=st_read(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,listeMasq2[1]))
     # On ne garde que les masques 2 en bord de mer! pour un nettoyage
-    Masques2=Masques2[which(substr(Masques2$FILINO,1,3)=="Mer"),]
+    Masques2Mer=Masques2[which(substr(Masques2$FILINO,1,3)=="Mer"),]
   }
   nb=st_intersects(TA,ZONE)
   n_int = which(sapply(nb, length)>0)
@@ -212,14 +212,14 @@ for (iTypeTIN in nTypeTIN)
           write("    },",nomjson,append=T)
         }
         
-        if (nCalcTaudem==0)
-        {
-          ############# Découpage à 100m autour
-          write("    {",nomjson,append=T)
-          write(paste0("       ",shQuote("type"),":",shQuote("filters.crop"),","),nomjson,append=T)
-          write(paste0("       ",shQuote("polygon"),":",shQuote(Polygon_Contour_CE)),nomjson,append=T)
-          write("    },",nomjson,append=T)
-        }
+        # if (nCalcTaudem==0)
+        # {
+        ############# Découpage à 100m autour
+        write("    {",nomjson,append=T)
+        write(paste0("       ",shQuote("type"),":",shQuote("filters.crop"),","),nomjson,append=T)
+        write(paste0("       ",shQuote("polygon"),":",shQuote(Polygon_Contour_CE)),nomjson,append=T)
+        write("    },",nomjson,append=T)
+        # }
         
         ############### Filtre delaunay
         write("    {",nomjson,append=T)
@@ -275,21 +275,32 @@ for (iTypeTIN in nTypeTIN)
         # Gestion du bord de mer si nécesaire
         if (length(listeMasq2)>0)
         {
-          if (dim(Masques2)[1]>0){
-            nbMasq=st_intersects(Masques2,TA_Zone[idalle,])
+          if (dim(Masques2Mer)[1]>0){
+            nbMasq=st_intersects(Masques2Mer,TA_Zone[idalle,])
+            
             
             n_intMasq = which(sapply(nbMasq, length)>0)
             if (length(n_intMasq)>0)
             {
-              MasqMer=Masques2[n_intMasq,]
+              MasqMer=Masques2Mer[n_intMasq,]
               
               nomType=file.path(dsnlayer,NomDirSurfEAU,racilayerTA,paste0(raciSurfEau,MasqMer$IdGlobal),"Type_Mer.txt")
-               nomType=nomType[file.exists(nomType)==T]
+              nomType=nomType[file.exists(nomType)==T]
               if (length(nomType)>0)
               {
                 if (iTypeTIN==1 & length(nomType)>0 & file.exists(NomTIF)==T)
                 {
                   cat("Gestion de plusieurs niveaux marins sur une même dalle RESULTATS A VERIFIER")
+                  
+                  # Récupération des masques terre pour éviter de modifier les altitudes dans ces masques
+                  nbMasqT=st_intersects(Masques2,TA_Zone[idalle,])
+                  n_intMasqT <-  which(sapply(nbMasqT, length) > 0)
+                  Masque2T=Masques2[n_intMasqT,]
+                  #verif "Can","Eco","Pla"
+                  M2T_FILINO=substr(Masque2T$FILINO,1,3)
+                  Masque2T=Masque2T[which(M2T_FILINO=="Can" | M2T_FILINO=="Eco" | M2T_FILINO=="Pla"),]
+                  nomMasques2T=file.path(dsnlayer,NomDirMNTTIN,racilayerTA,NomDossDalles,paste0(racidalle_,"_","masques2Terre",".gpkg"))
+                  if (dim(Masque2T)[1]>0){st_write(Masque2T,nomMasques2T, delete_layer=T, quiet=T)}
                   for (iType in 1:length(nomType))
                   {
                     # Lecture de l'altitiude de la mer

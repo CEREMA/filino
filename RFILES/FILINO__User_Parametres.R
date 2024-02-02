@@ -107,6 +107,7 @@ NomDirMNTTIN_D    ="06_MNTTIN_Direct"
 # NomDirMNTTIN  ="06_MNTTIN00_Direct"
 NomDirMNTGDAL ="07_MNTGDAL00"    
 NomDirVideo   ="08_Videos"
+NomDirDIFF    ="09_Differe"
 
 # Nom de la racine de fichiers résultats
 raciSurfEau="SurfEAU"

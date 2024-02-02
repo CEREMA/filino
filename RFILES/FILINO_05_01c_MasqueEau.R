@@ -449,7 +449,7 @@ if (file.exists(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"trhydro.gpkg"))
 }
 cat("\n",format(Sys.time(),format="%Y%m%d_%H%M%S")," Fin\n")
 
-unlink(nom_Manuel_tmp)
+# unlink(nom_Manuel_tmp)
 unlink(nom_Manuel2)
 unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("Masque2recupManu","Coupe",".gpkg")))
 unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("Masques2troptouche",".gpkg")))

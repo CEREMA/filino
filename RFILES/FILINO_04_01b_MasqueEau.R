@@ -250,8 +250,15 @@ if (length(n_int)>0)
     trhydro=st_read(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"trhydro_tmp.gpkg"))
     constsurf=st_read(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"constsurf_tmp.gpkg"))
     
-    # on en garde que les gros masques et les petits dans des surfaces en eau "planes"
-    # Intersection des 
+    # # on en garde que les gros masques et les petits dans des surfaces en eau "planes"
+    # # Intersection des 
+    # st_write(surfhydro[which(surfhydro$nature!="Ecoulement naturel"),1],file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"surfhydro_tmp_EN.gpkg"), delete_layer=T, quiet=T)
+    # 
+    # nomA=file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_Gros_et_SurfEauBDTopo_IndicesFusion.gpkg")
+    # nomB=file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"surfhydro_tmp_EN.gpkg")
+    # nomC=file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_tmp.csv")
+    # liaison=FILINO_Intersect_Qgis(nomA,nomB,nomC)
+    # Masques2=Masques2[unique(liaison$fid),]
     
     nbMSh=st_intersects(Masques2,surfhydro[which(surfhydro$nature!="Ecoulement naturel"),1])
     n_intMSh = which(sapply(nbMSh, length)>0) 
@@ -268,7 +275,8 @@ if (length(n_int)>0)
     st_write(Masques2,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_Gros_et_Petits_SurfEauBDTopo_Plane.gpkg"), delete_layer=T, quiet=T)
     
     nomA=file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"surfhydro_tmp.gpkg")
-    nomB=file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_Gros_et_Petits_SurfEauBDTopo_Plane.gpkg")
+    # nomB=file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_Gros_et_Petits_SurfEauBDTopo_Plane.gpkg")
+    nomB=file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2.gpkg")
     nomC=file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"surfhydro_tmp.csv")
     liaison=FILINO_Intersect_Qgis(nomA,nomB,nomC)
     
@@ -318,7 +326,8 @@ if (length(n_int)>0)
     # cat(format(Sys.time(),format="%Y%m%d_%H%M%S")," Export Index Spatial Masques2 restant\n")
     st_write(Masques2,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_tmp.gpkg"),delete_layer=T, quiet=T)
     nomA=file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"trhydro_tmp.gpkg")
-    nomB=file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_tmp.gpkg")
+    # nomB=file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_tmp.gpkg")
+    nomB=file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2.gpkg")
     nomC=file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"trhydro_tmp.csv")
     liaison=FILINO_Intersect_Qgis(nomA,nomB,nomC)
     
@@ -542,10 +551,15 @@ if (length(n_int)>0)
         
         trhydro_tmp2=st_intersection(trhydro_tmp2,Masques2[im,])
         
+        
         if (verif==1){st_write(trhydro_tmp2,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"trhydro_tmp2.gpkg"), delete_layer=T, quiet=T)}
         
-        if (dim(trhydro_tmp2)[1]>1)
+        # gestion des géométrie bizarre (geometrie collection qui pose pb)
+        nicitrh=which(st_is(trhydro_tmp2, c("MULTILINESTRING", "LINESTRING")))
+        # if (dim(trhydro_tmp2)[1]>1)
+        if (length(nicitrh)>0)
         {
+          trhydro_tmp2=trhydro_tmp2[nicitrh,]
           if (dim(trhydro_tmp2)[1]>2)
           {
             Masques2[im,]$F_Sh_Tr_Me_Co="Trop de rivières - Reprise manuelle"
@@ -724,23 +738,23 @@ if (length(n_int)>0)
   
   if (Nettoyage==1)
   {
-  unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydroMerConf.gpkg"))
-  unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_Gros_et_SurfEauBDTopo.gpkg"))
-  unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("Masques2_tmp.gpkg")))
-  unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("Masques2_Gros_et_SurfEauBDTopo_IndicesFusion.gpkg")))
-  unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_Gros_et_Petits_SurfEauBDTopo_Plane.gpkg"))
-  unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEau.gpkg"))
-  unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEau.gpkg"))
-  unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_tmp.gpkg"))
-  unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydro.gpkg"))
-  unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydroMer.gpkg"))
-  unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_im.gpkg"))
-  unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydroMer2.gpkg"))
-  unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydroMerConf.gpkg"))
-  unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"surfhydro_tmp.gpkg"))
-  unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"trhydro_tmp.gpkg"))
-  unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"surfhydro_tmp.csv"))
-  unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"trhydro_tmp.csv"))
-  unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("Masques2_tmp2.gpkg")) )
+    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydroMerConf.gpkg"))
+    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_Gros_et_SurfEauBDTopo.gpkg"))
+    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("Masques2_tmp.gpkg")))
+    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("Masques2_Gros_et_SurfEauBDTopo_IndicesFusion.gpkg")))
+    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_Gros_et_Petits_SurfEauBDTopo_Plane.gpkg"))
+    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEau.gpkg"))
+    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEau.gpkg"))
+    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_tmp.gpkg"))
+    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydro.gpkg"))
+    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydroMer.gpkg"))
+    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_im.gpkg"))
+    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydroMer2.gpkg"))
+    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydroMerConf.gpkg"))
+    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"surfhydro_tmp.gpkg"))
+    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"trhydro_tmp.gpkg"))
+    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"surfhydro_tmp.csv"))
+    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"trhydro_tmp.csv"))
+    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("Masques2_tmp2.gpkg")) )
   }
 }

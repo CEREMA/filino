@@ -74,21 +74,25 @@ paramTARaster=as.data.frame(rbind(
   
   cbind(0,file.path(dsnlayer,NomDirPonts)       ,"TA_PONT.shp","PONT.tif$",9,12,14,17),
   
-  cbind(0,file.path(dsnlayer,nomDirViSOLssVEGE) ,"TA_Vege.shp","Vege.tif$",9,12,14,17),
-  cbind(0,file.path(dsnlayer,nomDirViSOLssVEGE) ,"TA_VegeTropDense.shp","VegeTropDense.gpkg$",9,12,14,17),
+  cbind(0,file.path(dsnlayer,nomDirViSOLssVEGE) ,"TA_Vege.shp"               ,"Vege.tif$",9,12,14,17),
+  cbind(0,file.path(dsnlayer,nomDirViSOLssVEGE) ,"TA_VegeTropDense.shp"      ,"VegeTropDense.gpkg$",9,12,14,17),
   
-  cbind(1,file.path(dsnlayer,NomDirMNTTIN_F)    ,"TA_TIN_Filino.shp","TIN_Filino.gpkg$",9,12,14,17),
+  cbind(1,file.path(dsnlayer,NomDirMNTTIN_F)    ,"TA_TIN_Filino.shp"         ,"TIN_Filino.gpkg$",9,12,14,17),
   cbind(1,file.path(dsnlayer,NomDirMNTTIN_F)    ,"TA_TIN_Filino_Cuvettes.shp","TIN_Filino_cuvettes.gpkg$",9,12,14,17),
   
-  cbind(1,file.path(dsnlayer,NomDirMNTTIN_D)    ,"TA_TIN_Direct.shp","TIN_Direct.gpkg$",9,12,14,17),
+  cbind(1,file.path(dsnlayer,NomDirMNTTIN_D)    ,"TA_TIN_Direct.shp"         ,"TIN_Direct.gpkg$",9,12,14,17),
   cbind(1,file.path(dsnlayer,NomDirMNTTIN_D)    ,"TA_TIN_Direct_cuvettes.shp","TIN_Direct_cuvettes.gpkg$",9,12,14,17),
   
-  cbind(1,file.path(dsnlayer,NomDirMNTGDAL)     ,"TA_SOLetEAU_min.shp","SOLetEAU_min.gpkg$",9,12,14,17),
-  cbind(1,file.path(dsnlayer,NomDirMNTGDAL)     ,"TA_TOUT_min.gpkg.shp","TOUT_min.gpkg$",9,12,14,17),
-  cbind(1,file.path(dsnlayer,NomDirMNTGDAL)     ,"TA_VEGE_min.gpkg.shp","VEGE_min.gpkg$",9,12,14,17),
+  cbind(1,file.path(dsnlayer,NomDirMNTGDAL)     ,"TA_SOLetEAU_min.shp"       ,"SOLetEAU_min.gpkg$",9,12,14,17),
+  cbind(1,file.path(dsnlayer,NomDirMNTGDAL)     ,"TA_TOUT_min.shp"           ,"TOUT_min.gpkg$",9,12,14,17),
+  cbind(1,file.path(dsnlayer,NomDirMNTGDAL)     ,"TA_VEGE_min.shp"           ,"VEGE_min.gpkg$",9,12,14,17),
   
   
-  cbind(0,"modif dans la variable paramTARaster"," "," ","Xdeb","Xfin","Ydeb","Yfin")
+  cbind(0,"modif dans la variable paramTARaster"," "," ","Xdeb","Xfin","Ydeb","Yfin"),
+  
+  cbind(1,file.path(dsnlayer,NomDirDIFF)        ,"TA_TIN_Filino_moins_TIN_Direct_.shp","TIN_Filino_moins_TIN_Direct_.gpkg$",9,12,14,17),
+  cbind(1,file.path(dsnlayer,NomDirDIFF)        ,"TA_TIN_Filino_moins_VEGE_min_.shp"      ,"TIN_Filino_moins_VEGE_min_.gpkg$",9,12,14,17)
+  
 ))  
 
 # Ne pas modifier le nom des colonnes

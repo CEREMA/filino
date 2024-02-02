@@ -22,7 +22,7 @@ ChoixFILINO = cbind(
   "02_00c.     Table d'assemblage des données Lidar (LAZ)",
   "03_01a.     Masques Vides et Eau / Ponts / Végétation trop dense par dalles",
   "04_01b.     Masques Fusion des masques et identification avec BDTopo (étape manuelle avant 1c)",
-  "05_01c.     Masques Relations des masques 2 (un peu plus large) et 1 (bords sur lesquelq des points virtuels sont créés)",
+  "05_01c.     Masques Relations des masques 2 (un peu plus large) et 1 (bords sur lesquels des points virtuels sont créés)",
   "06_02ab.    SurfEau Exctraction des points Lidar des masques 2 et calculs des points virtuels",
   "07_05a.     Récupération Sol ancien d'autres Lidar dans la végétation trop dense",
   "08_06.      Table d'assemblage des points virtuels (à refaire après 09_03 et 10_04)",
@@ -34,7 +34,7 @@ ChoixFILINO = cbind(
   "14_10.      Palette de couleur",
   "15_11.      Videos démonstration",
   "16_12.      Création de vrt et gpkg par zone",
-  "            NON FAIT creation vrt et gpkg par secteur"
+  "17_12.      Différences entre deux types de données"
 )
 titre="Menu principal FILINO"
 preselec=NULL
@@ -172,7 +172,7 @@ if (nFILINO[15]==1)
 {
   Auto=apply(rbind(Auto,c(0,0)), 2,min)
   CalcVideo=cbind("Oui","Non")
-  nCalcVideo = select.list(CalcVideo,preselect = CalcVideo[1],
+  nCalcVideo = select.list(CalcVideo,preselect = CalcVideo[2],
                            title = "faire une vidéo",multiple = F,graphics = T)
   nCalcVideo = which(CalcVideo %in% nCalcVideo)
   if (length(nCalcVideo)==0){print("VOUSAVEZVOULUQUECAFASSEBADABOOM_CESTGAGNE");BOOM=BOOOM}
@@ -182,7 +182,7 @@ if (nFILINO[15]==1)
 # 16_11 FILINO_16_11_VRTGPKG.R
 if (nFILINO[16]==1)
 {
-  Auto=apply(rbind(Auto,c(1,1)), 2,min)
+  Auto=apply(rbind(Auto,c(0,0)), 2,min)
   # titre="Menu FILINO_04_01b"
   # preselec=".gpkg$"
   # extensionRAST=cbind(".gpkg$",".tif$")
@@ -195,8 +195,6 @@ if (nFILINO[16]==1)
   Etap_02_00c2=FILINO_BDD(titre,preselec,chois)
   paramTARaster=paramTARaster[which(Etap_02_00c2==1),]
   
-  
-  Auto=apply(rbind(Auto,c(0,0)), 2,min)
   CalcVRTtoGPKG=cbind("Oui","Non")
   nCalcVRTtoGPKG = select.list(CalcVRTtoGPKG,preselect = CalcVRTtoGPKG[1],
                                title = "Convertir le vrt en GPKG avec tuilage",multiple = F,graphics = T)
@@ -205,8 +203,31 @@ if (nFILINO[16]==1)
   
 }
 
-source(file.path(chem_routine,"FILINO_00_00a_Initialisation.R"))
+# "17_12.      Différences entre deux types de données"
+if (nFILINO[17]==1)
+{
+  Auto=apply(rbind(Auto,c(1,0)), 2,min)
+  chois1=paste(paramTARaster$Doss,paramTARaster$NomTA)
+  titre="Menu FILINO_16_11_VRTGPKG.R"
+  preselec=chois1[which(paramTARaster$Lancement==1)]
+  Etap_02_00c2=FILINO_BDD(titre,preselec,chois1)
+  paramTARaster1=paramTARaster[which(Etap_02_00c2==1)[1],]
+  
 
+  chois2=paste(paramTARaster$Doss,paramTARaster$NomTA)
+  titre="Menu FILINO_16_11_VRTGPKG.R"
+  preselec=chois2[which(paramTARaster$Lancement==1)]
+  Etap_02_00c2=FILINO_BDD(titre,preselec,chois2)
+  paramTARaster2=paramTARaster[which(Etap_02_00c2==1),]
+  
+   CalcDiffPlus=cbind("Garder toutes les valeurs","Ne garder que les valeurs positives")
+  nCalcDiffPlus = select.list(CalcDiffPlus,preselect = CalcDiffPlus[1],
+                               title = "Différences",multiple = F,graphics = T)
+  nCalcDiffPlus = which(CalcDiffPlus %in% nCalcDiffPlus)
+  if (length(nCalcDiffPlus)==0){print("VOUSAVEZVOULUQUECAFASSEBADABOOM_CESTGAGNE");BOOM=BOOOM}
+}
+  
+source(file.path(chem_routine,"FILINO_00_00a_Initialisation.R"))
 
 #-----------------------------------------------------------------------------------
 # boucle sur les fonctions
@@ -294,7 +315,7 @@ if (nFILINO[13]==1)
 }
 
 # ""14_09   FILINO_14_09_CycleCouleur.R"
-if (nFILINO[14]==1){source(file.path(chem_routine,"FILINO_13_09_CycleCouleur.R"))}
+if (nFILINO[14]==1){source(file.path(chem_routine,"FILINO_14_09_CycleCouleur.R"))}
 
 # ""15_10 FILINO_15_10_VideosDemoProcess.R"
 if (nFILINO[15]==1)
@@ -307,4 +328,10 @@ if (nFILINO[15]==1)
 if (nFILINO[16]==1)
 { 
   source(file.path(chem_routine,"FILINO_16_11_VRTGPKG.R"))
+}
+
+# "17_12.      Différences entre deux types de données"
+if (nFILINO[17]==1)
+{ 
+  source(file.path(chem_routine,"FILINO_17_12_Differences.R"))
 }

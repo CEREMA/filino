@@ -103,7 +103,7 @@ if (file.exists(file.path(chem_routine,nomXLSX))==T)
               racinomLazZone=substr(TA_Zone$NOM,1,nchar(TA_Zone$NOM)-4)
               racilisteRast=substr(listeRast,1,nchar(listeRast)-nchar(listeExport$Extension[iexp])+1)
               
-              commun <- intersect(gsub(".copc","_copc",racinomLazZone), gsub(".copc","_copc",racilisteRast))
+              commun <- intersect(gsub(".copc","_copc",racinomLazZone), gsub("copc_","copc",gsub(".copc","_copc",racilisteRast)))
               
               if (length(commun)>0)
               {
@@ -258,12 +258,12 @@ if (file.exists(file.path(chem_routine,nomXLSX))==T)
             unlink(shpfile)
             unlink(nomLaz)
             
-            for (ima in 1:listeExport$VideoImageParSeconde[iexp])
-            {
-              nompng2=file.path(repVIDEO,paste0("Im",paste0(formatC(nimage,width=4, flag="0"),".png")))
-              file.copy(file.path(RepQgs,nompng),nompng2)
-              nimage=nimage+1
-            }  
+            # for (ima in 1:listeExport$VideoImageParSeconde[iexp])
+            # {
+            #   nompng2=file.path(repVIDEO,paste0("Im",paste0(formatC(nimage,width=4, flag="0"),".png")))
+            #   file.copy(file.path(RepQgs,nompng),nompng2)
+            #   nimage=nimage+1
+            # }  
             
           }
         }
@@ -325,12 +325,12 @@ if (file.exists(file.path(chem_routine,nomXLSX))==T)
                   unlink(nomLaz)
                   
                   
-                  for (ima in 1:listeExport$VideoImageParSeconde[iexp])
-                  {
-                    nompng2=file.path(repVIDEO,paste0("Im",paste0(formatC(nimage,width=4, flag="0"),".png")))
-                    file.copy(file.path(RepQgs,"Temp.png"),nompng2)
-                    nimage=nimage+1
-                  }  
+                  # for (ima in 1:listeExport$VideoImageParSeconde[iexp])
+                  # {
+                  #   nompng2=file.path(repVIDEO,paste0("Im",paste0(formatC(nimage,width=4, flag="0"),".png")))
+                  #   file.copy(file.path(RepQgs,"Temp.png"),nompng2)
+                  #   nimage=nimage+1
+                  # }  
                 }
                 
               }
@@ -348,6 +348,22 @@ if (file.exists(file.path(chem_routine,nomXLSX))==T)
   }
   if (nCalcVideo==1 & file.exists(ffmpeg))
   {
+    
+    listepng=list.files(RepQgs,pattern=".png$")
+    
+    nimage=0
+    for (iliste in 1:length(listepng))
+    {
+      for (iframe in 1:2)
+      {
+        nompng2=file.path(repVIDEO,paste0("Im",paste0(formatC(nimage,width=4, flag="0"),".png")))
+        nimage=nimage+1
+        
+        file.copy(file.path(RepQgs,listepng[iliste]),
+                  nompng2)
+      }
+    }
+    
     setwd(repVIDEO)
     cmd=paste0(shQuote(ffmpeg),
                " -f image2 -i ",

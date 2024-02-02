@@ -6,6 +6,11 @@ FILINO_00c_TA=function(dsnlayerTA,nomlayerTA,extension,paramXYTA)
   cat("Recherche parfois longue des fichiers ",extension,"\n")
   cat("Répertoire",dsnlayerTA)
   listeLAZ=list.files(dsnlayerTA,pattern=extension,recursive="TRUE")
+  
+  ici=which(is.na(as.numeric(substr(basename(listeLAZ),paramXYTA$Xdeb,paramXYTA$Xfin)))==F &
+    is.na(as.numeric(substr(basename(listeLAZ),paramXYTA$Ydeb,paramXYTA$Yfin)))==F)
+  if (length(ici)>0){listeLAZ=listeLAZ[ici]}else{}
+  
   if (length(listeLAZ)>0)
   {
     if (exists("paramXYTA$COPC"))

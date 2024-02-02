@@ -14,7 +14,8 @@ if (length(n_int)>0)
 {
   if (Supp_PtsVirt_copc_laz==1)
   {
-    Liste_PtsVirt_copc_laz=list.files(file.path(dsnlayer,NomDirSurfEAU,racilayerTA),pattern="SurfEAU_PtsVirt_copc.laz",recursive=T)
+    Liste_PtsVirt_copc_laz=list.files(file.path(dsnlayer,NomDirSurfEAU,racilayerTA),pattern="SurfEAU_PtsVirt.copc.laz",full.names = TRUE,recursive=T)
+    unlink(Liste_PtsVirt_copc_laz)
   }  
   
   cat("##################################################################\n")
