@@ -98,44 +98,57 @@ FILINO_FusionMasque = function(nomDir,TA,motcle,nombre)
   # Suppression des anciens découpages
   ListPart=list.files(file.path(dsnlayer,nomDir,racilayerTA),pattern=paste0(motcle,nombre,"_Part"))
   if (length(ListPart)>0){unlink(ListPart)}
-  
+
   decoup=100
   cat(format(Sys.time(),format="%Y%m%d_%H%M%S")," Début de fusion des masques ",nombre,"\n")
-  listMasq=list.files(file.path(dsnlayer,nomDir,racilayerTA,NomDossDalles),pattern=paste0("_",motcle,nombre,".gpkg"))
   
-  nbCaracFin=nchar(paste0("_",motcle,nombre,".gpkg"))
-  
-  # substr(listMasq,1,nchar(listMasq[1])-nbCaracFin)
-  # substr(TA$NOM,1,nchar(TA$NOM[1])-4)
-  if (length(listMasq)>0)
+  if(is.null(TA)==T)
   {
-    listMasq=paste0(intersect(substr(listMasq,1,nchar(listMasq[1])-nbCaracFin),gsub(".copc","_copc",substr(TA$NOM,1,nchar(TA$NOM[1])-4))),"_",motcle,nombre,".gpkg")
+    nomdosstmp=nomDir
+    listMasq=file.path(nomDir,list.files(nomDir,pattern=paste0(".gpkg")))
+  }else{
+    nomdosstmp=file.path(dsnlayer,nomDir,racilayerTA,NomDossDalles)
+    listMasq=list.files(file.path(dsnlayer,nomDir,racilayerTA,NomDossDalles),pattern=paste0("_",motcle,nombre,".gpkg"))
+    
+    nbCaracFin=nchar(paste0("_",motcle,nombre,".gpkg")) 
     if (length(listMasq)>0)
     {
-      cat("Nombre de dalles:",length(listMasq),"\n")
-      print(listMasq[1:min(10,length(listMasq))])
-      for (ibc in seq(1,length(listMasq),decoup))
-      {
-        cat(min(ibc:(min(ibc+decoup-1,length(listMasq))))," ",max(ibc:(min(ibc+decoup-1,length(listMasq)))))
-        cmd=paste0(qgis_process, " run native:mergevectorlayers")
-        for (iM in ibc:(min(ibc+decoup-1,length(listMasq))))
-        {cmd=paste0(cmd," --LAYERS=",shQuote(listMasq[iM]))}
-        cmd=paste0(cmd,
-                   paste0(" --CRS=QgsCoordinateReferenceSystem('EPSG:",nEPSG,"') "),
-                   " --OUTPUT=",shQuote(paste0(motcle,nombre,"_Part",ibc,".gpkg")))
-        paste(cmd);system(cmd)
-      }
-      cat(format(Sys.time(),format="%Y%m%d_%H%M%S")," Fin de fusion des masques\n")
-      
-      ListPart=list.files(file.path(dsnlayer,nomDir,racilayerTA,NomDossDalles),pattern=paste0(motcle,nombre,"_Part"))
+      listMasq=paste0(intersect(substr(listMasq,1,nchar(listMasq[1])-nbCaracFin),gsub(".copc","_copc",substr(TA$NOM,1,nchar(TA$NOM[1])-4))),"_",motcle,nombre,".gpkg")
+    }
+  }
+  # substr(listMasq,1,nchar(listMasq[1])-nbCaracFin)
+  # substr(TA$NOM,1,nchar(TA$NOM[1])-4)
+  
+  if (length(listMasq)>0)
+  {
+    cat("Nombre de dalles:",length(listMasq),"\n")
+    print(listMasq[1:min(10,length(listMasq))])
+    for (ibc in seq(1,length(listMasq),decoup))
+    {
+      cat(min(ibc:(min(ibc+decoup-1,length(listMasq))))," ",max(ibc:(min(ibc+decoup-1,length(listMasq)))))
       cmd=paste0(qgis_process, " run native:mergevectorlayers")
-      for (iM in 1:length(ListPart))
-      {cmd=paste0(cmd," --LAYERS=",shQuote(ListPart[iM]))}
+      for (iM in ibc:(min(ibc+decoup-1,length(listMasq))))
+      {cmd=paste0(cmd," --LAYERS=",shQuote(listMasq[iM]))}
       cmd=paste0(cmd,
                  paste0(" --CRS=QgsCoordinateReferenceSystem('EPSG:",nEPSG,"') "),
-                 " --OUTPUT=",shQuote(paste0(motcle,nombre,"_Concat_Qgis.gpkg")))
-      system(cmd)
-      
+                 " --OUTPUT=",shQuote(paste0(motcle,nombre,"_Part",ibc,".gpkg")))
+      paste(cmd);system(cmd)
+    }
+    cat(format(Sys.time(),format="%Y%m%d_%H%M%S")," Fin de fusion des masques\n")
+    
+    
+    ListPart=list.files(nomdosstmp,pattern=paste0(motcle,nombre,"_Part"))
+    cmd=paste0(qgis_process, " run native:mergevectorlayers")
+    for (iM in 1:length(ListPart))
+    {cmd=paste0(cmd," --LAYERS=",shQuote(ListPart[iM]))}
+
+    cmd=paste0(cmd,
+               paste0(" --CRS=QgsCoordinateReferenceSystem('EPSG:",nEPSG,"') "),
+               " --OUTPUT=",shQuote(paste0(motcle,nombre,"_Concat_Qgis.gpkg")))
+    system(cmd)
+    
+    if(is.null(TA)==F)
+    {
       cmd=paste0(qgis_process, " run native:buffer",
                  " --INPUT=",shQuote(paste0(motcle,nombre,"_Concat_Qgis.gpkg")),
                  " --DISTANCE=0 --SEGMENTS=5 --END_CAP_STYLE=0 --JOIN_STYLE=0 --MITER_LIMIT=2 --DISSOLVE=True",
@@ -163,6 +176,7 @@ FILINO_FusionMasque = function(nomDir,TA,motcle,nombre)
     }
   }
 }
+
 
 ################################################################################
 ################################################################################

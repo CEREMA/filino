@@ -1,4 +1,4 @@
-FILINO1a_Vide_Grass =   function(iLAZ)
+FILINO1a_Vide_Grass =   function(iLAZ,NomLaz,nom_Rast_INV_VIDEetEAU,nom_RastEAU,nom_RastSOL,SecteurGRASS,Nord,Sud,Est,Ouest)
 {
   raci=gsub(".copc","_copc",paste0(substr(NomLaz,1,nchar(NomLaz)-4)))
   # Récupération du raster, création d'un masque inversé

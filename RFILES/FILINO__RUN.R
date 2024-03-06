@@ -6,12 +6,13 @@ library(xml2)
 library(readxl) 
 library(jpeg)
 library(png)
+library(foreach)
+library(doParallel)
 
 cat("\014") # Nettoyage de la console
 
 chem_routine=dirname(rstudioapi::getActiveDocumentContext()$path)
 print(chem_routine)
-# source(file.path(chem_routine,"C2D_ParamUser","C2D_LienOutilsPC.R"), encoding="utf-8")
 source(file.path(chem_routine,"FILINO__User_LienOutilsPC.R"))
 source(file.path(chem_routine,"FILINO__User_Parametres.R"))
 source(file.path(chem_routine,"FILINO__User_Chemin_et_Nom.R"))
@@ -213,20 +214,20 @@ if (nFILINO[17]==1)
   Etap_02_00c2=FILINO_BDD(titre,preselec,chois1)
   paramTARaster1=paramTARaster[which(Etap_02_00c2==1)[1],]
   
-
+  
   chois2=paste(paramTARaster$Doss,paramTARaster$NomTA)
   titre="Menu FILINO_16_11_VRTGPKG.R"
   preselec=chois2[which(paramTARaster$Lancement==1)]
   Etap_02_00c2=FILINO_BDD(titre,preselec,chois2)
   paramTARaster2=paramTARaster[which(Etap_02_00c2==1),]
   
-   CalcDiffPlus=cbind("Garder toutes les valeurs","Ne garder que les valeurs positives")
+  CalcDiffPlus=cbind("Garder toutes les valeurs","Ne garder que les valeurs positives")
   nCalcDiffPlus = select.list(CalcDiffPlus,preselect = CalcDiffPlus[1],
-                               title = "Différences",multiple = F,graphics = T)
+                              title = "Différences",multiple = F,graphics = T)
   nCalcDiffPlus = which(CalcDiffPlus %in% nCalcDiffPlus)
   if (length(nCalcDiffPlus)==0){print("VOUSAVEZVOULUQUECAFASSEBADABOOM_CESTGAGNE");BOOM=BOOOM}
 }
-  
+
 source(file.path(chem_routine,"FILINO_00_00a_Initialisation.R"))
 
 #-----------------------------------------------------------------------------------
@@ -260,7 +261,7 @@ for (iTA in 1:length(dsnTALidar))
     FILINO_Creat_Dir(file.path(dsnlayer,NomDirMasqueVEGE,racilayerTA,NomDossDalles))
     FILINO_Creat_Dir(file.path(dsnlayer,NomDirMasquePONT,racilayerTA,NomDossDalles))
     FILINO_Creat_Dir(file.path(dsnlayer,NomDirMNTGDAL,racilayerTA,NomDossDalles))
-    source(file.path(chem_routine,"FILINO_03_01a_MasqueDalle.R"))
+    source(file.path(chem_routine,"FILINO_03_01a_MasqueDalle_Pilotage.R"))
   }
   
   # "04_01b. Masques Fusion des  et identification avec BDTopo (étape manuelle avant 1c)",
@@ -273,18 +274,20 @@ for (iTA in 1:length(dsnTALidar))
   if (nFILINO[6]==1)
   {
     FILINO_Creat_Dir(file.path(dsnlayer,NomDirSurfEAU,racilayerTA))
-    source(file.path(chem_routine,"FILINO_06_02ab_ExtraitLazGrosMasquesEau.R"))  
+    source(file.path(chem_routine,"FILINO_06_02ab_ExtraitLazMasquesEau_Pilotage.R"))  
+    # FILINO_06_02ab_Pilotage(chem_routine)
   }
   
   # "07_05a. Vegetaion/Sol ancien Récupération sol dans d'autres Lidar",
   if (nFILINO[7]==1)
   {
     FILINO_Creat_Dir(file.path(dsnlayer,nomDirViSOLssVEGE,racilayerTA,NomDossDalles))
-    source(file.path(chem_routine,"FILINO_07_05a_SolVieuxLazSousVege.R"))
+    source(file.path(chem_routine,"FILINO_07_05a_SolVieuxLazSousVege_Pilotage.R"))
+    # FILINO_07_05a_Pilotage(chem_routine)
   }
   
   # "08_06.  Table d'assemblage des points virutels",
-  if (nFILINO[8]==1){source(file.path(chem_routine,"FILINO_08_06_TA_PtsVirtuelsLaz.R"))}
+  if (nFILINO[8]==1){source(file.path(chem_routine,"FILINO_08_06_TA_PtsVirtuelsLaz_Pilotage.R"))}
   
   # "07_03.  NON FAIT Gestion des thalwegs secs (voir travaux avec Univ G.Eiffel",
   # if (nFILINO[9]==1 ){source(file.path(chem_routine,""))}
@@ -293,13 +296,17 @@ for (iTA in 1:length(dsnTALidar))
   # if (nFILINO[10]==1 ){source(file.path(chem_routine,""))}
   
   # "11_07.  MNT TIN s'appyant sur TA LidarHD et TA virtuels",
-  if (nFILINO[11]==1){ source(file.path(chem_routine,"FILINO_11_07_CreationMNT_TIN.R"))}
+  if (nFILINO[11]==1)
+  {
+    source(file.path(chem_routine,"FILINO_11_07_CreationMNT_TIN_Pilotage.R"))
+    # FILINO_11_07_Pilotage(chem_routine)
+  }
   
   # "12_08.  MNT Minimum Raster (non continu)"
   if (nFILINO[12]==1)
   {
     FILINO_Creat_Dir(file.path(dsnlayer,NomDirMNTGDAL,racilayerTA))
-    source(file.path(chem_routine,"FILINO_12_08_CreationMNT_Raster.R"))
+    source(file.path(chem_routine,"FILINO_12_08_CreationMNT_Raster_Pilotage.R"))
   }
 }
 
@@ -333,5 +340,5 @@ if (nFILINO[16]==1)
 # "17_12.      Différences entre deux types de données"
 if (nFILINO[17]==1)
 { 
-  source(file.path(chem_routine,"FILINO_17_12_Differences.R"))
+  source(file.path(chem_routine,"FILINO_17_12_Differences_Pilotage.R"))
 }

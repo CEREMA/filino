@@ -123,6 +123,8 @@ if (length(n_int)>0)
     
     # Travail sur les gros masques
     Masques2=Masques2[unique(c(n_intMSh,which(Masques2$Aire>seuilSup1))),]
+    
+    Masques2=st_cast(Masques2,"POLYGON")##### voir si OK 05/03/2024
     # ajout de l'aire et travail par ordre decroissant
     Masques2=Masques2[order(Masques2$Aire,decreasing=TRUE),] 
     
@@ -166,11 +168,12 @@ if (length(n_int)>0)
     cat("FILINO_04_01b_MasqueEau.R - Etap1b[3]\n")
     # Masques1=st_read(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques1.gpkg"))
     Masques2=st_read(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_Gros_et_SurfEauBDTopo.gpkg"))
+    Masques2=arrange(Masques2,Id)
     #### initialisation
     ngros=data.frame(Gros=which(Masques2$Aire>=seuilSup2),Tour=0)
     units(seuilSup3)="m"
-    
     it=0
+    #### bug constaté le 05/03/2024
     while(max(ngros$Tour)>=it)
     {
       cat("#####################\n")
@@ -178,7 +181,8 @@ if (length(n_int)>0)
       cat("Tour ",it,"\n")
       
       #### boucle
-      npetit=which(Masques2$Id>(max(ngros$Gros)+1))
+      # npetit=which(Masques2$Id>(max(ngros$Gros)+1))
+      npetit=which(Masques2$Id>(max(ngros$Gros))) # modif du 05/03/2024
       
       for (ip in which(ngros$Tour==(it-1)))
       {
@@ -199,7 +203,7 @@ if (length(n_int)>0)
             if (length(lala)>0)
             {
               # cat("valeurs",round(valeurs,1),"\n")
-              cat(" - Indices a modifer",lala)
+              cat(" - Indices a modifer",Masques2[npetit[nint_ngp[lala]],]$Id)
               Masques2[npetit[nint_ngp[lala]],]$Id=ip
               ngros$Tour[ip]=it
             }
@@ -225,6 +229,7 @@ if (length(n_int)>0)
         system(cmd)
         # Masques2_Qgis=st_read(nomMasque2_tmp2)
         Masques2=st_read(nomMasque2_tmp2)
+        Masques2=arrange(Masques2,Id)
         cat(format(Sys.time(),format="%Y%m%d_%H%M%S")," Fin de fusion des masques Qgis","\n")
         
         Masques2$Aire=round(st_area(Masques2),0)
@@ -563,7 +568,6 @@ if (length(n_int)>0)
           if (dim(trhydro_tmp2)[1]>2)
           {
             Masques2[im,]$F_Sh_Tr_Me_Co="Trop de rivières - Reprise manuelle"
-            # browser()
           }else{
             Masques2[im,]$F_Sh_Tr_Me_Co="2 rivières"
             # recuperation de la jonction
@@ -696,65 +700,66 @@ if (length(n_int)>0)
         }
       }
     }
-  }
-  
-  Masques2$Aire=round(st_area(Masques2),0)
-  Masques2=Masques2[order(Masques2$Aire,decreasing = T),]
-  
-  ##### Codification
-  Masques2$Id=FILINO_NomMasque(Masques2)
-  st_write(Masques2,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydroMerConf.gpkg"), delete_layer=T, quiet=T)
-  
-  constsurf=st_read(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"constsurf_tmp.gpkg"))
-  ecluse=constsurf[which(constsurf$nature=="Ecluse"),]
-  necl=st_intersects(Masques2,ecluse)
-  n_intecl = which(sapply(necl, length)>0)
-  Masques2$VIGILANCE=""
-  if (length(n_intecl)>0)
-  {
-    Masques2[n_intecl,]$VIGILANCE="Ecluse"
-    Masques2[n_intecl,]$F_Sh_Tr_Me_Co=paste(Masques2[n_intecl,]$F_Sh_Tr_Me_Co,"Ecluse")
-  }
-  
-  print(sort(unique(Masques2$F_Sh_Tr_Me_Co)))
-  Masques2$Commentaires=""
-  
-  Masques2$FILINO=Masques2$F_Sh_Tr_Me_Co
-  
-  units(seuilSup4)="m^2"
-  Masques2=Masques2[which(Masques2$Aire>seuilSup4),]
-  
-  Masques2$ValPlanEAU=ValPlanEAU
-  Masques2$CE_BalPas=CE_BalPas
-  Masques2$CE_BalFen=CE_BalFen
-  Masques2$CE_PenteMax=CE_PenteMax
-  Masques2$NumCourBox=NumCourBox
-  
-  st_write(Masques2,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("Masques2_Seuil",seuilSup1,"m2",".gpkg")), delete_layer=T, quiet=T)
-  
-  file.copy(file.path(dsnlayer,NomDirSIGBase,"Masques.qgz"),
-            file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques.qgz"),
-            overwrite = T)
-  
-  if (Nettoyage==1)
-  {
-    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydroMerConf.gpkg"))
-    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_Gros_et_SurfEauBDTopo.gpkg"))
-    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("Masques2_tmp.gpkg")))
-    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("Masques2_Gros_et_SurfEauBDTopo_IndicesFusion.gpkg")))
-    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_Gros_et_Petits_SurfEauBDTopo_Plane.gpkg"))
-    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEau.gpkg"))
-    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEau.gpkg"))
-    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_tmp.gpkg"))
-    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydro.gpkg"))
-    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydroMer.gpkg"))
-    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_im.gpkg"))
-    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydroMer2.gpkg"))
-    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydroMerConf.gpkg"))
-    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"surfhydro_tmp.gpkg"))
-    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"trhydro_tmp.gpkg"))
-    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"surfhydro_tmp.csv"))
-    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"trhydro_tmp.csv"))
-    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("Masques2_tmp2.gpkg")) )
+    
+    
+    Masques2$Aire=round(st_area(Masques2),0)
+    Masques2=Masques2[order(Masques2$Aire,decreasing = T),]
+    
+    ##### Codification
+    Masques2$Id=FILINO_NomMasque(Masques2)
+    st_write(Masques2,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydroMerConf.gpkg"), delete_layer=T, quiet=T)
+    
+    constsurf=st_read(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"constsurf_tmp.gpkg"))
+    ecluse=constsurf[which(constsurf$nature=="Ecluse"),]
+    necl=st_intersects(Masques2,ecluse)
+    n_intecl = which(sapply(necl, length)>0)
+    Masques2$VIGILANCE=""
+    if (length(n_intecl)>0)
+    {
+      Masques2[n_intecl,]$VIGILANCE="Ecluse"
+      Masques2[n_intecl,]$F_Sh_Tr_Me_Co=paste(Masques2[n_intecl,]$F_Sh_Tr_Me_Co,"Ecluse")
+    }
+    
+    print(sort(unique(Masques2$F_Sh_Tr_Me_Co)))
+    Masques2$Commentaires=""
+    
+    Masques2$FILINO=Masques2$F_Sh_Tr_Me_Co
+    
+    units(seuilSup4)="m^2"
+    Masques2=Masques2[which(Masques2$Aire>seuilSup4),]
+    
+    Masques2$ValPlanEAU=ValPlanEAU
+    Masques2$CE_BalPas=CE_BalPas
+    Masques2$CE_BalFen=CE_BalFen
+    Masques2$CE_PenteMax=CE_PenteMax
+    Masques2$NumCourBox=NumCourBox
+    
+    st_write(Masques2,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("Masques2_Seuil",seuilSup1,"m2",".gpkg")), delete_layer=T, quiet=T)
+    
+    file.copy(file.path(dsnlayer,NomDirSIGBase,"Masques.qgz"),
+              file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques.qgz"),
+              overwrite = T)
+    
+    if (Nettoyage==1)
+    {
+      unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydroMerConf.gpkg"))
+      unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_Gros_et_SurfEauBDTopo.gpkg"))
+      unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("Masques2_tmp.gpkg")))
+      unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("Masques2_Gros_et_SurfEauBDTopo_IndicesFusion.gpkg")))
+      unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_Gros_et_Petits_SurfEauBDTopo_Plane.gpkg"))
+      unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEau.gpkg"))
+      unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEau.gpkg"))
+      unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_tmp.gpkg"))
+      unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydro.gpkg"))
+      unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydroMer.gpkg"))
+      unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_im.gpkg"))
+      unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydroMer2.gpkg"))
+      unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydroMerConf.gpkg"))
+      unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"surfhydro_tmp.gpkg"))
+      unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"trhydro_tmp.gpkg"))
+      unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"surfhydro_tmp.csv"))
+      unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"trhydro_tmp.csv"))
+      unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("Masques2_tmp2.gpkg")) )
+    }
   }
 }

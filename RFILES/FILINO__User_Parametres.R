@@ -52,7 +52,7 @@ CE_BalFen=50 # moyenne sur x pixels
 CE_PenteMax=1/100 # pente max sur
 NumCourBox=1
 
-#------------------------------------- Paramètres FILINO_06_02ab_ExtraitLazGrosMasquesEau.R ------------------------------------------------------
+#------------------------------------- Paramètres FILINO_06_02ab_ExtraitLazMasquesEau.R ------------------------------------------------------
 Supp_PtsVirt_copc_laz=1 # Ce paramètre permet de supprimer les fichiers virtuels Laz déjà créé
 # Cette option est à utiliser car si on modifie des masques, les vieux points virtuels seraient conservés, très "dangereux"
 
@@ -66,13 +66,15 @@ ClassesUtilisees=c(9,2) # si lidar hd classifié
 #ClassesUtilisees=c(1,9,2) Garder les 1 si pas classifié
 nmaxpointaff=1000000
 
-#------------------------------------- Paramètres FILINO_09_05a_SolVieuxLazSousVege.R ------------------------------------------------------
+#------------------------------------- Paramètres FILINO_07_05a_SolVieuxLazSousVege.R ------------------------------------------------------
 Classe_Old="Classification[2:2],Classification[10:10]"# 2 et 10 pour gérer tous les formats IGN
 
 #------------------------------------- Paramètres FILINO_11_07_CreationMNT_TIN.R ------------------------------------------------------
 nLimit=250 # Limite de nombre de fichier ouvert dans pdal, on regroupe par paquet de 250, limite windows à 500 a priori
 Buf_TIN=100 # Distance pour gérer l'interpolation des bords d'une dalle (100m sur recommandation IGN)
 # Un process étape FILINO_06_02c_creatPtsVirtuels.R permet de gérer si ce n'est pas suffisant
+# ClassPourMNTTIN="Classification[0:0]" # Code pour du Lidar jamais classé
+ClassPourMNTTIN="Classification[2:2],Classification[66:66],Classification[81:90]" # Code pour LidarHD IGN
 
 #------------------------------------- Paramètres FILINO_12_08_CreationMNT_Raster.R ------------------------------------------------------
 ClassPourMNTGDAL=rbind(
@@ -88,6 +90,31 @@ Mini=-50
 Maxi=2000
 PasDz=c(0.1,0.2,0.5,1) # On peut lancer avec plusieurs pas d'espace
 
+#------------------------------------- Processeurs en mode parallèle ------------------------------------------------------
+#----- Codification 
+#------------- NaN pas d'option
+#------------- 0 mode non parallèle
+#------------- 1 et plus mode parallèle
+# le mode parallèle semble mieux gérer la rame et mettre 1 semble permettre ded faire des calculs qui ne passent pas en mode classique...
+nb_proc_Filino=c(
+  NaN,
+  NaN,
+  5, #FILINO_03_01a_MasqueDalle.R
+  NaN,
+  NaN,
+  6,#6, #FILINO_06_02ab_ExtraitLazMasquesEau
+  6, #FILINO_07_05a_SolVieuxLazSousVege
+  10,#9, #FILINO_08_06_TA_PtsVirtuelsLaz
+  NaN,
+  NaN,
+  1,#1, #FILINO_11_07_CreationMNT_TIN.R
+  2, #FILINO_12_08_CreationMNT_Raster.R
+  NaN,
+  NaN,
+  NaN,
+  NaN,
+  6) #FILINO_03_01a_MasqueDalle_Pilotage
+
 
 
 ##############################################################################################################################################################
@@ -95,19 +122,19 @@ PasDz=c(0.1,0.2,0.5,1) # On peut lancer avec plusieurs pas d'espace
 ##############################################################################################################################################################
 # A NE PAS CHANGER SAUF SI VOUS EN AVEZ VRAIMENT ENVIE!
 # Nom des répertoires export
-NomDirMasqueVIDE  ="01a_MASQUE_VIDEetEAU"
-NomDirMasqueVEGE  ="01b_MASQUE_VEGEDENSE"
-NomDirMasquePONT  ="01c_MASQUE_PONT"
-NomDirSurfEAU     ="02_SURFACEEAU"   
-NomDirCoursEAU    ="03_COURSEAU"    
-NomDirPonts       ="04_PONTS"        
-nomDirViSOLssVEGE ="05_VieuxSOL_ss_VEGE" 
-NomDirMNTTIN_F    ="06_MNTTIN_FILINO"         
-NomDirMNTTIN_D    ="06_MNTTIN_Direct"         
+NomDirMasqueVIDE  ="01a_MASQUE_VIDEetEAUP"
+NomDirMasqueVEGE  ="01b_MASQUE_VEGEDENSEP"
+NomDirMasquePONT  ="01c_MASQUE_PONTP"
+NomDirSurfEAU     ="02_SURFACEEAUP"   
+NomDirCoursEAU    ="03_COURSEAUP"    
+NomDirPonts       ="04_PONTSP"        
+nomDirViSOLssVEGE ="05_VieuxSOL_ss_VEGEP" 
+NomDirMNTTIN_F    ="06_MNTTIN_FILINOP"         
+NomDirMNTTIN_D    ="06_MNTTIN_DirectP"         
 # NomDirMNTTIN  ="06_MNTTIN00_Direct"
-NomDirMNTGDAL ="07_MNTGDAL00"    
-NomDirVideo   ="08_Videos"
-NomDirDIFF    ="09_Differe"
+NomDirMNTGDAL ="07_MNTGDAL00P"    
+NomDirVideo   ="08_VideosP"
+NomDirDIFF    ="09_DiffereP"
 
 # Nom de la racine de fichiers résultats
 raciSurfEau="SurfEAU"

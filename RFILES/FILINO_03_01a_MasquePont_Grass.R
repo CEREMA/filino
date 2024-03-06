@@ -1,4 +1,4 @@
-FILINO1a_Pont_Grass = function(iLAZ) 
+FILINO1a_Pont_Grass = function(iLAZ,NomLaz,nom_RastPONT,SecteurGRASS,Nord,Sud,Est,Ouest) 
 {
   raci=gsub(".copc","_copc",paste0(substr(NomLaz,1,nchar(NomLaz)-4)))
   

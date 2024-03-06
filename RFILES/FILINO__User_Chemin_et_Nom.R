@@ -41,10 +41,12 @@ paramTALidar=as.data.frame(rbind(
   cbind(1,"F:/LidarHD_DC"                   ,"TA_HD.shp"           ,0.5,41, 9,12,14,17,1),
   cbind(0,"F:/NUALID"                       ,"TA_NUALID.shp"       ,1  ,59,25,28,30,33,1),# Nualid 2m
   cbind(0,"F:/Lidar2mTOUT/COPCLAZ"          ,"TA_NiMontpLid2m.shp" ,1  ,18, 1, 3, 8,11,1),# lidar 2m Nimes - Montpellier
-  cbind(0,"F:/Lidar2mTOUT/D13/HBOUC"        ,"TA_MAMP_HBOUC.shp"   ,1  ,56,22,25,27,30,0),
-  cbind(0,"F:/Lidar2mTOUT/D13/ISANA"        ,"TA_MAMP_ISANA.shp"   ,1  ,56,22,25,27,30,0),
-  cbind(0,"F:/Lidar2mTOUT/D13/VLIDTOULOUBRE","TA_MAMP_VLIDT.shp"   ,1  ,70,36,39,41,44,0),
-  cbind(0,"F:/Lidar2mTOUT/D13/VLIDVARLOT3C5","TA_MAMP_VLIDV.shp"   ,1  ,60,30,33,35,38,0)
+  cbind(0,"F:/Lidar2mTOUT/Laz_4_1_4"        ,"TA_nchar56_IVAR.shp" ,1  ,56,22,25,27,30,0),
+  cbind(0,"F:/Lidar2mTOUT/Laz_4_1_4"        ,"TA_nchar70_VLIDT.shp",1  ,70,36,39,41,44,0),
+  cbind(0,"F:/Lidar2mTOUT/Laz_4_1_4"        ,"TA_nchar60_VLIDV.shp",1  ,60,30,33,35,38,0),
+  cbind(0,"F:/Lidar2mTOUT/Laz_4_1_4"        ,"TA_nchar59.shp"      ,1  ,59,25,28,30,33,0),
+  cbind(0,"F:/Lidar2mTOUT/Laz_4_1_4"        ,"TA_4_1_4.shp"        ,1  , 0, 4, 1, 4, 0,0),
+  cbind(0,"F:/LidarRestonica"               ,"TA_Resto_Cerema.shp" ,0.5,37,30,33,35,38,1)
 ))
 
 
@@ -86,10 +88,11 @@ paramTARaster=as.data.frame(rbind(
   cbind(1,file.path(dsnlayer,NomDirMNTGDAL)     ,"TA_SOLetEAU_min.shp"       ,"SOLetEAU_min.gpkg$",9,12,14,17),
   cbind(1,file.path(dsnlayer,NomDirMNTGDAL)     ,"TA_TOUT_min.shp"           ,"TOUT_min.gpkg$",9,12,14,17),
   cbind(1,file.path(dsnlayer,NomDirMNTGDAL)     ,"TA_VEGE_min.shp"           ,"VEGE_min.gpkg$",9,12,14,17),
-  
+
+  cbind(0,"D:\\Strickler"                       ,"TA_ParamC2D_v2.shp"        ,"000.gpkg$"    ,4,4,4,0),
   
   cbind(0,"modif dans la variable paramTARaster"," "," ","Xdeb","Xfin","Ydeb","Yfin"),
-  
+  cbind(0,"ou"                                  ," "," ","nx"  ,"saut","ny"  ,     0),
   cbind(1,file.path(dsnlayer,NomDirDIFF)        ,"TA_TIN_Filino_moins_TIN_Direct_.shp","TIN_Filino_moins_TIN_Direct_.gpkg$",9,12,14,17),
   cbind(1,file.path(dsnlayer,NomDirDIFF)        ,"TA_TIN_Filino_moins_VEGE_min_.shp"      ,"TIN_Filino_moins_VEGE_min_.gpkg$",9,12,14,17)
   

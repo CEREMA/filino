@@ -1,4 +1,4 @@
-FILINO1a_Vege_Grass=function(iLAZ)
+FILINO1a_Vege_Grass=function(iLAZ,NomLaz,nom_RastTSF,nom_Rast_VEGE,SecteurGRASS,Nord,Sud,Est,Ouest)
 {
   raci=gsub(".copc","_copc",paste0(substr(NomLaz,1,nchar(NomLaz)-4)))
   # Récupération du raster, création d'un masque inversé et export en adoicissant les bords.

@@ -1,4 +1,4 @@
-FILINO_7_CreationMNT_Grass_Mer = function(NomTIF,Val,reso)
+FILINO_7_CreationMNT_Grass_Mer = function(NomTIF,Val,reso,SecteurGRASS,nomMasques2T,racidalle_,nomType)
 {
   # Suppression du masque (s'il existe)
   cmd=paste0("r.mask -r")
@@ -124,7 +124,7 @@ FILINO_7_CreationMNT_Grass_Mer = function(NomTIF,Val,reso)
 
 ###################################################################################
 
-FILINO_7_CreationMNT_Grass_Boite_et_Cuvettes = function(NomTIF,NomGPKG,NomMNTFill,NomMNTCuv,Boite,reso)
+FILINO_7_CreationMNT_Grass_Boite_et_Cuvettes = function(NomTIF,NomGPKG,NomMNTFill,NomMNTCuv,Boite,reso,SecteurGRASS)
 {
   # Suppression du masque (s'il existe)
   cmd=paste0("r.mask -r")
