@@ -21,7 +21,7 @@ FILINO_08_06_TA_PtsVirtuelsLaz_Job=function(iLAZ,nomlaz,nb_proc)
   tour[[1]]=matrix(c(xabs,yabs),5,2)
   
   listType=list.files(file.path(dsnlayer,dirname(nomlaz)),pattern="Type_",recursive = F)
-  nomType=ifelse(length(listType)==0,"",listType[1])
+  nomType=ifelse(length(listType)==0,"VieuxSol_sous_VegeDenseLidarHD",listType[1])
   
   chem=dirname(file.path(dsnlayer,nomlaz))
   doss=substr(chem,nchar(dsnlayer)+2,nchar(chem))

@@ -7,6 +7,10 @@ cat(" Liste des fichiers _PtsVirt_copc.laz\n")
 cat("Parfois long...\n")
 listeLazVirt=list.files(dsnlayer,pattern="_PtsVirt.copc.laz",recursive = T)
 
+# Récupération que des nom des dossiers en cours de travail
+listeLazVirt=listeLazVirt[c(which(dirname(dirname(dirname(listeLazVirt)))==NomDirSurfEAU),
+which(dirname(dirname(dirname(listeLazVirt)))==nomDirViSOLssVEGE))]
+
 listeLazVirt_tmp=listeLazVirt[grep(listeLazVirt,pattern=racilayerTA)]
 ici=grep(listeLazVirt_tmp,pattern="old")
 if (length(ici)>0){listeLazVirt_tmp=listeLazVirt_tmp[-ici]}

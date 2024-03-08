@@ -28,7 +28,7 @@ ChoixFILINO = cbind(
   "07_05a.     Récupération Sol ancien d'autres Lidar dans la végétation trop dense",
   "08_06.      Table d'assemblage des points virtuels (à refaire après 09_03 et 10_04)",
   "09_03.      NON FAIT Gestion des thalwegs secs (voir travaux avec Univ G.Eiffel",
-  "10_04.      NON FAIT Gestion de l'interpolation sous les ponts",
+  "10_04.      En COURS DE DVT - Traitement des ponts",
   "11_07.      MNT TIN s'appyant sur TA LidarHD et TA virtuels",
   "12_08.      MNT Minimum Raster (non continu)",# On peut faire un MN sol, un MN batiment, un MN végétation un MN Ponts
   "13_00c.     Table d'assemblage des données Raster (TIF ou GPKG)",
@@ -107,9 +107,6 @@ if (nFILINO[6]==1)
 # "07_03.  NON FAIT Gestion des thalwegs secs (voir travaux avec Univ G.Eiffel",
 # if (nFILINO[7]==1 ){source(file.path(chem_routine,""))}
 
-# "08_04.  Gestion de l'interpolation sous les ponts",
-# if (nFILINO[8]==1 ){source(file.path(chem_routine,""))}
-
 # "07_05a. Vegetaion/Sol ancien Récupération sol dans d'autres Lidar",
 if (nFILINO[7]==1)
 {
@@ -124,6 +121,30 @@ if (nFILINO[7]==1)
 
 # "08_06.  Table d'assemblage des points virutels",
 if (nFILINO[8]==1){Auto=apply(rbind(Auto,c(0,1)), 2,min)}
+
+
+
+# "08_04.  Gestion de l'interpolation sous les ponts",
+if (nFILINO[10]==1)
+{
+  Auto=apply(rbind(Auto,c(0,0)), 2,min)
+  ChoixFILINO_06_02ab = cbind(
+    "Extraction des points Laz dans les masques PONTS par dalles Lidar de base",
+    "Fusion des Laz Masques/Dalles",
+    "Travail sur les Laz et création des points virtuels"
+  )
+  titre="Menu FILINO_10_04"
+  preselec=ChoixFILINO_06_02ab[1]
+  
+  Etap10_04=FILINO_BDD(titre,preselec,ChoixFILINO_06_02ab)
+  
+  # TRDRG=c(1,2,3) # ancienne version avec 4 graph, longue, problème de calcul rive droite rive gauche, long si bcp de point
+  TRDRG=1
+}
+
+
+
+
 
 # "11_07.  MNT TIN s'appyant sur TA LidarHD et TA virtuels",
 if (nFILINO[11]==1)
@@ -292,8 +313,8 @@ for (iTA in 1:length(dsnTALidar))
   # "07_03.  NON FAIT Gestion des thalwegs secs (voir travaux avec Univ G.Eiffel",
   # if (nFILINO[9]==1 ){source(file.path(chem_routine,""))}
   
-  # "08_04.  Gestion de l'interpolation sous les ponts",
-  # if (nFILINO[10]==1 ){source(file.path(chem_routine,""))}
+  # "11_04.  Gestion de l'interpolation sous les ponts",
+  if (nFILINO[10]==1 ){source(file.path(chem_routine,"FILINO_10_04_ExtraitLazPonts_Pilotage.R"))}
   
   # "11_07.  MNT TIN s'appyant sur TA LidarHD et TA virtuels",
   if (nFILINO[11]==1)

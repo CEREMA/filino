@@ -538,31 +538,29 @@ if (length(n_int)>0)
       if (length(n_int_mtr)!=0)
       {
         trhydro_tmp=trhydro[n_int_mtr,]
-        trhydro_tmp=st_line_merge(st_cast(trhydro_tmp,'MULTILINESTRING'))
+        
+        # fusion des géométrie par cours d'eau
+        trhydro_tmp2=st_zm(do.call(rbind,
+                        lapply(sort(unique(trhydro_tmp$liens_vers_cours_d_eau )),
+                               function(x) {st_sf(data.frame(liens_vers_cours_d_eau =x),
+                                                  geometry=st_line_merge(st_cast(st_union(trhydro_tmp[which(trhydro_tmp$liens_vers_cours_d_eau ==x),]),"MULTILINESTRING")))})))
+        
         # Récuperation des troncons hydro qui intersectent
         
         if (verif==1){st_write(trhydro_tmp,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"trhydro_tmp.gpkg"), delete_layer=T, quiet=T)}
         
-        # fusion en ligne continu( mêeme si ce n'est pas vraoment un belle union et regroupement par cours d'eau)
-        
-        st_geometry(trhydro_tmp)="geometry"
-        trhydro_tmp2 = trhydro_tmp %>% 
-          group_by(liens_vers_cours_d_eau) %>%
-          summarize(geometry = st_union(geometry))
-        
-        # trhydro_tmp2=st_line_merge(st_cast(trhydro_tmp2,'MULTILINESTRING'))
-        # découpe des tronçns hydro sur le masque
-        trhydro_tmp2=st_line_merge(st_cast(st_cast(trhydro_tmp2,'LINESTRING'),'MULTILINESTRING'))
-        
-        trhydro_tmp2=st_intersection(trhydro_tmp2,Masques2[im,])
+
+        nb_tmp2=st_intersects(trhydro_tmp2,Masques2[im,]) #pas besoin de rajouter
+
+        trhydro_tmp2=st_intersection(trhydro_tmp2,Masques2[im,]) # old 20240306
         
         
         if (verif==1){st_write(trhydro_tmp2,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"trhydro_tmp2.gpkg"), delete_layer=T, quiet=T)}
         
         # gestion des géométrie bizarre (geometrie collection qui pose pb)
         nicitrh=which(st_is(trhydro_tmp2, c("MULTILINESTRING", "LINESTRING")))
-        # if (dim(trhydro_tmp2)[1]>1)
-        if (length(nicitrh)>0)
+
+        if (length(nicitrh)>1)#20240306
         {
           trhydro_tmp2=trhydro_tmp2[nicitrh,]
           if (dim(trhydro_tmp2)[1]>2)
@@ -570,6 +568,7 @@ if (length(n_int)>0)
             Masques2[im,]$F_Sh_Tr_Me_Co="Trop de rivières - Reprise manuelle"
           }else{
             Masques2[im,]$F_Sh_Tr_Me_Co="2 rivières"
+            
             # recuperation de la jonction
             coord=round(st_coordinates(st_line_sample(st_cast(trhydro_tmp,"LINESTRING"),sample=c(0,1)))[,c(1,2,3)],2)
             doublons=sapply(1:dim(coord)[1], function(x) {length(which((coord[,1]==coord[x,1])&(coord[,2]==coord[x,2])))})

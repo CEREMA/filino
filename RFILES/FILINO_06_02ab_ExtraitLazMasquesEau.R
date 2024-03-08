@@ -1,5 +1,5 @@
 #----------------------------------------------------------------------------------------
-FILINO_06_02ab_Job1=function(iLAZ,TA_tmp,TA,Masques2)
+FILINO_06_02ab_Job1=function(iLAZ,TA_tmp,TA,Masques2,NomDirTmp,raciTmp,ClassTmp)
 {
   if (is.null(TA_tmp$CHEMIN))
   {
@@ -32,8 +32,8 @@ FILINO_06_02ab_Job1=function(iLAZ,TA_tmp,TA,Masques2)
       
       
       
-      # raciMasq=paste0(raciSurfEau,formatC(Masq_tmp$IdGlobal,width=5, flag="0"),"_",racilayerTA)
-      raciMasq=paste0(raciSurfEau,Masq_tmp$IdGlobal)
+      # raciMasq=paste0(raciTmp,formatC(Masq_tmp$IdGlobal,width=5, flag="0"),"_",racilayerTA)
+      raciMasq=paste0(raciTmp,Masq_tmp$IdGlobal)
       raci=paste0(raciMasq,"_",substr(NomLaz,1,nchar(NomLaz)-4))
       
       # setwd(ChemLaz)
@@ -43,9 +43,9 @@ FILINO_06_02ab_Job1=function(iLAZ,TA_tmp,TA,Masques2)
                         paste0(raci,".copc.laz"))
       
       # nouveau 07/02/2023
-      # rep_COURSEAU=file.path(dsnlayer,NomDirSurfEAU,paste0(racilayerTA,raciSurfEau,formatC(Masq_tmp$IdGlobal,width=5, flag="0")))
-      rep_COURSEAU=file.path(dsnlayer,NomDirSurfEAU,racilayerTA,paste0(raciSurfEau,Masq_tmp$IdGlobal),NomDossDalles)
-
+      # rep_COURSEAU=file.path(dsnlayer,NomDirTmp,paste0(racilayerTA,raciTmp,formatC(Masq_tmp$IdGlobal,width=5, flag="0")))
+      rep_COURSEAU=file.path(dsnlayer,NomDirTmp,racilayerTA,paste0(raciTmp,Masq_tmp$IdGlobal),NomDossDalles)
+      
       # if (file.exists(rep_COURSEAU)==F){dir.create(rep_COURSEAU)}
       rep_COURSEAU=file.path(rep_COURSEAU)
       # if (file.exists(rep_COURSEAU)==F){dir.create(rep_COURSEAU)}
@@ -66,11 +66,14 @@ FILINO_06_02ab_Job1=function(iLAZ,TA_tmp,TA,Masques2)
         write(paste0("       ",shQuote("override_srs"),":",shQuote(paste0("EPSG:",nEPSG)),","),nomjson,append=T)
         write(paste0("       ",shQuote("nosrs"),":",shQuote("true")),nomjson,append=T)
         write("    },",nomjson,append=T)
-        write("    {",nomjson,append=T)
-        write(paste0("       ",shQuote("type"),":",shQuote("filters.range"),","),nomjson,append=T)
-        # write(paste0("       ",shQuote("limits"),":",shQuote("Classification[1:2],Classification[9:9]")),nomjson,append=T)
-        write(paste0("       ",shQuote("limits"),":",shQuote("Classification[2:2],Classification[9:9]")),nomjson,append=T)
-        write("    },",nomjson,append=T)
+        if (is.null(ClassTmp)==F)
+        {
+          write("    {",nomjson,append=T)
+          write(paste0("       ",shQuote("type"),":",shQuote("filters.range"),","),nomjson,append=T)
+          # write(paste0("       ",shQuote("limits"),":",shQuote("Classification[1:2],Classification[9:9]")),nomjson,append=T)
+          write(paste0("       ",shQuote("limits"),":",shQuote(ClassTmp)),nomjson,append=T)
+          write("    },",nomjson,append=T)
+        }
         write("    {",nomjson,append=T)
         write(paste0("       ",shQuote("type"),":",shQuote("filters.crop"),","),nomjson,append=T)
         write(paste0("       ",shQuote("polygon"),":",shQuote(st_as_text(st_geometry(Masq_tmp)))),nomjson,append=T)
@@ -102,19 +105,19 @@ FILINO_06_02ab_Job1=function(iLAZ,TA_tmp,TA,Masques2)
 }
 
 #----------------------------------------------------------------------------------------
-FILINO_06_02ab_Job23=function(iMasq,Masques1,Masques2,NbCharIdGlobal)
+FILINO_06_02ab_Job23=function(iMasq,Masques1,Masques2,NbCharIdGlobal,NomDirTmp,raciTmp)
 {
   
-  cat("On en est où ",iMasq,which(iMasq==paste0(raciSurfEau,Masques2$IdGlobal)),"\n")
-  # setwd(file.path(dsnlayer,NomDirSurfEAU,racilayerTA))
+  cat("On en est où ",iMasq,which(iMasq==paste0(raciTmp,Masques2$IdGlobal)),"\n")
+  # setwd(file.path(dsnlayer,NomDirTmp,racilayerTA))
   
-  NomLaz_tmp=paste0(raciSurfEau,".copc.laz")
+  NomLaz_tmp=paste0(raciTmp,".copc.laz")
   
   cat("###############################################################\n")
   cat(iMasq,NomLaz_tmp,"\n")
   
   # Recup du masque
-  idglo=substr(iMasq,nchar(raciSurfEau)+1,nchar(raciSurfEau)+NbCharIdGlobal)
+  idglo=substr(iMasq,nchar(raciTmp)+1,nchar(raciTmp)+NbCharIdGlobal)
   Masque2=Masques2[which(Masques2$IdGlobal==idglo),]
   # Lecture du cas à traiter dans Masque2$FILINO, ordre important
   Cas=0
@@ -122,8 +125,8 @@ FILINO_06_02ab_Job23=function(iMasq,Masques1,Masques2,NbCharIdGlobal)
   if (substr(Masque2$FILINO,1,3)=="Eco")   {Cas=4}
   if (substr(Masque2$FILINO,1,3)=="Can")   {Cas=3}
   if (substr(Masque2$FILINO,1,3)=="Pla")   {Cas=2}
-  
-  rep_COURSEAU=file.path(dsnlayer,NomDirSurfEAU,racilayerTA,iMasq)
+  browser()
+  rep_COURSEAU=file.path(dsnlayer,NomDirTmp,racilayerTA,iMasq)
   
   if (Cas==4)
   {
@@ -133,10 +136,10 @@ FILINO_06_02ab_Job23=function(iMasq,Masques1,Masques2,NbCharIdGlobal)
   }
   NomLaz_tmp=file.path(rep_COURSEAU,NomLaz_tmp)
   nomcsv=paste0(substr(NomLaz_tmp,1,nchar(NomLaz_tmp)-9),".csv")
-  nomPtsVirt=file.path(rep_COURSEAU,paste0(raciSurfEau,"_PtsVirt.csv"))
-  if (file.exists(file.path(rep_COURSEAU,paste0(raciSurfEau,"_PtsVirt.copc.laz")))==T & file.exists(paste0(raci_exp,'.jpg'))==T)
+  nomPtsVirt=file.path(rep_COURSEAU,paste0(raciTmp,"_PtsVirt.csv"))
+  if (file.exists(file.path(rep_COURSEAU,paste0(raciTmp,"_PtsVirt.copc.laz")))==T & file.exists(paste0(raci_exp,'.jpg'))==T)
   {
-    cat(raciSurfEau," déjà traité","\n")
+    cat(raciTmp," déjà traité","\n")
   }else{
     
     if (file.exists(file.path(rep_COURSEAU,paste0(raci_exp,'.jpg')))==F)
@@ -146,7 +149,7 @@ FILINO_06_02ab_Job23=function(iMasq,Masques1,Masques2,NbCharIdGlobal)
       
       
       # nmasq=grep(NOMLAZMasq,pattern=iMasq)
-      nmasq=list.files(file.path(dsnlayer,NomDirSurfEAU,racilayerTA,iMasq,NomDossDalles),pattern="laz",recursive=TRUE)
+      nmasq=list.files(file.path(dsnlayer,NomDirTmp,racilayerTA,iMasq,NomDossDalles),pattern="laz",recursive=TRUE)
       if (length(nmasq)!=0)
       {
         if (file.exists(nomcsv)==F)
@@ -154,12 +157,12 @@ FILINO_06_02ab_Job23=function(iMasq,Masques1,Masques2,NbCharIdGlobal)
           
           # Creation d'un pipeline pdal pour fusionner les différents fichiers et exporter en csv pour un traitement R
           cat("Plusieurs",nmasq,"\n")
-          nomjson=file.path(dsnlayer,NomDirSurfEAU,racilayerTA,iMasq,paste0(iMasq,"_MyScript.json"))
+          nomjson=file.path(dsnlayer,NomDirTmp,racilayerTA,iMasq,paste0(iMasq,"_MyScript.json"))
           
           write("[",nomjson)
           for (iNOMLAZMasq in nmasq)
           {
-            write(paste0("       ",shQuote(file.path(dsnlayer,NomDirSurfEAU,racilayerTA,iMasq,NomDossDalles,iNOMLAZMasq)),","),nomjson,append=T)
+            write(paste0("       ",shQuote(file.path(dsnlayer,NomDirTmp,racilayerTA,iMasq,NomDossDalles,iNOMLAZMasq)),","),nomjson,append=T)
           }
           if (length(nmasq)>1)
           {
@@ -196,7 +199,7 @@ FILINO_06_02ab_Job23=function(iMasq,Masques1,Masques2,NbCharIdGlobal)
           
           st_write(Masques1[which(Masques1$IdGlobal==idglo),],
                    file.path(rep_COURSEAU,"Masque1.gpkg"), delete_layer=T, quiet=T)
-          idglo=substr(iMasq,nchar(raciSurfEau)+1,nchar(raciSurfEau)+NbCharIdGlobal)
+          idglo=substr(iMasq,nchar(raciTmp)+1,nchar(raciTmp)+NbCharIdGlobal)
           
           st_write(Masques2[which(Masques2$IdGlobal==idglo),],
                    file.path(rep_COURSEAU,"Masque2.gpkg"), delete_layer=T, quiet=T)
@@ -221,7 +224,7 @@ FILINO_06_02ab_Job23=function(iMasq,Masques1,Masques2,NbCharIdGlobal)
       
       
     }else{cat("Fichier jpg déjà présent",nomcsv,"\n")}
-
+    
     ###########################################################
     # Travail commun quand on a créé les points virtuels pour les basculer en Laz
     if (Cas>0)
@@ -231,10 +234,10 @@ FILINO_06_02ab_Job23=function(iMasq,Masques1,Masques2,NbCharIdGlobal)
       zzzz=1
       if (file.exists(nomPtsVirt)==T)
       {
-        nomPtsVirtLaz=file.path(rep_COURSEAU,paste0(raciSurfEau,"_PtsVirt.copc.laz"))
+        nomPtsVirtLaz=file.path(rep_COURSEAU,paste0(raciTmp,"_PtsVirt.copc.laz"))
         # write.csv(PtsVirtuels,file=nomPtsVirt,quote=FALSE,row.names = FALSE)
         
-        nomjson=file.path(rep_COURSEAU,paste0(raciSurfEau,"_",racilayerTA,"_PtsVirt.json"))
+        nomjson=file.path(rep_COURSEAU,paste0(raciTmp,"_",racilayerTA,"_PtsVirt.json"))
         cat("###############################################################\n")
         write("[",nomjson)
         write("    {",nomjson,append=T)

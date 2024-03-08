@@ -1,17 +1,17 @@
 FILINO_03_01a_Job=function(iLAZ,TA_tmp,dimTA1,NomLaz,reso,largdalle,paramXYTA,iTA,dsnTALidar,dsnlayer)
 {
   # Gestion des noms de champs de mes tables d'assemblage
-  if (is.null(TA_tmp$CHEMIN))
-  {
+  # if (is.null(TA_tmp$CHEMIN))
+  # {
     # Lidar Hd brut
     NomLaz=basename(file.path(dsnlayerTA,TA_tmp$DOSSIER,TA_tmp$NOM))
     ChemLaz=dirname(file.path(dsnlayerTA,TA_tmp$DOSSIER,TA_tmp$NOM))
-  }else{
-    # Lidar HD classif
-    NomLaz=TA_tmp$NOM
-    ChemLaz=TA_tmp$CHEMIN
-  }
-  
+  # }else{
+  #   # Lidar HD classif
+  #   NomLaz=TA_tmp$NOM
+  #   ChemLaz=TA_tmp$CHEMIN
+  # }
+  browser()
   decalgrille=reso
   Ouest=largdalle*as.numeric(substr(NomLaz,paramXYTA[2],paramXYTA[3]))
   Nord=largdalle*as.numeric(substr(NomLaz,paramXYTA[4],paramXYTA[5]))

@@ -6,9 +6,7 @@ FILINO_06_02c_creatPtsVirtuels=function(nomcsv,rep_COURSEAU,Cas,raci_exp,nomPtsV
   if (dim(PtsCSV)[1]>0)
   {
     # Lecture du masque intenes pour créer des points viruels
-    # Masque1=st_read(file.path(rep_COURSEAU,paste0(raciSurfEau,"_",racilayerTA,"_Masque1.gpkg")))
-    # Masque2=st_read(file.path(rep_COURSEAU,paste0(raciSurfEau,"_",racilayerTA,"_Masque2.gpkg")))
-    
+
     Masque1=st_read(file.path(rep_COURSEAU,"Masque1.gpkg"))
     Masque2=st_read(file.path(rep_COURSEAU,"Masque2.gpkg"))
     
@@ -325,6 +323,10 @@ FILINO_06_02c_creatPtsVirtuels=function(nomcsv,rep_COURSEAU,Cas,raci_exp,nomPtsV
           
           if (Cas==4)
           {
+            
+            nomZ=file.path(rep_COURSEAU,paste0("Type_",CodeVirtuels$Type[Cas],".txt"))
+            write(-99,nomZ)
+            
             PtsCSV_sf$Rive=0
             
             if (length(TRDRG)>1)

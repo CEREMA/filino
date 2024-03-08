@@ -53,6 +53,8 @@ CE_PenteMax=1/100 # pente max sur
 NumCourBox=1
 
 #------------------------------------- Paramètres FILINO_06_02ab_ExtraitLazMasquesEau.R ------------------------------------------------------
+# ClassPourSurfEau="Classification[1:2],Classification[9:9]"
+ClassPourSurfEau="Classification[2:2],Classification[9:9]"
 Supp_PtsVirt_copc_laz=1 # Ce paramètre permet de supprimer les fichiers virtuels Laz déjà créé
 # Cette option est à utiliser car si on modifie des masques, les vieux points virtuels seraient conservés, très "dangereux"
 
@@ -99,21 +101,21 @@ PasDz=c(0.1,0.2,0.5,1) # On peut lancer avec plusieurs pas d'espace
 nb_proc_Filino=c(
   NaN,
   NaN,
-  5, #FILINO_03_01a_MasqueDalle.R
+  20, #FILINO_03_01a_MasqueDalle.R
   NaN,
   NaN,
-  6,#6, #FILINO_06_02ab_ExtraitLazMasquesEau
-  6, #FILINO_07_05a_SolVieuxLazSousVege
-  10,#9, #FILINO_08_06_TA_PtsVirtuelsLaz
+  20,#6, #FILINO_06_02ab_ExtraitLazMasquesEau
+  20, #FILINO_07_05a_SolVieuxLazSousVege
+  20,#9, #FILINO_08_06_TA_PtsVirtuelsLaz
+  NaN,
+  0, #6, #FILINO_10_04_ExtraitLazPonts_Pilotage
+  4, #1, #FILINO_11_07_CreationMNT_TIN.R
+  8, #FILINO_12_08_CreationMNT_Raster.R
   NaN,
   NaN,
-  1,#1, #FILINO_11_07_CreationMNT_TIN.R
-  2, #FILINO_12_08_CreationMNT_Raster.R
   NaN,
   NaN,
-  NaN,
-  NaN,
-  6) #FILINO_03_01a_MasqueDalle_Pilotage
+  20) #FILINO_03_01a_MasqueDalle_Pilotage
 
 
 
@@ -136,9 +138,24 @@ NomDirMNTGDAL ="07_MNTGDAL00P"
 NomDirVideo   ="08_VideosP"
 NomDirDIFF    ="09_DiffereP"
 
+NomDirMasqueVIDE  ="01a_MASQUE_VIDEetEAU"
+NomDirMasqueVEGE  ="01b_MASQUE_VEGEDENSE"
+NomDirMasquePONT  ="01c_MASQUE_PONT"
+NomDirSurfEAU     ="02_SURFACEEAU"   
+NomDirCoursEAU    ="03_COURSEAU"    
+NomDirPonts       ="04_PONTS"        
+nomDirViSOLssVEGE ="05_VieuxSOL_ss_VEGE" 
+NomDirMNTTIN_F    ="06_MNTTIN_FILINO"         
+NomDirMNTTIN_D    ="06_MNTTIN_Direct"         
+# NomDirMNTTIN  ="06_MNTTIN00_Direct"
+NomDirMNTGDAL ="07_MNTGDAL00"    
+NomDirVideo   ="08_Videos"
+NomDirDIFF    ="09_Differe"
+
 # Nom de la racine de fichiers résultats
 raciSurfEau="SurfEAU"
 raciPCoursEau="PCoursEAU"
+raciPonts="Ponts"
 NomDossDalles="Dalles"
 
 
