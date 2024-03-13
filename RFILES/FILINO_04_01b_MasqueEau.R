@@ -10,12 +10,19 @@ ZICAD=st_transform(
   st_crs(nEPSG))
 
 # Contour des Départements
-
 Departement=st_read(nomDpt)
 
 #Département Mer, pour tester si on est en mer ou à terre
-
 Dpt_Inv_Mer=st_read(nomBuf_pour_mer)
+
+# Gestion pour la limitation de l'import
+bbox=st_bbox(ZONE)
+bbox$xmin=floor(bbox$xmin/1000)*1000
+bbox$xmax=ceiling(bbox$xmax/1000)*1000
+bbox$ymin=floor(bbox$ymin/1000)*1000
+bbox$ymax=ceiling(bbox$ymax/1000)*1000
+
+bbox_wkt <- paste0("POLYGON((",bbox$xmin, " ",bbox$ymin, ",",bbox$xmax, " ",bbox$ymin, ",",bbox$xmax, " ",bbox$ymax, ",",bbox$xmin, " ",bbox$ymax, ",",bbox$xmin, " ",bbox$ymin, "))")
 
 setwd(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,NomDossDalles))
 
@@ -80,7 +87,7 @@ if (length(n_int)>0)
       ######################################################################################
       ##### Lecture des surfaces hydrographiques
       nomlayer="surface_hydrographique"
-      surfhydro=st_read(dsn=file.path(dsnlayerCE,nomgpkgCE),layer=nomlayer)
+      surfhydro=st_read(dsn=file.path(dsnlayerCE,nomgpkgCE),layer=nomlayer,wkt_filter = bbox_wkt)
       st_geometry(surfhydro)="geometry"
       LSH[[iDpt]]=surfhydro[,"nature"]
       # cat(nomlayer,dim(surfhydro),"\n")
@@ -88,7 +95,7 @@ if (length(n_int)>0)
       ######################################################################################
       ##### Lecture des troncons hydrographiques
       nomlayer="troncon_hydrographique"
-      trhydro=st_read(dsn=file.path(dsnlayerCE,nomgpkgCE),layer=nomlayer)
+      trhydro=st_read(dsn=file.path(dsnlayerCE,nomgpkgCE),layer=nomlayer,wkt_filter = bbox_wkt)
       st_geometry(trhydro)="geometry"
       # cleabs nature sens_de_l_ecoulement liens_vers_cours_d_eau
       LTr[[iDpt]]=trhydro[,cbind("cleabs","nature","sens_de_l_ecoulement","liens_vers_cours_d_eau")]
@@ -97,7 +104,7 @@ if (length(n_int)>0)
       ######################################################################################
       ##### Lecture des constructions hydrographiques
       nomlayer="construction_surfacique"
-      constsurf=st_read(dsn=file.path(dsnlayerCE,nomgpkgCE),layer=nomlayer)
+      constsurf=st_read(dsn=file.path(dsnlayerCE,nomgpkgCE),layer=nomlayer,wkt_filter = bbox_wkt)
       st_geometry(constsurf)="geometry"
       LCS[[iDpt]]=constsurf[,"nature"]
     }
@@ -123,6 +130,8 @@ if (length(n_int)>0)
     
     # Travail sur les gros masques
     Masques2=Masques2[unique(c(n_intMSh,which(Masques2$Aire>seuilSup1))),]
+    
+    Masques2=st_cast(Masques2,"POLYGON")##### voir si OK 05/03/2024
     # ajout de l'aire et travail par ordre decroissant
     Masques2=Masques2[order(Masques2$Aire,decreasing=TRUE),] 
     
@@ -138,7 +147,7 @@ if (length(n_int)>0)
     st_write(surfhydro,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"surfhydro_tmp.gpkg"),delete_layer=T, quiet=T)
     cmd <- paste0(qgis_process, " run native:createspatialindex",
                   " --distance_units=meters --area_units=m2 --ellipsoid=EPSG:7019 ",
-                  " --INPUT=",shQuote(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"trhydro_tmp.gpkg")))
+                  " --INPUT=",shQuote(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"surfhydro_tmp.gpkg")))
     system(cmd)
     
     cat(format(Sys.time(),format="%Y%m%d_%H%M%S")," Export Index Spatial Trhydro restant\n")
@@ -147,6 +156,7 @@ if (length(n_int)>0)
                   " --distance_units=meters --area_units=m2 --ellipsoid=EPSG:7019 ",
                   " --INPUT=",shQuote(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"trhydro_tmp.gpkg")))
     system(cmd)
+    trhydro=st_read(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"trhydro_tmp.gpkg"))
     
     cat(format(Sys.time(),format="%Y%m%d_%H%M%S")," Export Index Spatial constsurf restant\n")
     st_write(constsurf,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"constsurf_tmp.gpkg"),delete_layer=T, quiet=T)
@@ -166,11 +176,12 @@ if (length(n_int)>0)
     cat("FILINO_04_01b_MasqueEau.R - Etap1b[3]\n")
     # Masques1=st_read(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques1.gpkg"))
     Masques2=st_read(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_Gros_et_SurfEauBDTopo.gpkg"))
+    Masques2=arrange(Masques2,Id)
     #### initialisation
     ngros=data.frame(Gros=which(Masques2$Aire>=seuilSup2),Tour=0)
     units(seuilSup3)="m"
-    
     it=0
+    #### bug constaté le 05/03/2024
     while(max(ngros$Tour)>=it)
     {
       cat("#####################\n")
@@ -178,7 +189,8 @@ if (length(n_int)>0)
       cat("Tour ",it,"\n")
       
       #### boucle
-      npetit=which(Masques2$Id>(max(ngros$Gros)+1))
+      # npetit=which(Masques2$Id>(max(ngros$Gros)+1))
+      npetit=which(Masques2$Id>(max(ngros$Gros))) # modif du 05/03/2024
       
       for (ip in which(ngros$Tour==(it-1)))
       {
@@ -199,7 +211,7 @@ if (length(n_int)>0)
             if (length(lala)>0)
             {
               # cat("valeurs",round(valeurs,1),"\n")
-              cat(" - Indices a modifer",lala)
+              cat(" - Indices a modifer",Masques2[npetit[nint_ngp[lala]],]$Id)
               Masques2[npetit[nint_ngp[lala]],]$Id=ip
               ngros$Tour[ip]=it
             }
@@ -225,6 +237,7 @@ if (length(n_int)>0)
         system(cmd)
         # Masques2_Qgis=st_read(nomMasque2_tmp2)
         Masques2=st_read(nomMasque2_tmp2)
+        Masques2=arrange(Masques2,Id)
         cat(format(Sys.time(),format="%Y%m%d_%H%M%S")," Fin de fusion des masques Qgis","\n")
         
         Masques2$Aire=round(st_area(Masques2),0)
@@ -248,6 +261,7 @@ if (length(n_int)>0)
     st_geometry(Masques2)="geometry"
     surfhydro=st_read(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"surfhydro_tmp.gpkg"))
     trhydro=st_read(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"trhydro_tmp.gpkg"))
+    
     constsurf=st_read(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"constsurf_tmp.gpkg"))
     
     # # on en garde que les gros masques et les petits dans des surfaces en eau "planes"
@@ -331,19 +345,34 @@ if (length(n_int)>0)
     nomC=file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"trhydro_tmp.csv")
     liaison=FILINO_Intersect_Qgis(nomA,nomB,nomC)
     
+    
     if (dim(liaison)[1]>0)
     {
-      # st_write(trhydro[unique(liaison$fid),],file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"trhydro_peutetre.gpkg"),delete_layer=T, quiet=T)
-      trhydro=trhydro[unique(liaison$fid),]
+      # récupération des cours d'eau qui croisent des masques
+      trhydro_=trhydro[unique(liaison$fid),]
       
-      # nbTrM=st_intersects(trhydro,Masques2)
-      # n_intTrM = which(sapply(nbTrM, length)>0)
-      # if (length(n_intTrM)>0)
-      # {
-      #   trhydro=trhydro[n_intTrM,]
+      # Rajout des tronçons de cours d'eau nommés qui ne croisent pas (éviter d'avoir un troncon coupé en deux pour un même masque)
+      nomCE=unique(trhydro_$liens_vers_cours_d_eau)
+      if (length(which(is.na(nomCE)==F))>0)
+      {
+        nomCE=nomCE[which(is.na(nomCE)==F)]
+        voila=lapply(nomCE, function(x) {trhydro[which(trhydro$liens_vers_cours_d_eau==x),]})
+        trhydro=rbind(trhydro_,do.call(rbind, voila))
+      }
+      
+      trhydro=trhydro[order(trhydro$cleabs),]
+      trhydro$doublons=0
+      for (i in 2:dim(trhydro)[1])
+      {
+        if (trhydro$cleabs[i]==trhydro$cleabs[i-1]){trhydro$doublons[i]=1}
+      }
+      trhydro=trhydro[which(trhydro$doublons==0),]
+      st_write(trhydro,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"trhydro_peutetremieux.gpkg"),delete_layer=T, quiet=T)
       
       trhydro$F_Tr=""
       ici=grep(trhydro$nature,pattern="Ecoul")
+      if (length(ici)>0) {trhydro[ici,]$F_Tr="Ecoulement"}
+      ici=grep(trhydro$nature,pattern="Reten")
       if (length(ici)>0) {trhydro[ici,]$F_Tr="Ecoulement"}
       ici=grep(trhydro$nature,pattern="Canal")
       if (length(ici)>0) {trhydro[ici,]$F_Tr="Canal"}
@@ -533,39 +562,37 @@ if (length(n_int)>0)
       if (length(n_int_mtr)!=0)
       {
         trhydro_tmp=trhydro[n_int_mtr,]
-        trhydro_tmp=st_line_merge(st_cast(trhydro_tmp,'MULTILINESTRING'))
+        
+        # fusion des géométrie par cours d'eau
+        trhydro_tmp2=st_zm(do.call(rbind,
+                                   lapply(sort(unique(trhydro_tmp$liens_vers_cours_d_eau )),
+                                          function(x) {st_sf(data.frame(liens_vers_cours_d_eau =x),
+                                                             geometry=st_line_merge(st_cast(st_union(trhydro_tmp[which(trhydro_tmp$liens_vers_cours_d_eau ==x),]),"MULTILINESTRING")))})))
+        
         # Récuperation des troncons hydro qui intersectent
         
         if (verif==1){st_write(trhydro_tmp,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"trhydro_tmp.gpkg"), delete_layer=T, quiet=T)}
         
-        # fusion en ligne continu( mêeme si ce n'est pas vraoment un belle union et regroupement par cours d'eau)
         
-        st_geometry(trhydro_tmp)="geometry"
-        trhydro_tmp2 = trhydro_tmp %>% 
-          group_by(liens_vers_cours_d_eau) %>%
-          summarize(geometry = st_union(geometry))
+        nb_tmp2=st_intersects(trhydro_tmp2,Masques2[im,]) #pas besoin de rajouter
         
-        # trhydro_tmp2=st_line_merge(st_cast(trhydro_tmp2,'MULTILINESTRING'))
-        # découpe des tronçns hydro sur le masque
-        trhydro_tmp2=st_line_merge(st_cast(st_cast(trhydro_tmp2,'LINESTRING'),'MULTILINESTRING'))
-        
-        trhydro_tmp2=st_intersection(trhydro_tmp2,Masques2[im,])
+        trhydro_tmp2=st_intersection(trhydro_tmp2,Masques2[im,]) # old 20240306
         
         
         if (verif==1){st_write(trhydro_tmp2,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"trhydro_tmp2.gpkg"), delete_layer=T, quiet=T)}
         
         # gestion des géométrie bizarre (geometrie collection qui pose pb)
         nicitrh=which(st_is(trhydro_tmp2, c("MULTILINESTRING", "LINESTRING")))
-        # if (dim(trhydro_tmp2)[1]>1)
-        if (length(nicitrh)>0)
+        
+        if (length(nicitrh)>1)#20240306
         {
           trhydro_tmp2=trhydro_tmp2[nicitrh,]
           if (dim(trhydro_tmp2)[1]>2)
           {
             Masques2[im,]$F_Sh_Tr_Me_Co="Trop de rivières - Reprise manuelle"
-            # browser()
           }else{
             Masques2[im,]$F_Sh_Tr_Me_Co="2 rivières"
+            
             # recuperation de la jonction
             coord=round(st_coordinates(st_line_sample(st_cast(trhydro_tmp,"LINESTRING"),sample=c(0,1)))[,c(1,2,3)],2)
             doublons=sapply(1:dim(coord)[1], function(x) {length(which((coord[,1]==coord[x,1])&(coord[,2]==coord[x,2])))})
@@ -656,6 +683,7 @@ if (length(n_int)>0)
                     n_int_mtro = which(sapply(nbmtro, length)>0)
                     Affluent=Affluent[n_int_mtro,]
                     Affluent=st_sf(data.frame(Affluent)[1,1:(dim(Affluent)[2]-1)],geometry=st_combine(Affluent))
+                    
                     # if (verif==1){st_write(Affluent,file.path(dsnlayer,NomDirMasqueVIDE,paste0("Affluent",racilayerTA,".gpkg")), delete_layer=T, quiet=T)}
                     if (verif==1){st_write(Affluent,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Affluent.gpkg"), delete_layer=T, quiet=T)}
                     
@@ -670,6 +698,30 @@ if (length(n_int)>0)
                     IndMasq=IndMasq+1
                     Principal=st_sf(data.frame(cat=-1,Id=IndMasq,Aire=0,PlanEau="",Canal="",Ecoulement="",F_Sh="",F_Sh_Tr="",F_Sh_Tr_Me="",F_Sh_Tr_Me_Co="EcoulementPrincipal"),
                                     geometry=st_difference(st_union(Masques2[im,]),st_union(Affluent)))
+                    Principal=st_cast(Principal,"MULTIPOLYGON")
+                    
+                    # Gestion des petits morceaux 20240312
+                    units(seuilSup3)="m"
+                    Principal_=st_cast(Principal,"POLYGON")
+                    DistPrin=st_distance(Principal_)
+                    diag(DistPrin)=max(DistPrin)
+                    apply(DistPrin, 2, max)
+                    lalala=which(apply(DistPrin, 2, min)>unclass(seuilSup3)[1])
+                    if (length(lalala)>0)
+                    {
+                      Affluent_=rbind(Affluent,
+                                      Principal_[lalala,])
+                      Affluent_$F_Sh_Tr_Me_Co="EcoulementAffluent"
+                      st_geometry(Affluent)=st_union(st_cast(Affluent_,"MULTIPOLYGON"))
+                    }
+                    
+                    lalala=which(apply(DistPrin, 2, min)<=unclass(seuilSup3)[1])
+                    if (length(lalala)>0)
+                    {
+                      Principal_=rbind(Principal_[lalala,])
+                      Principal_$F_Sh_Tr_Me_Co="EcoulementPrincipal"
+                      st_geometry(Principal)=st_union(st_cast(Principal_,"MULTIPOLYGON"))
+                    }
                     
                     # if (verif==1){st_write(Principal,file.path(dsnlayer,NomDirMasqueVIDE,paste0("Principal",racilayerTA,".gpkg")), delete_layer=T, quiet=T)}
                     if (verif==1){st_write(Principal,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Principal.gpkg"), delete_layer=T, quiet=T)}
@@ -696,65 +748,66 @@ if (length(n_int)>0)
         }
       }
     }
-  }
-  
-  Masques2$Aire=round(st_area(Masques2),0)
-  Masques2=Masques2[order(Masques2$Aire,decreasing = T),]
-  
-  ##### Codification
-  Masques2$Id=FILINO_NomMasque(Masques2)
-  st_write(Masques2,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydroMerConf.gpkg"), delete_layer=T, quiet=T)
-  
-  constsurf=st_read(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"constsurf_tmp.gpkg"))
-  ecluse=constsurf[which(constsurf$nature=="Ecluse"),]
-  necl=st_intersects(Masques2,ecluse)
-  n_intecl = which(sapply(necl, length)>0)
-  Masques2$VIGILANCE=""
-  if (length(n_intecl)>0)
-  {
-    Masques2[n_intecl,]$VIGILANCE="Ecluse"
-    Masques2[n_intecl,]$F_Sh_Tr_Me_Co=paste(Masques2[n_intecl,]$F_Sh_Tr_Me_Co,"Ecluse")
-  }
-  
-  print(sort(unique(Masques2$F_Sh_Tr_Me_Co)))
-  Masques2$Commentaires=""
-  
-  Masques2$FILINO=Masques2$F_Sh_Tr_Me_Co
-  
-  units(seuilSup4)="m^2"
-  Masques2=Masques2[which(Masques2$Aire>seuilSup4),]
-  
-  Masques2$ValPlanEAU=ValPlanEAU
-  Masques2$CE_BalPas=CE_BalPas
-  Masques2$CE_BalFen=CE_BalFen
-  Masques2$CE_PenteMax=CE_PenteMax
-  Masques2$NumCourBox=NumCourBox
-  
-  st_write(Masques2,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("Masques2_Seuil",seuilSup1,"m2",".gpkg")), delete_layer=T, quiet=T)
-  
-  file.copy(file.path(dsnlayer,NomDirSIGBase,"Masques.qgz"),
-            file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques.qgz"),
-            overwrite = T)
-  
-  if (Nettoyage==1)
-  {
-    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydroMerConf.gpkg"))
-    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_Gros_et_SurfEauBDTopo.gpkg"))
-    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("Masques2_tmp.gpkg")))
-    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("Masques2_Gros_et_SurfEauBDTopo_IndicesFusion.gpkg")))
-    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_Gros_et_Petits_SurfEauBDTopo_Plane.gpkg"))
-    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEau.gpkg"))
-    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEau.gpkg"))
-    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_tmp.gpkg"))
-    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydro.gpkg"))
-    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydroMer.gpkg"))
-    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_im.gpkg"))
-    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydroMer2.gpkg"))
-    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydroMerConf.gpkg"))
-    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"surfhydro_tmp.gpkg"))
-    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"trhydro_tmp.gpkg"))
-    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"surfhydro_tmp.csv"))
-    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"trhydro_tmp.csv"))
-    unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("Masques2_tmp2.gpkg")) )
+    
+    
+    Masques2$Aire=round(st_area(Masques2),0)
+    Masques2=Masques2[order(Masques2$Aire,decreasing = T),]
+    
+    ##### Codification
+    Masques2$Id=FILINO_NomMasque(Masques2)
+    st_write(Masques2,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydroMerConf.gpkg"), delete_layer=T, quiet=T)
+    
+    constsurf=st_read(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"constsurf_tmp.gpkg"))
+    ecluse=constsurf[which(constsurf$nature=="Ecluse"),]
+    necl=st_intersects(Masques2,ecluse)
+    n_intecl = which(sapply(necl, length)>0)
+    Masques2$VIGILANCE=""
+    if (length(n_intecl)>0)
+    {
+      Masques2[n_intecl,]$VIGILANCE="Ecluse"
+      Masques2[n_intecl,]$F_Sh_Tr_Me_Co=paste(Masques2[n_intecl,]$F_Sh_Tr_Me_Co,"Ecluse")
+    }
+    
+    print(sort(unique(Masques2$F_Sh_Tr_Me_Co)))
+    Masques2$Commentaires=""
+    
+    Masques2$FILINO=Masques2$F_Sh_Tr_Me_Co
+    
+    units(seuilSup4)="m^2"
+    Masques2=Masques2[which(Masques2$Aire>seuilSup4),]
+    
+    Masques2$ValPlanEAU=ValPlanEAU
+    Masques2$CE_BalPas=CE_BalPas
+    Masques2$CE_BalFen=CE_BalFen
+    Masques2$CE_PenteMax=CE_PenteMax
+    Masques2$NumCourBox=NumCourBox
+    
+    st_write(Masques2,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("Masques2_Seuil",seuilSup1,"m2",".gpkg")), delete_layer=T, quiet=T)
+    
+    file.copy(file.path(dsnlayer,NomDirSIGBase,"Masques.qgz"),
+              file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques.qgz"),
+              overwrite = T)
+    
+    if (Nettoyage==1)
+    {
+      unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydroMerConf.gpkg"))
+      unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_Gros_et_SurfEauBDTopo.gpkg"))
+      unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("Masques2_tmp.gpkg")))
+      unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("Masques2_Gros_et_SurfEauBDTopo_IndicesFusion.gpkg")))
+      unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_Gros_et_Petits_SurfEauBDTopo_Plane.gpkg"))
+      unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEau.gpkg"))
+      unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEau.gpkg"))
+      unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_tmp.gpkg"))
+      unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydro.gpkg"))
+      unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydroMer.gpkg"))
+      unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_im.gpkg"))
+      unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydroMer2.gpkg"))
+      unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydroMerConf.gpkg"))
+      unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"surfhydro_tmp.gpkg"))
+      unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"trhydro_tmp.gpkg"))
+      unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"surfhydro_tmp.csv"))
+      unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"trhydro_tmp.csv"))
+      unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("Masques2_tmp2.gpkg")) )
+    }
   }
 }

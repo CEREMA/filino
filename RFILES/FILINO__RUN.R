@@ -6,12 +6,13 @@ library(xml2)
 library(readxl) 
 library(jpeg)
 library(png)
+library(foreach)
+library(doParallel)
 
 cat("\014") # Nettoyage de la console
 
 chem_routine=dirname(rstudioapi::getActiveDocumentContext()$path)
 print(chem_routine)
-# source(file.path(chem_routine,"C2D_ParamUser","C2D_LienOutilsPC.R"), encoding="utf-8")
 source(file.path(chem_routine,"FILINO__User_LienOutilsPC.R"))
 source(file.path(chem_routine,"FILINO__User_Parametres.R"))
 source(file.path(chem_routine,"FILINO__User_Chemin_et_Nom.R"))
@@ -27,7 +28,7 @@ ChoixFILINO = cbind(
   "07_05a.     Récupération Sol ancien d'autres Lidar dans la végétation trop dense",
   "08_06.      Table d'assemblage des points virtuels (à refaire après 09_03 et 10_04)",
   "09_03.      NON FAIT Gestion des thalwegs secs (voir travaux avec Univ G.Eiffel",
-  "10_04.      NON FAIT Gestion de l'interpolation sous les ponts",
+  "10_04.      En COURS DE DVT - Traitement des ponts",
   "11_07.      MNT TIN s'appyant sur TA LidarHD et TA virtuels",
   "12_08.      MNT Minimum Raster (non continu)",# On peut faire un MN sol, un MN batiment, un MN végétation un MN Ponts
   "13_00c.     Table d'assemblage des données Raster (TIF ou GPKG)",
@@ -44,6 +45,7 @@ nFILINO=FILINO_BDD(titre,preselec,ChoixFILINO)
 #-----------------------------------------------------------------------------------
 # Gestion des menus pour les diverses étapes
 Auto=c(1,1)
+
 # "01_0b. Téléchargement des données LidarHD classifiées IGN",
 if (nFILINO[1]==1){Auto=apply(rbind(Auto,c(0,0)), 2,min)}
 
@@ -63,6 +65,15 @@ if (nFILINO[3]==1)
 {
   Auto=apply(rbind(Auto,c(0,0)), 2,min)
   Etap3a=1 # 1 si fusion à la fin sinon O à voir si on le sort...
+  ChoixFILINO_03_01a = cbind(
+    "Calcul des masques des Vides et Eau, Végétation trop dense et Ponts",
+    "Fusion des végétations trop dense (peut-être très/trop long",
+    "Fusion des ponts (peut-être très/trop long",
+    "Aucune fusion"
+  )
+  titre="Menu FILINO_04_01b"
+  preselec=ChoixFILINO_03_01a[1:3]
+  Etap3a=FILINO_BDD(titre,preselec,ChoixFILINO_03_01a)
 }
 
 # "04_01b. Masques Fusion des  et identification avec BDTopo (étape manuelle avant 1c)",
@@ -106,9 +117,6 @@ if (nFILINO[6]==1)
 # "07_03.  NON FAIT Gestion des thalwegs secs (voir travaux avec Univ G.Eiffel",
 # if (nFILINO[7]==1 ){source(file.path(chem_routine,""))}
 
-# "08_04.  Gestion de l'interpolation sous les ponts",
-# if (nFILINO[8]==1 ){source(file.path(chem_routine,""))}
-
 # "07_05a. Vegetaion/Sol ancien Récupération sol dans d'autres Lidar",
 if (nFILINO[7]==1)
 {
@@ -123,6 +131,30 @@ if (nFILINO[7]==1)
 
 # "08_06.  Table d'assemblage des points virutels",
 if (nFILINO[8]==1){Auto=apply(rbind(Auto,c(0,1)), 2,min)}
+
+
+
+# "08_04.  Gestion de l'interpolation sous les ponts",
+if (nFILINO[10]==1)
+{
+  Auto=apply(rbind(Auto,c(0,0)), 2,min)
+  ChoixFILINO_06_02ab = cbind(
+    "Extraction des points Laz dans les masques PONTS par dalles Lidar de base",
+    "Fusion des Laz Masques/Dalles",
+    "Travail sur les Laz et création des points virtuels"
+  )
+  titre="Menu FILINO_10_04"
+  preselec=ChoixFILINO_06_02ab[1]
+  
+  Etap10_04=FILINO_BDD(titre,preselec,ChoixFILINO_06_02ab)
+  
+  # TRDRG=c(1,2,3) # ancienne version avec 4 graph, longue, problème de calcul rive droite rive gauche, long si bcp de point
+  TRDRG=1
+}
+
+
+
+
 
 # "11_07.  MNT TIN s'appyant sur TA LidarHD et TA virtuels",
 if (nFILINO[11]==1)
@@ -213,19 +245,22 @@ if (nFILINO[17]==1)
   Etap_02_00c2=FILINO_BDD(titre,preselec,chois1)
   paramTARaster1=paramTARaster[which(Etap_02_00c2==1)[1],]
   
-
+  
   chois2=paste(paramTARaster$Doss,paramTARaster$NomTA)
   titre="Menu FILINO_16_11_VRTGPKG.R"
   preselec=chois2[which(paramTARaster$Lancement==1)]
   Etap_02_00c2=FILINO_BDD(titre,preselec,chois2)
   paramTARaster2=paramTARaster[which(Etap_02_00c2==1),]
   
-   CalcDiffPlus=cbind("Garder toutes les valeurs","Ne garder que les valeurs positives")
+  CalcDiffPlus=cbind("Garder toutes les valeurs","Ne garder que les valeurs positives")
   nCalcDiffPlus = select.list(CalcDiffPlus,preselect = CalcDiffPlus[1],
-                               title = "Différences",multiple = F,graphics = T)
+                              title = "Différences",multiple = F,graphics = T)
   nCalcDiffPlus = which(CalcDiffPlus %in% nCalcDiffPlus)
   if (length(nCalcDiffPlus)==0){print("VOUSAVEZVOULUQUECAFASSEBADABOOM_CESTGAGNE");BOOM=BOOOM}
 }
+
+Choixmode=FILINO_BDD("Mode de calcul",preselect_nb_proc_Filino,colnames(nb_proc_Filino))
+nb_proc_Filino_=nb_proc_Filino[,which(Choixmode==1)[1]]
   
 source(file.path(chem_routine,"FILINO_00_00a_Initialisation.R"))
 
@@ -260,7 +295,7 @@ for (iTA in 1:length(dsnTALidar))
     FILINO_Creat_Dir(file.path(dsnlayer,NomDirMasqueVEGE,racilayerTA,NomDossDalles))
     FILINO_Creat_Dir(file.path(dsnlayer,NomDirMasquePONT,racilayerTA,NomDossDalles))
     FILINO_Creat_Dir(file.path(dsnlayer,NomDirMNTGDAL,racilayerTA,NomDossDalles))
-    source(file.path(chem_routine,"FILINO_03_01a_MasqueDalle.R"))
+    source(file.path(chem_routine,"FILINO_03_01a_MasqueDalle_Pilotage.R"))
   }
   
   # "04_01b. Masques Fusion des  et identification avec BDTopo (étape manuelle avant 1c)",
@@ -273,33 +308,39 @@ for (iTA in 1:length(dsnTALidar))
   if (nFILINO[6]==1)
   {
     FILINO_Creat_Dir(file.path(dsnlayer,NomDirSurfEAU,racilayerTA))
-    source(file.path(chem_routine,"FILINO_06_02ab_ExtraitLazGrosMasquesEau.R"))  
+    source(file.path(chem_routine,"FILINO_06_02ab_ExtraitLazMasquesEau_Pilotage.R"))  
+    # FILINO_06_02ab_Pilotage(chem_routine)
   }
   
   # "07_05a. Vegetaion/Sol ancien Récupération sol dans d'autres Lidar",
   if (nFILINO[7]==1)
   {
     FILINO_Creat_Dir(file.path(dsnlayer,nomDirViSOLssVEGE,racilayerTA,NomDossDalles))
-    source(file.path(chem_routine,"FILINO_07_05a_SolVieuxLazSousVege.R"))
+    source(file.path(chem_routine,"FILINO_07_05a_SolVieuxLazSousVege_Pilotage.R"))
+    # FILINO_07_05a_Pilotage(chem_routine)
   }
   
   # "08_06.  Table d'assemblage des points virutels",
-  if (nFILINO[8]==1){source(file.path(chem_routine,"FILINO_08_06_TA_PtsVirtuelsLaz.R"))}
+  if (nFILINO[8]==1){source(file.path(chem_routine,"FILINO_08_06_TA_PtsVirtuelsLaz_Pilotage.R"))}
   
   # "07_03.  NON FAIT Gestion des thalwegs secs (voir travaux avec Univ G.Eiffel",
   # if (nFILINO[9]==1 ){source(file.path(chem_routine,""))}
   
-  # "08_04.  Gestion de l'interpolation sous les ponts",
-  # if (nFILINO[10]==1 ){source(file.path(chem_routine,""))}
+  # "11_04.  Gestion de l'interpolation sous les ponts",
+  if (nFILINO[10]==1 ){source(file.path(chem_routine,"FILINO_10_04_ExtraitLazPonts_Pilotage.R"))}
   
   # "11_07.  MNT TIN s'appyant sur TA LidarHD et TA virtuels",
-  if (nFILINO[11]==1){ source(file.path(chem_routine,"FILINO_11_07_CreationMNT_TIN.R"))}
+  if (nFILINO[11]==1)
+  {
+    source(file.path(chem_routine,"FILINO_11_07_CreationMNT_TIN_Pilotage.R"))
+    # FILINO_11_07_Pilotage(chem_routine)
+  }
   
   # "12_08.  MNT Minimum Raster (non continu)"
   if (nFILINO[12]==1)
   {
     FILINO_Creat_Dir(file.path(dsnlayer,NomDirMNTGDAL,racilayerTA))
-    source(file.path(chem_routine,"FILINO_12_08_CreationMNT_Raster.R"))
+    source(file.path(chem_routine,"FILINO_12_08_CreationMNT_Raster_Pilotage.R"))
   }
 }
 
@@ -333,5 +374,5 @@ if (nFILINO[16]==1)
 # "17_12.      Différences entre deux types de données"
 if (nFILINO[17]==1)
 { 
-  source(file.path(chem_routine,"FILINO_17_12_Differences.R"))
+  source(file.path(chem_routine,"FILINO_17_12_Differences_Pilotage.R"))
 }

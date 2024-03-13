@@ -1,4 +1,4 @@
-FILINO1a_Pont_Grass = function(iLAZ) 
+FILINO1a_Pont_Grass = function(iLAZ,NomLaz,nom_RastPONT,SecteurGRASS,Nord,Sud,Est,Ouest) 
 {
   raci=gsub(".copc","_copc",paste0(substr(NomLaz,1,nchar(NomLaz)-4)))
   
@@ -18,7 +18,7 @@ FILINO1a_Pont_Grass = function(iLAZ)
     print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
     
     # Test pour voir si tout s'est bien passé, certaines dalles rendent des NULL...
-    NomUnivar=file.path(dsnlayer,paste0(raci,"_runivar.txt"))
+    NomUnivar=file.path(dsnlayer,paste0(raci,"_runivarP1.txt"))
     cmd=paste0("r.univar --quiet --overwrite map=",nomMNTPONT," output=",NomUnivar)
     print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
     

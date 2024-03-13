@@ -42,6 +42,7 @@ paraXYLidar=paramTALidar[which(paramTALidar[,1]==1),5:10]
 ###############
 # lecture de la zone à traiter
 ZONE=st_read(nomZONE)
+ZONE=arrange(ZONE,ZONE)
 # Choix des secteurs à traiter
 if (Auto[2]==0)
 {

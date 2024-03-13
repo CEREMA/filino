@@ -58,7 +58,7 @@ if (length(n_int)>0)
         
         if (nCalcVRTtoGPKG==1)
         {
-          ConvertGPKG(vrtfile,0)
+          ConvertGPKG(vrtfile,1)
         }
       }
     }

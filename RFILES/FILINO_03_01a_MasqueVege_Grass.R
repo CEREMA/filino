@@ -1,5 +1,6 @@
-FILINO1a_Vege_Grass=function(iLAZ)
+FILINO1a_Vege_Grass=function(iLAZ,NomLaz,nom_RastTSF,nom_Rast_VEGE,SecteurGRASS,Nord,Sud,Est,Ouest)
 {
+
   raci=gsub(".copc","_copc",paste0(substr(NomLaz,1,nchar(NomLaz)-4)))
   # Récupération du raster, création d'un masque inversé et export en adoicissant les bords.
   nomMNT_Reste=paste0("MNT_ToutSaufVege",iLAZ)
@@ -15,7 +16,7 @@ FILINO1a_Vege_Grass=function(iLAZ)
     print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
     
     # Test pour voir si tout s'est bien passé, certaines dalles rendent des NULL...
-    NomUnivar=file.path(dsnlayer,"runivar.txt")
+    NomUnivar=file.path(dsnlayer,paste0(raci,"_runivarv1.txt"))
     cmd=paste0("r.univar --quiet --overwrite map=",nomMNT_Vege," output=",NomUnivar)
     print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
     
@@ -74,7 +75,7 @@ FILINO1a_Vege_Grass=function(iLAZ)
       FILINO_Creat_Dir(dir_tmp_)
       
       # Test pour voir s'il y a des zones sinon on crée un fichier vide
-      NomUnivar=file.path(dsnlayer,paste0(raci,"_runivar.txt"))
+      NomUnivar=file.path(dsnlayer,paste0(raci,"_runivarv2.txt"))
       cmd=paste0("r.univar --quiet --overwrite map=",nomMNT_VegeMasque," output=",NomUnivar)
       print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
       nvaleur=as.numeric(scan(file=NomUnivar,NomUnivar,sep=":",skip=5,nlines=1,dec=".")[2])
@@ -95,6 +96,9 @@ FILINO1a_Vege_Grass=function(iLAZ)
       cmd=paste0("r.mask -r")
       print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
       return(nommasqueveget)
+      
+    }else{
+      write("VIDE",file.path(dsnlayer,NomDirMasqueVEGE,racilayerTA,NomDossDalles,paste0(raci,"_VegeTropDense.vide")))
     }
   }
 }
