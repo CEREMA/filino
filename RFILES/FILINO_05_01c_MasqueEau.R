@@ -87,7 +87,6 @@ if (Opt_Manuel==1)
     Masque2recupManu=st_read(NomC)
     
     #COUPE
-    # browser()
     iCoupe=which(Manuel$FILINO=="COUPE")
     if (length(iCoupe>0))
     {
@@ -424,8 +423,9 @@ if (file.exists(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"trhydro.gpkg"))
                 " --OUTPUT=",shQuote(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2.csv")))
   system(cmd)
   
-  liaison2=read.csv(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2.csv"))
   
+  
+  liaison2=read.csv(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2.csv"))
   Iav=0
   Compl=max(1,length(unique(liaison2$IdGlobal)))
   cat(format(Sys.time(),format="%Y%m%d_%H%M%S")," Copie de chaque morceau de tronçon hydro dans le dossier Surfacexxx correspondant\n")
@@ -440,9 +440,38 @@ if (file.exists(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"trhydro.gpkg"))
     if (length(ntr)>0)
     {
       ncle=sapply(ntr, function(x) {which(trhydro$cleabs==x)})
+      trhydro_surf=trhydro[ncle,]
+      # Rajout des tronçons de cours d'eau nommés qui ne croisent pas (éviter d'avoir un troncon coupé en deux pour un même masque)
+      nomCE=unique(trhydro_surf$liens_vers_cours_d_eau)
+      if (length(which(is.na(nomCE)==F))>0)
+      {
+        trhydro_=trhydro_surf
+        nomCE=nomCE[which(is.na(nomCE)==F)]
+        voila=lapply(nomCE, function(x) {trhydro[which(trhydro$liens_vers_cours_d_eau==x),]})
+        
+        trhydro_2=do.call(rbind, voila)
+        # ne prendre que ceux dans la bbox
+
+        nbtm=st_intersects(trhydro_2, st_buffer(st_as_sfc(st_bbox(Masques2[which(Masques2$IdGlobal==imasq),])),500))
+        n_intnbtm <-  which(sapply(nbtm, length) > 0)
+        trhydro_2 <- trhydro_2[n_intnbtm,]
+        
+        trhydro_surf=rbind(trhydro_,trhydro_2)
+        
+        
+        trhydro_surf=trhydro_surf[order(trhydro_surf$cleabs),]
+        trhydro_surf$doublons=0
+        
+        for (i in 2:dim(trhydro_surf)[1])
+        {
+          if (trhydro_surf$cleabs[i]==trhydro_surf$cleabs[i-1]){trhydro_surf$doublons[i]=1}
+        }
+        trhydro_surf=trhydro_surf[which(trhydro_surf$doublons==0),]
+      }
+      
       rep_SURFEAU=file.path(dsnlayer,NomDirSurfEAU,racilayerTA,paste0(raciSurfEau,imasq))
       FILINO_Creat_Dir(rep_SURFEAU)
-      st_write(trhydro[ncle,],file.path(rep_SURFEAU,"trhydro.gpkg"), delete_layer=T, quiet=T)
+      st_write(trhydro_surf,file.path(rep_SURFEAU,"trhydro.gpkg"), delete_layer=T, quiet=T)
     }
   }
   setTxtProgressBar(pgb, Compl)

@@ -26,7 +26,7 @@ FILINO1a_Vide_Grass =   function(iLAZ,NomLaz,nom_Rast_INV_VIDEetEAU,nom_RastEAU,
     print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
     
     # Test pour voir si tout s'est bien passé, certaines dalles rendent des NULL...
-    NomUnivar=file.path(dsnlayer,paste0(raci,"_runivar.txt"))
+    NomUnivar=file.path(dsnlayer,paste0(raci,"_runivarE1.txt"))
     cmd=paste0("r.univar --quiet --overwrite map=",nomMNT," output=",NomUnivar)
     print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
     
@@ -48,7 +48,7 @@ FILINO1a_Vide_Grass =   function(iLAZ,NomLaz,nom_Rast_INV_VIDEetEAU,nom_RastEAU,
       print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
       
       # vérification qu'il y a un secteur touché
-      NomUnivar=file.path(dsnlayer,paste0(raci,"_runivar2.txt"))
+      NomUnivar=file.path(dsnlayer,paste0(raci,"_runivarE2.txt"))
       cmd=paste0("r.univar --quiet --overwrite map=",nomMNTMasque1," output=",NomUnivar)
       print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
       

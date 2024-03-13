@@ -45,6 +45,7 @@ nFILINO=FILINO_BDD(titre,preselec,ChoixFILINO)
 #-----------------------------------------------------------------------------------
 # Gestion des menus pour les diverses étapes
 Auto=c(1,1)
+
 # "01_0b. Téléchargement des données LidarHD classifiées IGN",
 if (nFILINO[1]==1){Auto=apply(rbind(Auto,c(0,0)), 2,min)}
 
@@ -64,6 +65,15 @@ if (nFILINO[3]==1)
 {
   Auto=apply(rbind(Auto,c(0,0)), 2,min)
   Etap3a=1 # 1 si fusion à la fin sinon O à voir si on le sort...
+  ChoixFILINO_03_01a = cbind(
+    "Calcul des masques des Vides et Eau, Végétation trop dense et Ponts",
+    "Fusion des végétations trop dense (peut-être très/trop long",
+    "Fusion des ponts (peut-être très/trop long",
+    "Aucune fusion"
+  )
+  titre="Menu FILINO_04_01b"
+  preselec=ChoixFILINO_03_01a[1:3]
+  Etap3a=FILINO_BDD(titre,preselec,ChoixFILINO_03_01a)
 }
 
 # "04_01b. Masques Fusion des  et identification avec BDTopo (étape manuelle avant 1c)",
@@ -249,6 +259,9 @@ if (nFILINO[17]==1)
   if (length(nCalcDiffPlus)==0){print("VOUSAVEZVOULUQUECAFASSEBADABOOM_CESTGAGNE");BOOM=BOOOM}
 }
 
+Choixmode=FILINO_BDD("Mode de calcul",preselect_nb_proc_Filino,colnames(nb_proc_Filino))
+nb_proc_Filino_=nb_proc_Filino[,which(Choixmode==1)[1]]
+  
 source(file.path(chem_routine,"FILINO_00_00a_Initialisation.R"))
 
 #-----------------------------------------------------------------------------------

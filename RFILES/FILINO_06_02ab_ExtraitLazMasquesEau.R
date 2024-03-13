@@ -1,16 +1,16 @@
 #----------------------------------------------------------------------------------------
 FILINO_06_02ab_Job1=function(iLAZ,TA_tmp,TA,Masques2,NomDirTmp,raciTmp,ClassTmp)
 {
-  if (is.null(TA_tmp$CHEMIN))
-  {
-    # Lidar Hd brut
+  # if (is.null(TA_tmp$CHEMIN))
+  # {
+    # Lidar Hd 
     NomLaz=basename(file.path(dsnlayerTA,TA_tmp$DOSSIER,TA_tmp$NOM))
     ChemLaz=dirname(file.path(dsnlayerTA,TA_tmp$DOSSIER,TA_tmp$NOM))
-  }else{
-    # Lidar HD classif
-    NomLaz=TA_tmp$NOM
-    ChemLaz=TA_tmp$CHEMIN
-  }
+  # }else{
+  #   # Lidar HD classif
+  #   NomLaz=TA_tmp$NOM
+  #   ChemLaz=TA_tmp$CHEMIN
+  # }
   
   cat("###############################################################\n")
   cat("Passage R",iLAZ,"sur", dim(TA)[1],"\n")
@@ -125,7 +125,7 @@ FILINO_06_02ab_Job23=function(iMasq,Masques1,Masques2,NbCharIdGlobal,NomDirTmp,r
   if (substr(Masque2$FILINO,1,3)=="Eco")   {Cas=4}
   if (substr(Masque2$FILINO,1,3)=="Can")   {Cas=3}
   if (substr(Masque2$FILINO,1,3)=="Pla")   {Cas=2}
-  browser()
+
   rep_COURSEAU=file.path(dsnlayer,NomDirTmp,racilayerTA,iMasq)
   
   if (Cas==4)

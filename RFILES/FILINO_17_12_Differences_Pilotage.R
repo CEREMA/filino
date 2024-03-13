@@ -1,4 +1,4 @@
-nb_proc=nb_proc_Filino[17]
+nb_proc=nb_proc_Filino_[17]
 source(file.path(chem_routine,"FILINO_17_12_Differences.R"))
 
 cat("\014")

@@ -1,4 +1,4 @@
-nb_proc=nb_proc_Filino[6]
+nb_proc=nb_proc_Filino_[6]
 
 source(file.path(chem_routine,"FILINO_06_02ab_ExtraitLazMasquesEau.R"),encoding = "utf-8")
 source(file.path(chem_routine,"FILINO_06_02c_creatPtsVirtuels.R"),encoding = "utf-8")

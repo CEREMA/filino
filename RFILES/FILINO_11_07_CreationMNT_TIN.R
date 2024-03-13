@@ -166,7 +166,7 @@ FILINO_11_07_Job=function(idalle,TA_Zone,NomDirMNTTIN,type,TA,TAPtsVirtu,listeMa
     write(paste0("       ",shQuote("type"),":",shQuote("filters.crop"),","),nomjson,append=T)
     write(paste0("       ",shQuote("polygon"),":",shQuote(Polygon_Contour_CE)),nomjson,append=T)
     write("    },",nomjson,append=T)
-
+    
     ################ Import des fichiers Laz virtuels Cerema
     # for (NOMLAZ in file.path(TAPtsVirtu[n_intVirt,]$CHEMIN,TAPtsVirtu[n_intVirt,]$NOM))
     for (NOMLAZ in NomBouclePtsVirtuels)
@@ -227,7 +227,7 @@ FILINO_11_07_Job=function(idalle,TA_Zone,NomDirMNTTIN,type,TA,TAPtsVirtu,listeMa
     write("    }",nomjson,append=T)
     write("]",nomjson,append=T)
     cmd=paste(pdal_exe,"pipeline",nomjson)
-
+    
     print(cmd);toto=system(cmd)
     
     if (file.exists(NomTIF)==F)
@@ -249,11 +249,12 @@ FILINO_11_07_Job=function(idalle,TA_Zone,NomDirMNTTIN,type,TA,TAPtsVirtu,listeMa
       {
         unlink(nomjson)
       }
-      
+
       # Gestion du bord de mer si nécesaire
       if (length(listeMasq2)>0)
       {
-        if (dim(Masques2Mer)[1]>0){
+        if (dim(Masques2Mer)[1]>0)
+        {
           nbMasq=st_intersects(Masques2Mer,TA_Zone[idalle,])
           
           

@@ -1,4 +1,4 @@
-nb_proc=nb_proc_Filino[8]
+nb_proc=nb_proc_Filino_[8]
 source(file.path(chem_routine,"FILINO_08_06_TA_PtsVirtuelsLaz.R"),encoding = "utf-8")
 
 cat("\014")

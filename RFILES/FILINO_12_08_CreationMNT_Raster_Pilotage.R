@@ -1,4 +1,4 @@
-nb_proc=nb_proc_Filino[12]
+nb_proc=nb_proc_Filino_[12]
 source(file.path(chem_routine,"FILINO_12_08_CreationMNT_Raster.R"))
 source(file.path(chem_routine,"FILINO_Utils.R"))
 

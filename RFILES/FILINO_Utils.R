@@ -96,7 +96,7 @@ FILINO_NomMasque = function(Masque)
 FILINO_FusionMasque = function(nomDir,TA,motcle,nombre)
 {
   # Suppression des anciens découpages
-  ListPart=list.files(file.path(dsnlayer,nomDir,racilayerTA),pattern=paste0(motcle,nombre,"_Part"))
+  ListPart=list.files(file.path(dsnlayer,nomDir,racilayerTA,"Dalles"),pattern=paste0(motcle,nombre,"_Part"))
   if (length(ListPart)>0){unlink(ListPart)}
 
   decoup=100
@@ -268,11 +268,13 @@ multiplot <-   function(..., plotlist=NULL, file, cols=1, layout=NULL)
 ConvertGPKG=function(NomInput,tuilage)
 {
   NomGPKG=paste0(substr(NomInput,1,nchar(NomInput)-4),".gpkg")
+  cat("#######################################################################\n")
   cmd = paste0(shQuote(OSGeo4W_path)," gdal_translate ", "-of GPKG ","--config OGR_SQLITE_SYNCHRONOUS OFF ", "-co  APPEND_SUBDATASET=YES ", "-co TILE_FORMAT=PNG_JPEG ",shQuote(NomInput)," ",shQuote(NomGPKG))
-  paste(cmd);system(cmd)
+  print(cmd);system(cmd)
   if (tuilage==1)
   {
+    cat("#######################################################################\n")
     cmd = paste0(shQuote(OSGeo4W_path)," gdaladdo ","--config OGR_SQLITE_SYNCHRONOUS OFF ", "-r AVERAGE ",NomGPKG," 2 4 8 16 32 64 128 256")
-    paste(cmd);system(cmd)
+    print(cmd);system(cmd)
   }
 }

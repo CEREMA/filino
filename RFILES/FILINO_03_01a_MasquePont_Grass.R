@@ -18,7 +18,7 @@ FILINO1a_Pont_Grass = function(iLAZ,NomLaz,nom_RastPONT,SecteurGRASS,Nord,Sud,Es
     print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
     
     # Test pour voir si tout s'est bien passé, certaines dalles rendent des NULL...
-    NomUnivar=file.path(dsnlayer,paste0(raci,"_runivar.txt"))
+    NomUnivar=file.path(dsnlayer,paste0(raci,"_runivarP1.txt"))
     cmd=paste0("r.univar --quiet --overwrite map=",nomMNTPONT," output=",NomUnivar)
     print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
     

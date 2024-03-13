@@ -109,7 +109,7 @@ nb_proc_Filino=c(
   20,#9, #FILINO_08_06_TA_PtsVirtuelsLaz
   NaN,
   0, #6, #FILINO_10_04_ExtraitLazPonts_Pilotage
-  4, #1, #FILINO_11_07_CreationMNT_TIN.R
+  4,#4, #1, #FILINO_11_07_CreationMNT_TIN.R
   8, #FILINO_12_08_CreationMNT_Raster.R
   NaN,
   NaN,
@@ -118,6 +118,30 @@ nb_proc_Filino=c(
   20) #FILINO_03_01a_MasqueDalle_Pilotage
 
 
+nb_proc_Filino=rbind(
+  cbind(0,NaN,NaN,NaN),#1
+  cbind(0,NaN,NaN,NaN),#2
+  cbind(0,  6, 15,10),#3  #FILINO_03_01a_MasqueDalle.R
+  cbind(0,NaN,NaN,NaN),#4
+  cbind(0,NaN,NaN,NaN),#5
+  cbind(0,  6, 15, 10),#6  #FILINO_06_02ab_ExtraitLazMasquesEau
+  cbind(0,  6, 15, 10),#7  #FILINO_07_05a_SolVieuxLazSousVege 
+  cbind(0,  9, 15, 10),#8  #FILINO_08_06_TA_PtsVirtuelsLaz
+  cbind(0,NaN,NaN,NaN),#9
+  cbind(0,  6, 15, 10),#10 #FILINO_10_04_ExtraitLazPonts_Pilotage
+  cbind(0,  1,  4,  2),#11 #FILINO_11_07_CreationMNT_TIN.R
+  cbind(0,  8, 15, 10),#12 #FILINO_12_08_CreationMNT_Raster.R
+  cbind(0,NaN,NaN,NaN),#13
+  cbind(0,NaN,NaN,NaN),#14
+  cbind(0,NaN,NaN,NaN),#15
+  cbind(0,NaN,NaN,NaN),#16
+  cbind(0,  4, 16, 10),#17
+  cbind(0,NaN,NaN,NaN),#18
+  cbind(0,NaN,NaN,NaN),#19
+  cbind(0,NaN,NaN,NaN)#20
+)
+colnames(nb_proc_Filino)=cbind("Mode Classique","PC HP 2019 16GoRam, 6*2 proc","PC DELL 2024 64GoRam, 24+8proc","Moitie PC DELL 2024 64GoRam, 24+8proc")
+preselect_nb_proc_Filino=colnames(nb_proc_Filino[3])
 
 ##############################################################################################################################################################
 ##############################################################################################################################################################
