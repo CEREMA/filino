@@ -295,7 +295,7 @@ if (length(n_int)>0)
     liaison=FILINO_Intersect_Qgis(nomA,nomB,nomC)
     
     surfhydro=surfhydro[unique(liaison$fid),]
-    
+    # browser()
     surfhydro$F_Sh="PlanEau"
     ici=grep(surfhydro$nature,pattern="Ecoul")
     if (length(ici)>0) {surfhydro[ici,]$F_Sh="Ecoulement"}
@@ -310,7 +310,12 @@ if (length(n_int)>0)
     if (length(ici)>0)
     {
       nbShM=st_intersects(Masques2,surfhydro[ici,1])
-      Masques2[which(sapply(nbShM, length)>0),]$PlanEau="PlanEau"
+      n_intShM = which(sapply(nbShM, length)>0)
+      if (length(n_intShM)>0)
+      {
+        Masques2[n_intShM,]$PlanEau="PlanEau"
+      }
+      # Masques2[which(sapply(nbShM, length)>0),]$PlanEau="PlanEau"
     }
     
     Masques2$Canal=""
@@ -318,7 +323,12 @@ if (length(n_int)>0)
     if (length(ici)>0)
     {
       nbShM=st_intersects(Masques2,surfhydro[ici,1])
-      Masques2[which(sapply(nbShM, length)>0),]$Canal="Canal"   
+      n_intShM = which(sapply(nbShM, length)>0)
+      if (length(n_intShM)>0)
+      {
+        Masques2[n_intShM,]$Canal="Canal"
+      }
+      # Masques2[which(sapply(nbShM, length)>0),]$Canal="Canal"   
     }
     
     Masques2$Ecoulement=""
@@ -326,9 +336,13 @@ if (length(n_int)>0)
     if (length(ici)>0)
     {
       nbShM=st_intersects(Masques2,surfhydro[ici,1])
-      Masques2[which(sapply(nbShM, length)>0),]$Ecoulement="Ecoulement"
+      n_intShM = which(sapply(nbShM, length)>0)
+      if (length(n_intShM)>0)
+      {
+        Masques2[n_intShM,]$Ecoulement="Ecoulement"
+      }
     }
-    
+    # browser()
     
     Masques2$F_Sh=paste0(Masques2$PlanEau,Masques2$Canal,Masques2$Ecoulement)
     st_write(Masques2,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEau.gpkg"), delete_layer=T, quiet=T)
@@ -504,22 +518,30 @@ if (length(n_int)>0)
           Estuaires[ime,]$Id=IndMasq
         }
         
-        Mer2=Mer2[,colnames(Masques2)]
-        Mer2$F_Sh_Tr_Me="Mer"
-        Mer2$F_Sh_Tr=""
-        IndMasq=IndMasq+1
-        Mer2$Id=IndMasq
-        # modification des attributs
-        Masques2[im,]$F_Sh_Tr_Me="VieuxMer"
-        #ATTENTION, il faudrait éclater en morceaux et regrouper si on va d'un estuaire à l'autre...
+        if (im==8)
+        {
+          # browser()
+        }
         
-        st_geometry(Masques2)="geometry"
-        st_geometry(Estuaires)="geometry"
-        st_geometry(Mer2)="geometry"
-        Masques2=rbind(Masques2,
-                       Estuaires,
-                       Mer2)
-        paspasse=0
+        Mer2=Mer2[,colnames(Masques2)]
+        if (dim(Mer2)[1]>0)
+        {
+          Mer2$F_Sh_Tr_Me="Mer"
+          Mer2$F_Sh_Tr=""
+          IndMasq=IndMasq+1
+          Mer2$Id=IndMasq
+          # modification des attributs
+          Masques2[im,]$F_Sh_Tr_Me="VieuxMer"
+          #ATTENTION, il faudrait éclater en morceaux et regrouper si on va d'un estuaire à l'autre...
+          
+          st_geometry(Masques2)="geometry"
+          st_geometry(Estuaires)="geometry"
+          st_geometry(Mer2)="geometry"
+          Masques2=rbind(Masques2,
+                         Estuaires,
+                         Mer2)
+          paspasse=0
+        }
       }else{
         Masques2[im,]$F_Sh_Tr_Me="Mer"
       }

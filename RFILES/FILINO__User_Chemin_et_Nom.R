@@ -26,7 +26,7 @@
 SecteurGRASS_="C:/GRASSDATA/FILINO/Temp" # Creation automatique
 
 # Repertoire de travail
-dsnlayer="D:/IGN/IGN_Cerema_UGE"
+dsnlayer="E:/IGN/IGN_Cerema_UGE"
 dsnlayer="C:/AFFAIRES/FILINO_Travail"
 
 # Zones a traiter à mettre dans le répertoire dsnlayer
@@ -38,17 +38,17 @@ NomDirSIGBase ="00_SIGBase" # à mettre dans le répertoire dsnlayer
 dsnDepartement="E:\\BDTopo"
 
 paramTALidar=as.data.frame(rbind(
-  cbind(1,"E:/LidarHD_DC"                   ,"TA_HD.shp"           ,0.5,41, 9,12,14,17,1),
-  cbind(0,"E:/NUALID"                       ,"TA_NUALID.shp"       ,1  ,59,25,28,30,33,1),# Nualid 2m
-  cbind(0,"E:/Lidar2mTOUT/COPCLAZ"          ,"TA_NiMontpLid2m.shp" ,1  ,18, 1, 3, 8,11,1),# lidar 2m Nimes - Montpellier
-  # cbind(0,"E:/Lidar2mTOUT/Laz_4_1_4"        ,"TA_nchar56_IVAR.shp" ,1  ,56,22,25,27,30,0),
-  # cbind(0,"E:/Lidar2mTOUT/Laz_4_1_4"        ,"TA_nchar70_VLIDT.shp",1  ,70,36,39,41,44,0),
-  # cbind(0,"E:/Lidar2mTOUT/Laz_4_1_4"        ,"TA_nchar60_VLIDV.shp",1  ,60,30,33,35,38,0),
-  # cbind(0,"E:/Lidar2mTOUT/Laz_4_1_4"        ,"TA_nchar59.shp"      ,1  ,59,25,28,30,33,0),
-  cbind(0,"E:/Lidar2mTOUT/Laz_4_1_4"        ,"TA_4_1_4.shp"        ,1  , 0, 4, 1, 4, 0,0),
-  cbind(0,"E:/LidarRestonica"               ,"TA_Resto_Cerema.shp" ,0.5,37,30,33,35,38,1)
+  cbind(1,"E:/LidarHD_DC"                       ,"TA_HD.shp"           ,0.5,41, 9,12,14,17,1),
+  cbind(0,"F:/Lidar2mTOUT/COPCLAZ"              ,"TA_NiMontpLid2m.shp" ,1  ,18, 1, 3, 8,11,1),# lidar 2m Nimes - Montpellier
+  cbind(0,"F:/LidarNonHD/Lidar2mTOUT/Laz_4_1_4" ,"TA_4_1_4.shp"        ,1  , 0, 4, 1, 4, 0,0), #le 4 1 4  correspond à la recherche de 4 chiffres pour les X, un saut de 1 caractère et 4 chiffres pour les Y
+  cbind(0,"F:/LidarRestonica"                   ,"TA_Resto_Cerema.shp" ,0.5,37,30,33,35,38,1)
 ))
-
+#le 4 1 4  correspond à la recherche de 4 chiffres pour les X, un saut de 1 caractère et 4 chiffres pour les Y
+#ceci a été fait pour la gestion de divers chantiers lidar historique IGN
+#  où les X et y ont à la fois une position et un nombre pour les X et Y pas identiques...
+# 0, 4, 1, 4 NUALID_1-0_DI19R078_PTS_1188_6147_LAMB93_IGN69_20191031
+# 0, 4, 1, 4 NUALID_1-0_VLIDVARLOT1C3_PTS_0911_6300_LAMB93_IGN69_20180606
+# 0, 3, 4, 4 748000_6283000.copc.laz
 
 # Ne pas modifier le nom des colonnes
 colnames(paramTALidar)=cbind("Lancement","DossLAZ","NomTALAZ","Reso","NbreCaratere","Xdeb","Xfin","Ydeb","Yfin","COPC")
@@ -88,7 +88,7 @@ paramTARaster=as.data.frame(rbind(
   cbind(1,file.path(dsnlayer,NomDirMNTGDAL)     ,"TA_SOLetEAU_min.shp"       ,"SOLetEAU_min.gpkg$",9,12,14,17),
   cbind(1,file.path(dsnlayer,NomDirMNTGDAL)     ,"TA_TOUT_min.shp"           ,"TOUT_min.gpkg$",9,12,14,17),
   cbind(1,file.path(dsnlayer,NomDirMNTGDAL)     ,"TA_VEGE_min.shp"           ,"VEGE_min.gpkg$",9,12,14,17),
-
+  
   cbind(0,"C:\\_D\\Strickler"                   ,"TA_ParamC2D_v2.shp"        ,"000.gpkg$"    ,4,4,4,0),
   
   cbind(0,"modif dans la variable paramTARaster"," "," ","Xdeb","Xfin","Ydeb","Yfin"),

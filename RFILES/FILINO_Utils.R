@@ -97,8 +97,13 @@ FILINO_FusionMasque = function(nomDir,TA,motcle,nombre)
 {
   # Suppression des anciens découpages
   ListPart=list.files(file.path(dsnlayer,nomDir,racilayerTA,"Dalles"),pattern=paste0(motcle,nombre,"_Part"))
-  if (length(ListPart)>0){unlink(ListPart)}
-
+  if (length(ListPart)>0)
+  {
+    unlink(ListPart)
+    ListPart=list.files(file.path(dsnlayer,nomDir,racilayerTA,"Dalles"),pattern=paste0(motcle,nombre,"_Part"))
+    if(length(ListPart)>0){cat("BUG, les fichiers ",ListPart,"ne veulent pas se supprimer, à faire manuellement\n");BOOM=SUPP_PART_XXX}
+  }
+  
   decoup=100
   cat(format(Sys.time(),format="%Y%m%d_%H%M%S")," Début de fusion des masques ",nombre,"\n")
   
@@ -141,7 +146,7 @@ FILINO_FusionMasque = function(nomDir,TA,motcle,nombre)
     cmd=paste0(qgis_process, " run native:mergevectorlayers")
     for (iM in 1:length(ListPart))
     {cmd=paste0(cmd," --LAYERS=",shQuote(ListPart[iM]))}
-
+    
     cmd=paste0(cmd,
                paste0(" --CRS=QgsCoordinateReferenceSystem('EPSG:",nEPSG,"') "),
                " --OUTPUT=",shQuote(paste0(motcle,nombre,"_Concat_Qgis.gpkg")))
@@ -268,6 +273,8 @@ multiplot <-   function(..., plotlist=NULL, file, cols=1, layout=NULL)
 ConvertGPKG=function(NomInput,tuilage)
 {
   NomGPKG=paste0(substr(NomInput,1,nchar(NomInput)-4),".gpkg")
+  
+  if (file.exists(NomGPKG)){unlink(NomGPKG)}
   cat("#######################################################################\n")
   cmd = paste0(shQuote(OSGeo4W_path)," gdal_translate ", "-of GPKG ","--config OGR_SQLITE_SYNCHRONOUS OFF ", "-co  APPEND_SUBDATASET=YES ", "-co TILE_FORMAT=PNG_JPEG ",shQuote(NomInput)," ",shQuote(NomGPKG))
   print(cmd);system(cmd)

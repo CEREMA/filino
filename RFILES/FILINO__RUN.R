@@ -35,7 +35,8 @@ ChoixFILINO = cbind(
   "14_10.      Palette de couleur",
   "15_11.      Videos démonstration",
   "16_12.      Création de vrt et gpkg par zone",
-  "17_12.      Différences entre deux types de données"
+  "17_12.      Différences entre deux types de données",
+  "18_13.      Copie vers autre disques durs"
 )
 titre="Menu principal FILINO"
 preselec=NULL
@@ -259,9 +260,16 @@ if (nFILINO[17]==1)
   if (length(nCalcDiffPlus)==0){print("VOUSAVEZVOULUQUECAFASSEBADABOOM_CESTGAGNE");BOOM=BOOOM}
 }
 
+# "01_0b. Téléchargement des données LidarHD classifiées IGN",
+if (nFILINO[18]==1)
+{
+  Auto=apply(rbind(Auto,c(0,0)), 2,min)
+  # dsnlayerRaster=choose.dir(default = "", caption = "Select folder")
+}
+
 Choixmode=FILINO_BDD("Mode de calcul",preselect_nb_proc_Filino,colnames(nb_proc_Filino))
 nb_proc_Filino_=nb_proc_Filino[,which(Choixmode==1)[1]]
-  
+
 source(file.path(chem_routine,"FILINO_00_00a_Initialisation.R"))
 
 #-----------------------------------------------------------------------------------
@@ -342,6 +350,10 @@ for (iTA in 1:length(dsnTALidar))
     FILINO_Creat_Dir(file.path(dsnlayer,NomDirMNTGDAL,racilayerTA))
     source(file.path(chem_routine,"FILINO_12_08_CreationMNT_Raster_Pilotage.R"))
   }
+  if (nFILINO[18]==1)
+  { 
+    source(file.path(chem_routine,"FILINO_18_99_CopieDonnees.R"))
+  }
 }
 
 # "13_00c. Table d'assemblage des données Lidar (classifiées ou autre)",
@@ -376,3 +388,4 @@ if (nFILINO[17]==1)
 { 
   source(file.path(chem_routine,"FILINO_17_12_Differences_Pilotage.R"))
 }
+
