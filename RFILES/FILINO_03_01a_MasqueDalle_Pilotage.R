@@ -49,6 +49,7 @@ if (length(n_int)>0)
       stopCluster(cl)
     }
   }
+  
   # Fusion de toutes les zones de végétation
   # lecture des zones militaires pour les exclure
   ZICAD=st_transform(

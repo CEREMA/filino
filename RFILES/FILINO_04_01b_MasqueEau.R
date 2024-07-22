@@ -87,30 +87,45 @@ if (length(n_int)>0)
       ######################################################################################
       ##### Lecture des surfaces hydrographiques
       nomlayer="surface_hydrographique"
+      cat("Si vous avez une erreur - (Erreur dans if (nchar(dsn) < 1) stop(dsn must point to a source, not an empty string.)\n" )
+      cat("Cela veut dire que vous n'arrivez pas à récupérer des données de la BDTopo avec le découpage de votre zone de travail, agrandissez ou reduisez là!\n" )
       surfhydro=st_read(dsn=file.path(dsnlayerCE,nomgpkgCE),layer=nomlayer,wkt_filter = bbox_wkt)
       st_geometry(surfhydro)="geometry"
-      LSH[[iDpt]]=surfhydro[,"nature"]
+      LSH[[iDpt]]=surfhydro[,cbind("cleabs","nature")]
       # cat(nomlayer,dim(surfhydro),"\n")
       
       ######################################################################################
       ##### Lecture des troncons hydrographiques
       nomlayer="troncon_hydrographique"
+      cat("Si vous avez une erreur - (Erreur dans if (nchar(dsn) < 1) stop(dsn must point to a source, not an empty string.)\n" )
+      cat("Cela veut dire que vous n'arrivez pas à récupérer des données de la BDTopo avec le découpage de votre zone de travail, agrandissez ou reduisez là!\n" )
       trhydro=st_read(dsn=file.path(dsnlayerCE,nomgpkgCE),layer=nomlayer,wkt_filter = bbox_wkt)
       st_geometry(trhydro)="geometry"
       # cleabs nature sens_de_l_ecoulement liens_vers_cours_d_eau
-      LTr[[iDpt]]=trhydro[,cbind("cleabs","nature","sens_de_l_ecoulement","liens_vers_cours_d_eau")]
+      LTr[[iDpt]]=trhydro[,cbind("cleabs","nature","position_par_rapport_au_sol","sens_de_l_ecoulement","liens_vers_cours_d_eau")]
       # cat(nomlayer,dim(trhydro),"\n")
       
       ######################################################################################
       ##### Lecture des constructions hydrographiques
       nomlayer="construction_surfacique"
+      cat("Si vous avez une erreur - (Erreur dans if (nchar(dsn) < 1) stop(dsn must point to a source, not an empty string.)\n" )
+      cat("Cela veut dire que vous n'arrivez pas à récupérer des données de la BDTopo avec le découpage de votre zone de travail, agrandissez ou reduisez là!\n" )
       constsurf=st_read(dsn=file.path(dsnlayerCE,nomgpkgCE),layer=nomlayer,wkt_filter = bbox_wkt)
       st_geometry(constsurf)="geometry"
-      LCS[[iDpt]]=constsurf[,"nature"]
+      LCS[[iDpt]]=constsurf[,cbind("cleabs","nature")]
     }
     
+    # Fusion et nettoyage des doublons de deux départements...
     surfhydro=do.call(rbind, LSH)
-    # nettoyage des doublons de deux départements...
+    surfhydro=surfhydro[order(surfhydro$cleabs),]
+    surfhydro$doublons=0
+    for (i in 2:dim(surfhydro)[1])
+    {
+      if (surfhydro$cleabs[i]==surfhydro$cleabs[i-1]){surfhydro$doublons[i]=1}
+    }
+    surfhydro=surfhydro[which(surfhydro$doublons==0),]
+    
+    # Fusion et nettoyage des doublons de deux départements...
     trhydro=do.call(rbind, LTr)
     trhydro=trhydro[order(trhydro$cleabs),]
     trhydro$doublons=0
@@ -120,8 +135,19 @@ if (length(n_int)>0)
     }
     trhydro=trhydro[which(trhydro$doublons==0),]
     
+    # Fusion et nettoyage des doublons de deux départements...
     constsurf=do.call(rbind, LCS)
-    
+    constsurf=constsurf[order(constsurf$cleabs),]
+    if (dim(constsurf)[1]>1)
+    {
+      constsurf$doublons=0
+      constsurf$doublons=0
+      for (i in 2:dim(constsurf)[1])
+      {
+        if (constsurf$cleabs[i]==constsurf$cleabs[i-1]){constsurf$doublons[i]=1}
+      }
+      constsurf=constsurf[which(constsurf$doublons==0),]
+    }
     # Intersection des 
     nbMSh=st_intersects(Masques2,surfhydro)
     n_intMSh = which(sapply(nbMSh, length)>0)
@@ -129,6 +155,9 @@ if (length(n_int)>0)
     # units(seuilSup1)="m^2"
     
     # Travail sur les gros masques
+    # Masques2$QUOI="GROS"
+    # Masques2$QUOI[n_intMSh]="SurfaceHydro"
+    # Masques2$QUOI[which(Masques2$Aire>seuilSup1)]="GROSetSurfaceHydro"
     Masques2=Masques2[unique(c(n_intMSh,which(Masques2$Aire>seuilSup1))),]
     
     Masques2=st_cast(Masques2,"POLYGON")##### voir si OK 05/03/2024
@@ -181,6 +210,7 @@ if (length(n_int)>0)
     ngros=data.frame(Gros=which(Masques2$Aire>=seuilSup2),Tour=0)
     units(seuilSup3)="m"
     it=0
+    
     #### bug constaté le 05/03/2024
     while(max(ngros$Tour)>=it)
     {
@@ -274,10 +304,15 @@ if (length(n_int)>0)
     # liaison=FILINO_Intersect_Qgis(nomA,nomB,nomC)
     # Masques2=Masques2[unique(liaison$fid),]
     
+    # 20240524 SUPPRESSION HAZARDEUSE
     nbMSh=st_intersects(Masques2,surfhydro[which(surfhydro$nature!="Ecoulement naturel"),1])
+    # nbMSh=st_intersects(Masques2,surfhydro[,1])
+    # 20240524 SUPPRESSION HAZARDEUSE
     n_intMSh = which(sapply(nbMSh, length)>0) 
     # Modif du 10/01/2024, on peut essayer de garder les petits dans les surfaces en eau
     Masques2=Masques2[unique(rbind(as.matrix(which(Masques2$Aire>seuilSup1)),as.matrix(n_intMSh))),]
+    
+    
     # trois lignes ci-dessous non concluantes
     # units(seuilSup2)="m2"
     # n_intMGros=which(st_area(Masques2)>seuilSup2)
@@ -295,7 +330,6 @@ if (length(n_int)>0)
     liaison=FILINO_Intersect_Qgis(nomA,nomB,nomC)
     
     surfhydro=surfhydro[unique(liaison$fid),]
-    # browser()
     surfhydro$F_Sh="PlanEau"
     ici=grep(surfhydro$nature,pattern="Ecoul")
     if (length(ici)>0) {surfhydro[ici,]$F_Sh="Ecoulement"}
@@ -342,7 +376,6 @@ if (length(n_int)>0)
         Masques2[n_intShM,]$Ecoulement="Ecoulement"
       }
     }
-    # browser()
     
     Masques2$F_Sh=paste0(Masques2$PlanEau,Masques2$Canal,Masques2$Ecoulement)
     st_write(Masques2,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEau.gpkg"), delete_layer=T, quiet=T)
@@ -434,6 +467,62 @@ if (length(n_int)>0)
     
     st_write(Masques2,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydro.gpkg"), delete_layer=T, quiet=T)
     
+    
+    for (iFShTr in cbind("Canal","Ecoulement"))
+    {
+      cat("Association des petits morceaux de ",iFShTr)
+      
+      if (iFShTr=="Ecoulement")
+      {
+        nbFShFr=which(Masques2$F_Sh_Tr==iFShTr)
+        distbufAsso=15
+      }
+      
+      if (iFShTr=="Canal")
+      {
+        nbFShFr=which(Masques2$F_Sh=="Canal" & (Masques2$F_Sh_Tr=="Canal" | Masques2$F_Sh_Tr=="PlanEau_Tr"))
+        distbufAsso=10
+      }
+      
+      print(length(nbFShFr))
+      if (length(nbFShFr)>1)
+      {
+        polygones=Masques2[nbFShFr,]
+        
+        # Créer des buffers de 5 mètres autour de chaque polygone
+        cat("Début du buffer proposé Mistral, à voir si pas trop long")
+        buffers <- st_buffer(polygones, dist = distbufAsso)
+        # Fusionner tous les buffers qui se chevauchent
+        buffers_fusionnes <- st_cast(st_union(buffers),"POLYGON")
+        st_write(buffers,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"buffers.gpkg"), delete_layer=T, quiet=T)
+        cat("Fin du buffern")
+        
+        # Trouver l'intersection entre les polygones d'origine et les buffers fusionnés
+        polygones_associes <- st_intersection(st_union(polygones), buffers_fusionnes)
+        st_write(polygones_associes,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"polygones_associes.gpkg"), delete_layer=T, quiet=T)
+        
+        DF=polygones
+        st_geometry(DF)=NULL
+        
+        remplace=st_sf(data.frame(
+          cat=2,
+          Aire=-9999,
+          # QUOI=paste0("fusion",iFShTr),
+          Id=0,
+          PlanEau="",
+          Canal="",
+          Ecoulement="",
+          F_Sh="",
+          F_Sh_Tr=iFShTr
+        ),
+        geometry=polygones_associes)
+        print(sort(unique(colnames(remplace))))
+        print(sort(unique(colnames(Masques2[-nbFShFr,]))))
+        
+        Masques2=rbind(Masques2[-nbFShFr,],remplace[,colnames(Masques2)])
+      }
+    }
+    
     ##################################################
     ##### travail sur la mer
     
@@ -443,13 +532,16 @@ if (length(n_int)>0)
     if (dim(Masques2[-iMer[[1]],])[1]>0) {Masques2[-iMer[[1]],]$F_Sh_Tr_Me="Mer"}
     
     st_write(Masques2,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydroMer.gpkg"), delete_layer=T, quiet=T)
+    
   }
-  # etape qui peut conduire à des bugs SIG, on peut traaviller à partir de la donnée précédente mais plus de découpes manuelles
+  
+  # etape qui peut conduire à des bugs SIG, on peut travailler à partir de la donnée précédente mais plus de découpes manuelles
   if (Etap1b[5]==1)
   { 
     cat("\014")
     cat("FILINO_04_01b_MasqueEau.R - Etap1b[5]\n")
     Masques2=st_read(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydroMer.gpkg"))
+    st_geometry(Masques2)="geometry"
     surfhydro=st_read(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"surfhydro.gpkg"))
     trhydro=st_read(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"trhydro.gpkg"))
     # constsurf=st_read(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"constsurf_tmp.gpkg"))
@@ -458,6 +550,7 @@ if (length(n_int)>0)
     
     IndMasq=max(Masques2$Id)
     
+    # Boucle sur tous les morceaux de mer
     for (im in which(Masques2$F_Sh_Tr_Me=="Mer"))
     {
       nomA=file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"surfhydro.gpkg")
@@ -465,88 +558,257 @@ if (length(n_int)>0)
       st_write(Masques2[im,],nomB,delete_layer=T, quiet=T)
       nomC=file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"surfhydro_tmp.csv")
       liaison=FILINO_Intersect_Qgis(nomA,nomB,nomC)
-      surfhydro_tmp=surfhydro[unique(liaison$fid),1]
+      # On ne garde que les surface hydro qui croisent la mer
+      surfhydro_tmp=surfhydro[unique(liaison$fid),]
       
-      nbms=st_intersects(surfhydro_tmp,trhydro)
+      # On cherche à ne garder que les surfaces en mer qui sont aussi des cours d'eau
+      # sinon, c'est de la mer
+      trhydro_croi=trhydro
+      nici=which(trhydro_croi$position_par_rapport_au_sol>-10)
+      if (length(nici>0)){trhydro_croi=trhydro_croi[nici,]}
+      
+      st_write(trhydro_croi,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"trhydro_croi.gpkg"), delete_layer=T, quiet=T)
+      
+      # On n'intersecte qu'avec les troncons hydro de position par rapport au sol >-1
+      # en gros on ne va pas intersecter avec des ouvrages  enterrés
+      nbms=st_intersects(surfhydro_tmp,trhydro_croi)
       n_int_ms = which(sapply(nbms, length)>0)
       if (length(n_int_ms)>0)
       {
         surfhydro_tmp=surfhydro_tmp[n_int_ms,]
-        ##### PARAMETRES SUBJECTIF ATTENTION
-        bufMer=10
+        if (verif==1){st_write(surfhydro_tmp,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"surfhydro_tmp.gpkg"), delete_layer=T, quiet=T)}
         
-        # Récuypération de la partie estuaire
-        Estuaires=st_intersection(Masques2[im,], st_buffer(surfhydro_tmp,bufMer))
-        if (verif==1){st_write(Estuaires,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Estuaires.gpkg"), delete_layer=T, quiet=T)}
+        # On intersecte pour ne garder que ceux qui ont un croisement avec une rivière important
+        trhydro_croi=st_intersection(trhydro_croi,surfhydro_tmp)
+        trhydro_croi$longueur=st_length(trhydro_croi)
+        units(trhydro_croi$longueur)=NULL
         
-        # Récupération de la partie mer
-        Estuaires=Estuaires[,colnames(Masques2)]
-        
-        # Récupération de la partie Mer
-        Mer2=st_difference(Masques2[im,],st_union(Estuaires))
-        if (verif==1){st_write(Mer2,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Mer2.gpkg"), delete_layer=T, quiet=T)}
-        
-        # Gestion pour vérifier que l'on ne prend en compte que la grose mer, pas les petits morceaux asociés
-        Mer2b=st_cast(Mer2,"POLYGON")
-        Mer2b$Aire=st_area(Mer2b)
-        Mer2=Mer2b[which(Mer2b$Aire==max(Mer2b$Aire)), ]#which(colnames(Mer2b)!="Aire")
-        
-        if (dim(Mer2b)[1]>1)
+        trhydro_croi=trhydro_croi[which(trhydro_croi$longueur>=seuillgtrhydrodanssurface),]
+        # browser()
+        if (dim(trhydro_croi)[1]>0)
         {
-          Mer2b=Mer2b[-which(Mer2b$Aire==max(Mer2b$Aire)), ]
-          dat=Estuaires[1,]
-          st_geometry(dat)=NULL
-          st_geometry(Estuaires)="geometry"
-          st_geometry(Mer2b)="geometry"
-          Estuaires=st_cast(
-            st_sf(dat,geometry=st_cast(st_union(rbind(Estuaires,Mer2b)),"MULTIPOLYGON")),
-            "POLYGON")
-          Estuaires$Aire=st_area(Estuaires)
-        }
-        
-        Estuaires$F_Sh_Tr_Me="EcoulementEstuaire"
-        if (dim(Estuaires)[1]>1)
-        {
-          autres=which(Estuaires$Aire!=max(Estuaires$Aire))
-          Estuaires$F_Sh_Tr_Me[autres]="PlanMerEcoulementEstuaire"
-        }
-        
-        Estuaires$F_Sh_Tr=""
-        for (ime in 1:dim(Estuaires)[2])
-        {
-          IndMasq=IndMasq+1
-          Estuaires[ime,]$Id=IndMasq
-        }
-        
-        if (im==8)
-        {
-          # browser()
-        }
-        
-        Mer2=Mer2[,colnames(Masques2)]
-        if (dim(Mer2)[1]>0)
-        {
-          Mer2$F_Sh_Tr_Me="Mer"
-          Mer2$F_Sh_Tr=""
-          IndMasq=IndMasq+1
-          Mer2$Id=IndMasq
-          # modification des attributs
-          Masques2[im,]$F_Sh_Tr_Me="VieuxMer"
-          #ATTENTION, il faudrait éclater en morceaux et regrouper si on va d'un estuaire à l'autre...
-          
-          st_geometry(Masques2)="geometry"
-          st_geometry(Estuaires)="geometry"
-          st_geometry(Mer2)="geometry"
-          Masques2=rbind(Masques2,
-                         Estuaires,
-                         Mer2)
-          paspasse=0
+          # On ne garde que les surface hydro qui ont un troncon hydro un peu long...
+          nbms2=st_intersects(surfhydro_tmp,trhydro_croi)
+          n_int_ms2 = which(sapply(nbms2, length)>0)
+          if (length(n_int_ms2)>0)
+          {
+            surfhydro_tmp=surfhydro_tmp[n_int_ms2,]
+            ##### PARAMETRES SUBJECTIF ATTENTION
+            bufMer=10
+            
+            # Récupération de la partie estuaire
+            Estuaires=st_intersection(Masques2[im,], st_buffer(surfhydro_tmp,bufMer))
+            if (verif==1){st_write(Estuaires,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Estuaires.gpkg"), delete_layer=T, quiet=T)}
+            Estuaires=Estuaires[,colnames(Masques2)]
+            
+            # Codification des estuaires en recroisant avec les surface en eau
+            for (iest in 1:dim(Estuaires)[1])
+            {
+              # browser()
+              nbiest=st_intersects(surfhydro_tmp,Estuaires[iest,1])
+              n_int_iest = which(sapply(nbiest, length)>0)
+              Estuaires$F_Sh_Tr_Me[iest]=paste0(ifelse(length(grep(surfhydro_tmp$nature[n_int_iest],pattern="Ecoul"))>0,
+                                                       "Ecoulement","PlanEau"),"Estuaire")
+              
+              IndMasq=IndMasq+1
+              Estuaires[iest,]$Id=IndMasq
+            }
+            
+            # Récupération de la partie Mer
+            Mer2=st_difference(Masques2[im,],st_union(Estuaires))
+            if (verif==1){st_write(Mer2,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Mer2.gpkg"), delete_layer=T, quiet=T)}
+            # browser()
+            
+            # 2024 05 21
+            # je ne sais plus pourquoi j'éclatais et je changeais de codification, à revoir mais
+            # Gestion pour vérifier que l'on ne prend en compte que la grosse mer, pas les petits morceaux associés
+            # Mer2b=st_cast(Mer2,"POLYGON")
+            # Mer2b$Aire=st_area(Mer2b)
+            # Mer2=Mer2b[which(Mer2b$Aire==max(Mer2b$Aire)), ]
+            # browser()
+            # if (dim(Mer2b)[1]>1)
+            # {
+            #   Mer2b=Mer2b[-which(Mer2b$Aire==max(Mer2b$Aire)), ]
+            #   dat=Estuaires[1,]
+            #   st_geometry(dat)=NULL
+            #   st_geometry(Estuaires)="geometry"
+            #   st_geometry(Mer2b)="geometry"
+            #   Estuaires=st_cast(
+            #     st_sf(dat,geometry=st_cast(st_union(rbind(Estuaires,Mer2b)),"MULTIPOLYGON")),
+            #     "POLYGON")
+            #   Estuaires$Aire=st_area(Estuaires)
+            # }
+            # browser()
+            # 
+            # # browser()
+            # if (dim(Estuaires)[1]>1)
+            # {
+            #   autres=which(Estuaires$Aire!=max(Estuaires$Aire))
+            #   Estuaires$F_Sh_Tr_Me[autres]="PlanMerEcoulementEstuaire"
+            # }
+            
+            # Estuaires$F_Sh_Tr=""
+            # for (ime in 1:dim(Estuaires)[2])
+            # {
+            #   IndMasq=IndMasq+1
+            #   Estuaires[ime,]$Id=IndMasq
+            # }
+            
+            if (im==8)
+            {
+              # browser()
+            }
+            
+            Mer2=Mer2[,colnames(Masques2)]
+            if (dim(Mer2)[1]>0)
+            {
+              Mer2$F_Sh_Tr_Me="Mer"
+              Mer2$F_Sh_Tr=""
+              IndMasq=IndMasq+1
+              Mer2$Id=IndMasq
+              # modification des attributs
+              Masques2[im,]$F_Sh_Tr_Me="VieuxMer"
+              #ATTENTION, il faudrait éclater en morceaux et regrouper si on va d'un estuaire à l'autre...
+              
+              st_geometry(Masques2)="geometry"
+              st_geometry(Estuaires)="geometry"
+              st_geometry(Mer2)="geometry"
+              Masques2=rbind(Masques2,
+                             Estuaires,
+                             Mer2)
+              paspasse=0
+            }
+          }else{
+            Masques2[im,]$F_Sh_Tr_Me="Mer"
+          }
+        }else{
+          Masques2[im,]$F_Sh_Tr_Me="Mer"
         }
       }else{
         Masques2[im,]$F_Sh_Tr_Me="Mer"
       }
     }
+    
+    ####################################################
+    ###### MATHIEU A TESTER SUR MAMP 19/04/2024
+    ######################################################
+    # si ca bugge mettre en commentaire jusqu'au prochain MATHIEU
+    
+    # Redecoupage du masque mer pour limiter sa taille
+    
+    if (verif==1){st_write(Masques2,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_avantgrille.gpkg"), delete_layer=T, quiet=T)}
+    
+    nMerADecouper=which(Masques2$F_Sh_Tr_Me=="Mer")
+    if (length(nMerADecouper)>0)
+    {
+      nomMerADecouper=file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"MerADecouper.gpkg")
+      nomMerDecoupee =file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"MerDecoupee.gpkg" )
+      nomMerDecoupee2=file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"MerDecoupeeC.gpkg" )
+      nomMerDecoupee3=file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"MerDecoupeeCF.gpkg" )
+      st_write(Masques2[nMerADecouper,],nomMerADecouper, delete_layer=T, quiet=T)
+      
+      # qgis_process run native:intersection 
+      # --distance_units=meters --area_units=m2 --ellipsoid=EPSG:7019 
+      # --INPUT='C:/AFFAIRES/FILINO_Travail/01a_MASQUE_VIDEetEAU/TA_HD/Masques2_Seuil1000m2.gpkg|layername=Masques2_Seuil1000m2' --OVERLAY='E:/LidarHD_DC/TA_HD.shp' --OVERLAY_FIELDS_PREFIX= --OUTPUT=TEMPORARY_OUTPUT
+      cmd <- paste0(qgis_process, " run native:intersection",
+                    " --distance_units=meters --area_units=m2 --ellipsoid=EPSG:7019",
+                    " --INPUT=",shQuote(nomMerADecouper),
+                    " --OVERLAY=",shQuote(file.path(dsnTALidar,nomTALidar)),
+                    " --OVERLAY_FIELDS_PREFIX=",
+                    " --OUTPUT=",shQuote(nomMerDecoupee))
+      system(cmd)
+      MerDecoupee=st_cast(st_read(nomMerDecoupee),"POLYGON")
+      st_geometry(MerDecoupee)="geometry"
+      MerDecoupee=MerDecoupee[,colnames(Masques2)]
+      
+      # Faire une boucle pour coller les éléments jusqu'à une aire de XXX
+      
+      MerDecoupee$Aire=st_area(MerDecoupee)
+      units(MerDecoupee$Aire)=NULL
+      
+      while (min(MerDecoupee$Aire)<seuilmerdec)
+      {
+        
+        npetit=which(MerDecoupee$Aire==min(MerDecoupee$Aire))[1]
+        MersansPetit=MerDecoupee[-npetit,]
+        nbmdp=st_intersects(MersansPetit,MerDecoupee[npetit,])
+        n_intnbmdp <-  which(sapply(nbmdp, length) > 0)
+        cat("Fusion des petits découpages mer",dim(MerDecoupee)," ",length(n_intnbmdp)," ",min(MerDecoupee$Aire),"\n")
+        
+        if (length(n_intnbmdp)>1)
+        {
+          # browser()
+        }
+        if (length(n_intnbmdp)>0)
+        {
+          # il faut fusionner avec les voisins
+          FusionPetitsVoisins=st_union(MerDecoupee[npetit,],st_union(MersansPetit[n_intnbmdp,],))
+          FusionPetitsVoisins=FusionPetitsVoisins[,colnames(Masques2)]
+          # FusionPetitsVoisins=st_union(FusionPetitsVoisins)
+          FusionPetitsVoisins$Aire=st_area(FusionPetitsVoisins)
+          units(FusionPetitsVoisins$Aire)=NULL
+          MerDecoupee=rbind(MersansPetit[-n_intnbmdp,],FusionPetitsVoisins)
+        }else{
+          
+          MerDecoupee$Aire[npetit]=seuilmerdec
+        }
+      }
+      
+      verif=1
+      if (verif==1){st_write(MerDecoupee,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"MerDecoupee.gpkg"), delete_layer=T, quiet=T)}
+      
+      # browser()
+      nNRacc=which(MerDecoupee$Aire==seuilmerdec)
+      ngrosmer=dim(MerDecoupee[-nNRacc,1])[1]
+      if (length(nNRacc)>0)
+      {
+        
+        GrosseMer=MerDecoupee[-nNRacc,]
+        PetiteMer=MerDecoupee[nNRacc,]
+        distaC=st_distance(PetiteMer,GrosseMer)
+        GrosseMer$Id=1:ngrosmer
+        
+        PetiteMer$Id=0
+        for (ifmer in 1:length(nNRacc))
+        {
+          PetiteMer[ifmer,]$Id=GrosseMer[which(distaC[ifmer,]==min(distaC[ifmer,])),]$Id
+        }
+        if (verif==1)
+        {
+          st_write(PetiteMer,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"PetiteMer.gpkg"), delete_layer=T, quiet=T)
+          st_write(GrosseMer,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"GrosseMer.gpkg"), delete_layer=T, quiet=T)
+        }
+        GrosseMer2=rbind(GrosseMer,PetiteMer)
+        GrosseMer2DF=GrosseMer2
+        st_geometry(GrosseMer2DF)=NULL
+        GrosseMer2=do.call(rbind,
+                           lapply(1:ngrosmer,
+                                  function(x) {st_sf(data.frame(GrosseMer2DF[x,]),
+                                                     geometry=st_cast(st_union(GrosseMer2[which(GrosseMer2$Id==x),]),"MULTIPOLYGON"))}))
+        
+        # st_sf(data.frame(liens_vers_cours_d_eau =x),
+        #       geometry=st_line_merge(st_cast(st_union(trhydro_tmp[which(trhydro_tmp$liens_vers_cours_d_eau ==x),]),"MULTILINESTRING")))})))
+        
+        if (verif==1)
+        {
+          
+          st_write(GrosseMer2,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"GrosseMer2.gpkg"), delete_layer=T, quiet=T)
+        }
+        
+        GrosseMer2$Aire=st_area(GrosseMer2)
+        units(GrosseMer2$Aire)=NULL
+        Masques2=Masques2[-nMerADecouper,]
+        Masques2=rbind(Masques2,GrosseMer2[,colnames(Masques2)])
+      }
+      Masques2=Masques2[order(Masques2$Aire),]
+      
+    }
+    ####################################################
+    ###### MATHIEU A TESTER SUR MAMP 19/04/2024
+    ######################################################
+    
     st_write(Masques2,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydroMer2.gpkg"), delete_layer=T, quiet=T)
+    
   } 
   if (Etap1b[6]==1)
   { 
@@ -711,6 +973,7 @@ if (length(n_int)>0)
                     
                     
                     # modification des attributs
+                    # browser()
                     Masques2[im,]$F_Sh_Tr_Me_Co="VieuxEcoulement"
                     Affluent$F_Sh_Tr_Me_Co="EcoulementAffluent"
                     IndMasq=IndMasq+1

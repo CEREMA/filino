@@ -1,17 +1,9 @@
 FILINO_03_01a_Job=function(iLAZ,TA_tmp,dimTA1,NomLaz,reso,largdalle,paramXYTA,iTA,dsnTALidar,dsnlayer)
 {
-  # Gestion des noms de champs de mes tables d'assemblage
-  # if (is.null(TA_tmp$CHEMIN))
-  # {
-    # Lidar Hd brut
-    NomLaz=basename(file.path(dsnlayerTA,TA_tmp$DOSSIER,TA_tmp$NOM))
-    ChemLaz=dirname(file.path(dsnlayerTA,TA_tmp$DOSSIER,TA_tmp$NOM))
-  # }else{
-  #   # Lidar HD classif
-  #   NomLaz=TA_tmp$NOM
-  #   ChemLaz=TA_tmp$CHEMIN
-  # }
-
+  NomLaz=basename(file.path(dsnlayerTA,TA_tmp$DOSSIER,TA_tmp$NOM))
+  ChemLaz=dirname(file.path(dsnlayerTA,TA_tmp$DOSSIER,TA_tmp$NOM))
+  
+  
   decalgrille=reso
   Ouest=largdalle*as.numeric(substr(NomLaz,paramXYTA[2],paramXYTA[3]))
   Nord=largdalle*as.numeric(substr(NomLaz,paramXYTA[4],paramXYTA[5]))
@@ -210,7 +202,7 @@ FILINO_03_01a_Job=function(iLAZ,TA_tmp,dimTA1,NomLaz,reso,largdalle,paramXYTA,iT
     nominput=file.path(ChemLaz,NomLaz)
     Ch_Classif="Classification[3:5]"
     FILINO_writers_gdal(nomjson,nominput,Ch_Classif,nom_method,Mult_Reso*reso,Ouest,Est,Sud,Nord,nom_Rast_VEGE)
-
+    
     if (file.exists(file.path(dirname(nomjson),nom_RastTSF))==T)
     {
       #Creation d'un monde GRASS

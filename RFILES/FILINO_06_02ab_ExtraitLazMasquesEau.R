@@ -3,9 +3,9 @@ FILINO_06_02ab_Job1=function(iLAZ,TA_tmp,TA,Masques2,NomDirTmp,raciTmp,ClassTmp)
 {
   # if (is.null(TA_tmp$CHEMIN))
   # {
-    # Lidar Hd 
-    NomLaz=basename(file.path(dsnlayerTA,TA_tmp$DOSSIER,TA_tmp$NOM))
-    ChemLaz=dirname(file.path(dsnlayerTA,TA_tmp$DOSSIER,TA_tmp$NOM))
+  # Lidar Hd 
+  NomLaz=basename(file.path(dsnlayerTA,TA_tmp$DOSSIER,TA_tmp$NOM))
+  ChemLaz=dirname(file.path(dsnlayerTA,TA_tmp$DOSSIER,TA_tmp$NOM))
   # }else{
   #   # Lidar HD classif
   #   NomLaz=TA_tmp$NOM
@@ -30,33 +30,25 @@ FILINO_06_02ab_Job1=function(iLAZ,TA_tmp,TA,Masques2,NomDirTmp,raciTmp,ClassTmp)
       # Selection des sections dans le Lidar
       Masq_tmp=Masques2[iMasq,]
       
-      
-      
-      # raciMasq=paste0(raciTmp,formatC(Masq_tmp$IdGlobal,width=5, flag="0"),"_",racilayerTA)
+      rep_COURSEAU=file.path(dsnlayer,NomDirTmp,racilayerTA,paste0(raciTmp,Masq_tmp$IdGlobal),NomDossDalles)
       raciMasq=paste0(raciTmp,Masq_tmp$IdGlobal)
       raci=paste0(raciMasq,"_",substr(NomLaz,1,nchar(NomLaz)-4))
       
-      # setwd(ChemLaz)
+      Masq_tmp=st_cast(Masq_tmp,"POLYGON")
+      MinTaille=5
+      units(MinTaille)="m^2"
+      Masq_tmp=Masq_tmp[which(st_area(Masq_tmp)>MinTaille),]
+      Masq_tmp=st_union(Masq_tmp)
       
       NomLaz_tmp=ifelse(substr(raci,nchar(raci)-4,nchar(raci))==".copc",
                         paste0(raci,".laz"),
                         paste0(raci,".copc.laz"))
-      
-      # nouveau 07/02/2023
-      # rep_COURSEAU=file.path(dsnlayer,NomDirTmp,paste0(racilayerTA,raciTmp,formatC(Masq_tmp$IdGlobal,width=5, flag="0")))
-      rep_COURSEAU=file.path(dsnlayer,NomDirTmp,racilayerTA,paste0(raciTmp,Masq_tmp$IdGlobal),NomDossDalles)
-      
-      # if (file.exists(rep_COURSEAU)==F){dir.create(rep_COURSEAU)}
-      rep_COURSEAU=file.path(rep_COURSEAU)
-      # if (file.exists(rep_COURSEAU)==F){dir.create(rep_COURSEAU)}
+
       FILINO_Creat_Dir(rep_COURSEAU)
       nomjson=file.path(rep_COURSEAU,paste0(raci,"06_02ab_MyScript.json"))
       NomLaz_tmp=file.path(rep_COURSEAU,NomLaz_tmp)
       if (file.exists(NomLaz_tmp)==F & file.exists(file.path(rep_COURSEAU,paste0(raci,".vide")))==F)
       {   
-        # st_write(Masq_tmp,
-        #        file.path(rep_COURSEAU,paste0("Masque",iMasq,".gpkg")), delete_layer=T, quiet=T)
-        # Creation d'un pipeline pdal pour extraire les points autour du masque
         cat("------------------------------------------------------------------\n")
         cat(NomLaz_tmp,"\n")
         write("[",nomjson)
@@ -125,7 +117,7 @@ FILINO_06_02ab_Job23=function(iMasq,Masques1,Masques2,NbCharIdGlobal,NomDirTmp,r
   if (substr(Masque2$FILINO,1,3)=="Eco")   {Cas=4}
   if (substr(Masque2$FILINO,1,3)=="Can")   {Cas=3}
   if (substr(Masque2$FILINO,1,3)=="Pla")   {Cas=2}
-
+  
   rep_COURSEAU=file.path(dsnlayer,NomDirTmp,racilayerTA,iMasq)
   
   if (Cas==4)

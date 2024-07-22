@@ -81,11 +81,13 @@ FILINO_11_07_Job=function(idalle,TA_Zone,NomDirMNTTIN,type,TA,TAPtsVirtu,listeMa
       Alancer=0
     } else {
       cat("Les fichiers Laz sont différents:\n")
+      unlink(NomGPKG)
       Alancer=1
     }
     unlink(NomTXT_old)
   }else{
     cat("Pas de fichier de comparaison ou de fichier MNT:\n")
+    unlink(NomGPKG)
     Alancer=1
   }
   if (Alancer==1 & file.exists(nomBADPDAL)==F)
@@ -261,6 +263,14 @@ FILINO_11_07_Job=function(idalle,TA_Zone,NomDirMNTTIN,type,TA,TAPtsVirtu,listeMa
           n_intMasq = which(sapply(nbMasq, length)>0)
           if (length(n_intMasq)>0)
           {
+            if (length(n_intMasq)>1)
+            {
+              Masques2Mer_tmp=st_intersection(Masques2Mer,TA_Zone[idalle,])
+              Masques2Mer_tmp_Aire=st_area(Masques2Mer_tmp)
+              
+              n_intMasq=n_intMasq[which(Masques2Mer_tmp_Aire==max(Masques2Mer_tmp_Aire))]
+            }
+            
             MasqMer=Masques2Mer[n_intMasq,]
             
             nomType=file.path(dsnlayer,NomDirSurfEAU,racilayerTA,paste0(raciSurfEau,MasqMer$IdGlobal),"Type_Mer.txt")
@@ -292,7 +302,7 @@ FILINO_11_07_Job=function(idalle,TA_Zone,NomDirMNTTIN,type,TA,TAPtsVirtu,listeMa
                   system(paste0(BatGRASS," -c ",SecteurGRASS," --text"))
                   
                   # source(file.path(chem_routine,"FILINO_11_07_CreationMNT_TIN_Grass.R"),encoding = "utf-8")
-                  FILINO_7_CreationMNT_Grass_Mer(NomTIF,Val,reso,SecteurGRASS,nomMasques2T,racidalle_,nomType)
+                  FILINO_7_CreationMNT_Grass_Mer(NomTIF,Val,reso,SecteurGRASS,nomMasques2T,racidalle_,nomType,BoiteBuf_tmp)
                   
                   unlink(dirname(SecteurGRASS),recursive=TRUE)
                 }

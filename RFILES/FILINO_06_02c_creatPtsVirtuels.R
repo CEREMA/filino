@@ -6,44 +6,9 @@ FILINO_06_02c_creatPtsVirtuels=function(nomcsv,rep_COURSEAU,Cas,raci_exp,nomPtsV
   if (dim(PtsCSV)[1]>0)
   {
     # Lecture du masque intenes pour créer des points viruels
-
+    
     Masque1=st_read(file.path(rep_COURSEAU,"Masque1.gpkg"))
     Masque2=st_read(file.path(rep_COURSEAU,"Masque2.gpkg"))
-    
-    # ne peut pas marcher
-    # #-------------------------------------------------------------------------------------------------------------
-    # # Quand on interpole, on prend 100m autour de chaque dalle, parfois cela ne suffit pas
-    # # On va créer des points dans la bbox du masque , voir si ces points sont dans le masque
-    # # et si c'est le cas, on calcule la distance
-    # # si >50m > alors on va créer un fichier distance pour modieir la valeur de 100 dans l'interpolation TIN
-    # limXYM2=st_bbox(Masque2)/largdalle
-    # 
-    # grille_points <- expand.grid(x = largdalle*seq(floor(limXYM2[1]), ceiling(limXYM2[3]), by = 0.005), y = largdalle*seq(floor(limXYM2[2]), ceiling(limXYM2[4]), by = 0.005))
-    # 
-    # # Transformer la grille en un objet sf
-    # grille_sf <- st_as_sf(grille_points, coords = c("x", "y"),crs=nEPSG)
-    # 
-    # nbGr=st_intersects(grille_sf,Masque2)
-    # n_intGr = which(sapply(nbGr, length)>0)
-    # if (length(n_intGr)>0)
-    # {
-    #   # il y a du boulot pour calculer la distance
-    #   grille_sf=grille_sf[n_intGr,]
-    #   # distGr=st_distance(grille_sf,st_cast(st_cast(Masque2,'POLYGON'),"LINESTRING"))
-    #   distGr=st_distance(grille_sf,st_cast(Masque2,'MULTILINESTRING'))
-    #   
-    #   Buf_TIN_=Buf_TIN/2
-    #   
-    #   units(Buf_TIN)="m"
-    #   max_distGr=max(distGr)
-    #   if (max_distGr>Buf_TIN)
-    #   {
-    #     #Mettre un brower après la formation pour trouver le acs rare!!!
-    #     grille_sf=st_sf(data.frame(Buf_TIN_MNT_en_m=max_distGr),
-    #                     geometry=st_union(st_buffer(grille_sf[distGr>Buf_TIN,],1)))
-    #     st_write(grille_sf,file.path(rep_COURSEAU,paste0("Buf_TIN_MNT_en_m_",ceiling(max_distGr),".gpkg")),delete_layer=TRUE)
-    #   }
-    # }
     
     #-------------------------------------------------------------------------------------------------------------
     
@@ -100,14 +65,19 @@ FILINO_06_02c_creatPtsVirtuels=function(nomcsv,rep_COURSEAU,Cas,raci_exp,nomPtsV
               trhydro=st_sf(data.frame(liens_vers_cours_d_eau =trhydro$liens_vers_cours_d_eau[1]),
                             geometry=st_line_merge(st_cast(st_union(trhydro),"MULTILINESTRING")))
               
-              
               trhydro=st_cast(st_line_merge(st_cast(trhydro,'MULTILINESTRING')),"LINESTRING")
-              
+              if (dim(trhydro)[1]>1)
+              {
+                trhydro=trhydro[st_length(trhydro)==max(st_length(trhydro)),]
+              }
             } # Il faudra gérer quand il y a plusieurs troncçons dans un masque, intersection par exemple
             st_write(trhydro,file.path(rep_COURSEAU,"Polyligne_Calcul.gpkg"),delete_layer=TRUE)
           }else{
             Cas=0
           }
+          
+        }else{
+          Cas=0
         }
       }
       

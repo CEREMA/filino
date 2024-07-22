@@ -45,6 +45,13 @@ seuilSup4=0
 # Vérification
 verif=0 # que pour 1b mais a voir ailleurs?
 
+# Paramétrage pour les secteurs Mer
+# Valeur pour reassembler les zones de masques plus petites que seuilmerdec
+seuilmerdec=500000
+# valeur de seuil minimum de croisment entre un troncon linéaire et une surface en eau pour donner le type de la surface en eau au lieu de garder mer
+# doit être supérieur à 1 sinon ca plante dans les étapes d'après
+seuillgtrhydrodanssurface=20
+
 # Paramétrage pour la valeur utilisateur d'un plan d'eau ou des paramétrage de balayage
 ValPlanEAU="-99.99"
 CE_BalPas=5 # déplacement du balayage sur x pixels
@@ -88,8 +95,8 @@ ClassPourMNTGDAL=rbind(
 
 #------------------------------------- Paramètres FILINO_13_09_CycleCouleur.R ------------------------------------------------------
 nompalcoul=file.path(chem_routine,"couleurpourpalette.csv")
-Mini=-50
-Maxi=2000
+Mini=-10
+Maxi=200
 PasDz=c(0.1,0.2,0.5,1) # On peut lancer avec plusieurs pas d'espace
 
 #------------------------------------- Processeurs en mode parallèle ------------------------------------------------------
@@ -129,7 +136,7 @@ nb_proc_Filino=rbind(
   cbind(0,  9, 15, 10),#8  #FILINO_08_06_TA_PtsVirtuelsLaz
   cbind(0,NaN,NaN,NaN),#9
   cbind(0,  6, 15, 10),#10 #FILINO_10_04_ExtraitLazPonts_Pilotage
-  cbind(0,  1,  4,  2),#11 #FILINO_11_07_CreationMNT_TIN.R
+  cbind(0,  1,  3,  2),#11 #FILINO_11_07_CreationMNT_TIN.R
   cbind(0,  8, 15, 10),#12 #FILINO_12_08_CreationMNT_Raster.R
   cbind(0,NaN,NaN,NaN),#13
   cbind(0,NaN,NaN,NaN),#14

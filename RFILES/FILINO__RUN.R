@@ -1,4 +1,5 @@
-library(sf)
+Sys.unsetenv("PROJ_LIB") # Suppression uniquement dans R d'une variable environnement associée à PostGre qui posait des problème de projection dans R
+library(sf) # si vous avez des problème avec st_crs et PROJ.LIB, merci de réinstaller le package sf après avoir relancer la 1ère ligne
 library(dplyr)
 library(rjson)
 library(ggplot2)
@@ -310,7 +311,7 @@ for (iTA in 1:length(dsnTALidar))
   if (nFILINO[4]==1){source(file.path(chem_routine,"FILINO_04_01b_MasqueEau.R"))}
   
   # "05_01c. Masques Relations des 2 (un peu plus large) et 1 (bords sur lesquelq des points virtuels sont créés)",
-  if (nFILINO[5]==1){source(file.path(chem_routine,"FILINO_05_01c_MasqueEau.R"))}
+  if (nFILINO[5]==1){suppressWarnings(source(file.path(chem_routine,"FILINO_05_01c_MasqueEau.R")))}
   
   # "06_02ab.SurfEau Exctraction des points Lidar des masques 2 et calculs des points virtuels",
   if (nFILINO[6]==1)

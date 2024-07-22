@@ -1,3 +1,4 @@
+# set path=%path:C:\Program Files (x86)\Common Files\Oracle\Java\java8path=%%
 FILINO_Creat_Dir=function(chem_et_ou_nom)
 {
   if (file.exists(chem_et_ou_nom)==F)    {dir.create(chem_et_ou_nom,recursive = T)}

@@ -4,6 +4,7 @@ print(dsnlayerTA)
 
 dosssortie="D:\\Filino_Pour_Nabil_Nimes"
 dosssortie="D:\\Filino_Pour_Nassim_Mosson"
+dosssortie="C:\\LidarNonHD"
 
 # Lecture de la table d'assemblage
 TA=st_read(file.path(dsnlayerTA,nomlayerTA))
