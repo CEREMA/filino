@@ -32,6 +32,7 @@ FILINO_12_08_CreationMNT_Raster_Job=function(idalle)
         NomLaz=file.path(dsnlayerTA,TAHDCla[idalle,]$DOSSIER,TAHDCla[idalle,]$NOM)
         
         nomjson=file.path(dsnlayer,NomDirMNTGDAL,racilayerTA,NomDossDalles,paste0(racidalle,"MNT_Raster.json"))
+        FILINO_Creat_Dir(dirname(nomjson))
         
         FILINO_writers_gdal(nomjson,NomLaz,ClassPourMNTGDAL[igdal,1],ClassPourMNTGDAL[igdal,2],reso,Ouest,Est,Sud,Nord,basename(NomTIF))
         

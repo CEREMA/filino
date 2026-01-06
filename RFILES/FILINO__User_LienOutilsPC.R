@@ -20,13 +20,15 @@
 OSGeo4W_path = "C:/QGIS/OSGeo4W.bat" #chemin OSGeo4w.bat
 
 # Lien pour utiliser des fonction GRASS
-BatGRASS="C:\\QGIS\\bin\\grass83.bat"
+BatGRASS="C:\\QGIS\\bin\\grass84.bat"
+BatGRASS="C:\\QGIS\\bin\\grass84.bat"
 
 # Lien pour utiliser Pdal
 pdal_exe="C:/QGIS/bin/pdal.exe"
 
 # Lien pour utiliser des fonction Qgis
-qgis_process <- "C:/QGIS/bin/qgis_process-qgis.bat"
+qgis_process="C:/QGIS/bin/qgis_process-qgis-ltr.bat"
+qgis_process="C:/QGIS/bin/qgis_process-qgis-qt6.bat"
 
 # Lien pour faire des vidéos de démo
 # ffmpeg peut être installé après la 1ère utilisation de l'extension Crayfish dans Qgis

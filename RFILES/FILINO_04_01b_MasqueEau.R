@@ -36,17 +36,26 @@ if (length(n_int)>0)
 {
   # réduction sur les dalles electionnées
   TA=TA[n_int,]
+  TA_UnionPol=st_union(TA[,1])
+  TA_UnionLig=st_cast(TA_UnionPol,"MULTILINESTRING")
+  TA_UnionBuf=st_buffer(TA_UnionLig,0.1)
   
   if (Etap1b[1]==1)
   {
     
     cat("\014")
     cat("FILINO_04_01b_MasqueEau.R - Etap1b[1]\n")
-    Masques1=FILINO_FusionMasque(NomDirMasqueVIDE,TA,"Masque",1)
+    Masques1brut=FILINO_FusionMasque(NomDirMasqueVIDE,TA,"Masque",1)
+ 
+    # Ajout 25/09/2025 pour diminuer l'emrpise des masques sur les bords surtout en mer
+    # st_differnce peut être mis en qgis au besoin
+    Masques1=st_difference(Masques1brut,TA_UnionBuf)
+    Masques1=st_cast(Masques1,"POLYGON")
+    Masques1$Aire=st_area(Masques1)
     Masques1=Masques1[order(Masques1$Aire,decreasing=TRUE),]
     Masques1$Id=1:dim(Masques1)[1]
     st_write(Masques1,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques1.gpkg"), delete_layer=T, quiet=T)
-    
+       
     ##############################################################
     Masques2=FILINO_FusionMasque(NomDirMasqueVIDE,TA,"Masque",2)
     st_write(Masques2,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2.gpkg"), delete_layer=T, quiet=T)
@@ -336,7 +345,14 @@ if (length(n_int)>0)
     ici=grep(surfhydro$nature,pattern="Canal")
     if (length(ici)>0) {surfhydro[ici,]$F_Sh="Canal"}
     
+    ############################################################################
+    # 20250905 Suppression des masques de surface en eau qui sont en mer
+    ## Détéction des masques touchant la mer
+    iMer=st_contains_properly(Dpt_Inv_Mer,surfhydro)
+    if (dim(surfhydro[iMer[[1]],])[1]>0) {surfhydro=surfhydro[iMer[[1]],]}
     st_write(surfhydro,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"surfhydro.gpkg"), delete_layer=T, quiet=T)
+
+    ############################################################################
     
     # Appareillage des types de surfaces en eau sur les masques
     Masques2$PlanEau=""
@@ -397,6 +413,14 @@ if (length(n_int)>0)
     {
       # récupération des cours d'eau qui croisent des masques
       trhydro_=trhydro[unique(liaison$fid),]
+      ############################################################################
+      # 20250905 Suppression des masques de troncon en eau qui sont en mer
+      ## Détéction des masques touchant la mer
+      iMer=st_contains_properly(Dpt_Inv_Mer,trhydro_)
+      if (dim(trhydro_[iMer[[1]],])[1]>0) {trhydro_=trhydro_[iMer[[1]],]}
+
+      ############################################################################
+      
       
       # Rajout des tronçons de cours d'eau nommés qui ne croisent pas (éviter d'avoir un troncon coupé en deux pour un même masque)
       nomCE=unique(trhydro_$liens_vers_cours_d_eau)
@@ -460,7 +484,7 @@ if (length(n_int)>0)
       var=1:dim(trhydro)[1]
       trhydro=st_cast(trhydro[-var,],"MULTILINESTRING")
       st_write(trhydro,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"trhydro.gpkg"), delete_layer=T, quiet=T)
-      # sys.sleep(10)
+      # Sys.sleep(10)
     }
     # test pour enlever les types de surfaces en eau qui seraient avec des tronçons supprimé précédement
     Masques2$F_Sh_Tr=paste0(Masques2$PlanEau,Masques2$Canal,Masques2$Ecoulement)
@@ -488,7 +512,7 @@ if (length(n_int)>0)
       if (length(nbFShFr)>1)
       {
         polygones=Masques2[nbFShFr,]
-        
+        # AREVOIR
         # Créer des buffers de 5 mètres autour de chaque polygone
         cat("Début du buffer proposé Mistral, à voir si pas trop long")
         buffers <- st_buffer(polygones, dist = distbufAsso)
@@ -695,7 +719,7 @@ if (length(n_int)>0)
     # si ca bugge mettre en commentaire jusqu'au prochain MATHIEU
     
     # Redecoupage du masque mer pour limiter sa taille
-    
+    # browser()
     if (verif==1){st_write(Masques2,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_avantgrille.gpkg"), delete_layer=T, quiet=T)}
     
     nMerADecouper=which(Masques2$F_Sh_Tr_Me=="Mer")

@@ -63,6 +63,8 @@ if (length(n_int)>0)
       cl <- parallel::makeCluster(nb_proc)
       registerDoParallel(cl)
       foreach(iLAZ = 1:dim(TA)[1],
+              .combine = 'c',
+              .inorder = FALSE,
               .packages = c("sf")) %dopar% 
         {
           TA_tmp=TA[iLAZ,]
@@ -80,9 +82,10 @@ if (length(n_int)>0)
     
     if(nb_proc==0)
     {
+      # browser()
       for (iMasq in paste0(raciSurfEau,Masques2$IdGlobal))
       {
-        FILINO_06_02ab_Job23(iMasq,Masques1,Masques2,NbCharIdGlobal,NomDirSurfEAU,raciSurfEau)
+        FILINO_06_02ab_Job23(iMasq,Masques1,Masques2,NbCharIdGlobal,NomDirSurfEAU,raciSurfEau,TA)
         
       }
     }else{
@@ -92,13 +95,38 @@ if (length(n_int)>0)
       registerDoParallel(cl)
       
       foreach(iMasq = paste0(raciSurfEau,Masques2$IdGlobal),
-              .packages = c("sf","ggplot2")) %dopar% 
+              .combine = 'c',
+              .inorder = FALSE,
+              .packages = c("sf","ggplot2","ggrepel")) %dopar% 
         {
           
-          FILINO_06_02ab_Job23(iMasq,Masques1,Masques2,NbCharIdGlobal,NomDirSurfEAU,raciSurfEau)
+          FILINO_06_02ab_Job23(iMasq,Masques1,Masques2,NbCharIdGlobal,NomDirSurfEAU,raciSurfEau,TA)
         }
       
       stopCluster(cl)
     }
   }
 }
+
+cat("\n")
+cat("\n")
+cat("########################################################################################################\n")
+cat("######################### FILINO A LIRE SVP ###############################################################\n")
+cat("---------------- ETAPE FILINO_06_02ab_ExtraitLazMasquesEau_Pilotage #######################################\n")
+cat("---------------- Fusion Extraction des points Lidar dans les Masques 2: \n")
+cat("Etape a: Vérifier si des fichiers SurfEAU_xxxnomdalleLidarxxx.vide existent.\n")
+cat("Deux solutions.\n")
+cat("     - Il n'y a pas de points sol ou eau dans certains masques OK\n")
+cat("     - Il y a eu un problème mémoire en mode parallèle - supprimer les xxx.vide et relancer\n")
+cat("\n")
+cat("Etape c: Vérifier si des fichiers .jpg ne sont pas à des valeurs de poids 0 - sinon supprimer et relancer\n")
+cat("\n")
+cat("    - Il est souvent utile de faire passer un coup en mode non parallèle à la fin pour être plus sûr...\n")
+cat("\n")
+cat("Il est souvent utile de regarder les images terminant par '_3_Canaux_30_pcbas.jpg'...\n")
+cat("   - L'analyse des écluses est encore manuelle (pas d'analyse dans FILINO des données dans la BDTopo, un jour peut-être......\n")
+cat("   - Reprendre le travail manuel et relancer de cette étape sans rien supprimer, la gestion est normalement automatique\n")
+cat("\n")
+cat("\n")
+cat("Par exemple, le dernier travail se trouve dans le dossier:","","\n")
+cat("######################### Fin FILINO A LIRE ###############################################################\n")

@@ -7,11 +7,14 @@ FILINO_03_01a_Job=function(iLAZ,TA_tmp,dimTA1,NomLaz,reso,largdalle,paramXYTA,iT
   decalgrille=reso
   Ouest=largdalle*as.numeric(substr(NomLaz,paramXYTA[2],paramXYTA[3]))
   Nord=largdalle*as.numeric(substr(NomLaz,paramXYTA[4],paramXYTA[5]))
-  Est=as.character(Ouest+largdalle+decalgrille)
-  Sud=as.character(Nord-largdalle-decalgrille)
-  Ouest=as.character(Ouest-decalgrille)
-  Nord=as.character(Nord+decalgrille)
-  
+  Est=as.character(Ouest+largdalle)
+  Sud=as.character(Nord-largdalle)
+  # ancien 05/08/2025
+  # Est=as.character(Ouest+largdalle+decalgrille)
+  # Sud=as.character(Nord-largdalle-decalgrille)
+  # Ouest=as.character(Ouest-decalgrille)
+  # Nord=as.character(Nord+decalgrille)
+
   raci=gsub(".copc","_copc",paste0(substr(NomLaz,1,nchar(NomLaz)-4)))
   
   cat("###############################################################\n")
@@ -114,8 +117,11 @@ FILINO_03_01a_Job=function(iLAZ,TA_tmp,dimTA1,NomLaz,reso,largdalle,paramXYTA,iT
       system(paste0(BatGRASS," -c EPSG:",nEPSG," ",dirname(SecteurGRASS)," --text"))
       system(paste0(BatGRASS," -c ",SecteurGRASS," --text"))
       
-      # source(file.path(chem_routine,"FILINO_03_01a_MasqueEau_Grass.R"),encoding = "utf-8")
+      # Ancien
       FILINO1a_Vide_Grass(iLAZ,NomLaz,nom_Rast_INV_VIDEetEAU,nom_RastEAU,nom_RastSOL,SecteurGRASS,Nord,Sud,Est,Ouest)
+      # Nouveau du 05/08/2025 voir si cela ne plante pas pour d'autres choix que reso 0.5...
+      # FILINO1a_Vide_Grass(iLAZ,NomLaz,nom_Rast_INV_VIDEetEAU,nom_RastEAU,nom_RastSOL,SecteurGRASS,as.numeric(Nord)-reso,as.numeric(Sud)+reso,as.numeric(Est)-reso,as.numeric(Ouest)+reso)
+      
       
       unlink(dirname(SecteurGRASS),recursive=TRUE)
       cat("\014")

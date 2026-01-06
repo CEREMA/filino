@@ -18,11 +18,8 @@
 # Largeur des dalles
 largdalle=1000
 
-# code EPSG du projet que des valeur entière
-nEPSG = 2154
-
 # Parametre pour nettoyer des fichiers temporaires
-Nettoyage=0
+Nettoyage=1
 
 #------------------------------------- Paramètres FILINO_03_01a_MasqueDalle.R ------------------------------------------------------
 # Parametres pour garder les points non classé dans les masques
@@ -86,19 +83,31 @@ Buf_TIN=100 # Distance pour gérer l'interpolation des bords d'une dalle (100m s
 ClassPourMNTTIN="Classification[2:2],Classification[66:66],Classification[81:90]" # Code pour LidarHD IGN
 
 #------------------------------------- Paramètres FILINO_12_08_CreationMNT_Raster.R ------------------------------------------------------
+# virgule à la fin de chaque ligne sauf la dernière
 ClassPourMNTGDAL=rbind(
-  cbind("Classification[2:2],Classification[9:9]","min","SOLetEAU"),
+  # cbind("Classification[2:2],Classification[9:9]","min","SOLetEAU"),
+  # cbind("Classification[2:2],Classification[9:9]","max","SOLetEAU"),
+  # cbind("Classification[2:2],Classification[9:9]","mean","SOLetEAU")
+  # cbind("","count","NbrePOINTS")
+  cbind("ReturnNumber[1:1]","count","NbreIMPULSIONS")
   # canopée pas utile pour nous cbind("Classification[3:5]","max","VEGE"),
   # inutile, déjà fait cbind("Classification[17:17]","max","PONT")
-  cbind("Classification[6:6]","max","BATI")
+  # cbind("Classification[6:6]","max","BATI")
+  # cbind("Classification[2:2],Classification[9:9]","stdev","SOLetEAU")
 )
 
 #------------------------------------- Paramètres FILINO_13_09_CycleCouleur.R ------------------------------------------------------
 nompalcoul=file.path(chem_routine,"couleurpourpalette.csv")
 Mini=-10
-Maxi=200
+Maxi=0
 PasDz=c(0.1,0.2,0.5,1) # On peut lancer avec plusieurs pas d'espace
-
+Mini=-10;Maxi=2000;PasDz=0.25 # Topo
+Mini=0;Maxi=10*24*3600;PasDz=5*60 # Temps
+Mini=0;Maxi=3000;PasDz=c(10,5,2,1,0.5,0.25) # Temps
+Mini=-5;Maxi=0;PasDz=0.25 # Négatif
+Mini=-2.5;Maxi=2.5;PasDz=0.25 # Négatif
+# Mini=63;Maxi=65;PasDz=0.01 # Temps
+Mini=-5.5;Maxi=4.5;PasDz=0.25 # Lafaute
 #------------------------------------- Processeurs en mode parallèle ------------------------------------------------------
 #----- Codification 
 #------------- NaN pas d'option
@@ -126,28 +135,31 @@ nb_proc_Filino=c(
 
 
 nb_proc_Filino=rbind(
-  cbind(0,NaN,NaN,NaN),#1
-  cbind(0,NaN,NaN,NaN),#2
-  cbind(0,  6, 15,10),#3  #FILINO_03_01a_MasqueDalle.R
-  cbind(0,NaN,NaN,NaN),#4
-  cbind(0,NaN,NaN,NaN),#5
-  cbind(0,  6, 15, 10),#6  #FILINO_06_02ab_ExtraitLazMasquesEau
-  cbind(0,  6, 15, 10),#7  #FILINO_07_05a_SolVieuxLazSousVege 
-  cbind(0,  9, 15, 10),#8  #FILINO_08_06_TA_PtsVirtuelsLaz
-  cbind(0,NaN,NaN,NaN),#9
-  cbind(0,  6, 15, 10),#10 #FILINO_10_04_ExtraitLazPonts_Pilotage
-  cbind(0,  1,  3,  2),#11 #FILINO_11_07_CreationMNT_TIN.R
-  cbind(0,  8, 15, 10),#12 #FILINO_12_08_CreationMNT_Raster.R
-  cbind(0,NaN,NaN,NaN),#13
-  cbind(0,NaN,NaN,NaN),#14
-  cbind(0,NaN,NaN,NaN),#15
-  cbind(0,NaN,NaN,NaN),#16
-  cbind(0,  4, 16, 10),#17
-  cbind(0,NaN,NaN,NaN),#18
-  cbind(0,NaN,NaN,NaN),#19
-  cbind(0,NaN,NaN,NaN)#20
+  cbind(0,  1,  1,  1,  2),#1
+  cbind(0,  2,  2,  2,  2),#2
+  cbind(0,  6, 15, 20, 50),#3  #FILINO_03_01a_MasqueDalle.R
+  cbind(0,NaN,NaN,NaN,NaN),#4
+  cbind(0,NaN,NaN,NaN,NaN),#5
+  cbind(0,  6, 15, 10, 65),#6  #FILINO_06_02ab_ExtraitLazMasquesEau
+  cbind(0,  6, 15, 10, 65),#7  #FILINO_07_05a_SolVieuxLazSousVege 
+  cbind(0,  9, 15, 10, 65),#8  #FILINO_08_06_TA_PtsVirtuelsLaz
+  cbind(0,NaN,NaN,NaN,NaN),#9
+  cbind(0,  6, 15, 10, 65),#10 #FILINO_10_04_ExtraitLazPonts_Pilotage
+  cbind(0,  1,  4, 10, 25),#11 #FILINO_11_07_CreationMNT_TIN.R
+  cbind(0,  8, 15, 10, 50),#12 #FILINO_12_08_CreationMNT_Raster.R limité par accès au disque si pas SSD
+  cbind(0,  6, 15, 10, 16),#13
+  cbind(0,NaN,NaN,NaN,NaN),#14
+  cbind(0,NaN,NaN,NaN,NaN),#15
+  cbind(0,NaN,NaN,NaN,NaN),#16
+  cbind(0,  4, 16, 10, 55),#17
+  cbind(0,  4, 16, 20, 50),#18
+  cbind(0,  1,  1,  4,  6),#19
+  cbind(0,NaN,NaN,NaN,NaN),#20
+  cbind(0,  1,  3,  5, 10),#62),#21
+  cbind(0,NaN,NaN,NaN,NaN),#22
+  cbind(0,NaN,NaN,NaN,NaN) #23
 )
-colnames(nb_proc_Filino)=cbind("Mode Classique","PC HP 2019 16GoRam, 6*2 proc","PC DELL 2024 64GoRam, 24+8proc","Moitie PC DELL 2024 64GoRam, 24+8proc")
+colnames(nb_proc_Filino)=cbind("Mode Classique","PC HP 2019 16GoRam, 6*2 proc","PC DELL 2024 64GoRam, 24+8proc","Moitie PC DELL 2024 64GoRam, 24+8proc","STATION DELL")
 preselect_nb_proc_Filino=colnames(nb_proc_Filino[3])
 
 ##############################################################################################################################################################
@@ -182,6 +194,8 @@ NomDirMNTTIN_D    ="06_MNTTIN_Direct"
 NomDirMNTGDAL ="07_MNTGDAL00"    
 NomDirVideo   ="08_Videos"
 NomDirDIFF    ="09_Differe"
+NomDirVEGEDIFF  ="09_Vege_InfMNT"
+NomDirGpsTime ="10_GpsTime"
 
 # Nom de la racine de fichiers résultats
 raciSurfEau="SurfEAU"

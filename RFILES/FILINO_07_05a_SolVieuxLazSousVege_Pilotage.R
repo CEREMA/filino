@@ -62,6 +62,8 @@ if (length(n_int)>0)
         registerDoParallel(cl)
         
         foreach(iLAZ = 1:dim(TA_TA_OLD)[1],
+                .combine = 'c',
+                .inorder = FALSE,
                 .packages = c("sf")) %dopar% 
           {
             FILINO_07_05a_Job(iLAZ,TA_TA_OLD[iLAZ,],racilayerTAold,TA_Old,Classe_New)

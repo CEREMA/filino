@@ -67,6 +67,8 @@ if (length(n_int)>0)
       cl <- parallel::makeCluster(nb_proc)
       registerDoParallel(cl)
       foreach(iLAZ = 1:dim(TA)[1],
+              .combine = 'c',
+              .inorder = FALSE,
               .packages = c("sf")) %dopar% 
         {
           TA_tmp=TA[iLAZ,]
@@ -96,6 +98,8 @@ if (length(n_int)>0)
       registerDoParallel(cl)
       
       foreach(iMasq = paste0(raciSurfEau,Ponts2$IdGlobal),
+              .combine = 'c',
+              .inorder = FALSE,
               .packages = c("sf","ggplot2")) %dopar% 
         {
           

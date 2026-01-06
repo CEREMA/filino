@@ -1,5 +1,6 @@
 FILINO_7_CreationMNT_Grass_Mer = function(NomTIF,Val,reso,SecteurGRASS,nomMasques2T,racidalle_,nomType,BoiteBuf_tmp)
 {
+  browser()
   # Suppression du masque (s'il existe)
   cmd=paste0("r.mask -r")
   print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
@@ -134,9 +135,10 @@ FILINO_7_CreationMNT_Grass_Mer = function(NomTIF,Val,reso,SecteurGRASS,nomMasque
   Masque2F="Masque2F"
   cmd=paste0("v.in.ogr  -o --quiet --overwrite input=",nomM2_FILINO_Mer," output=",Masque2F," -r")
   print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
-  
+
   nomM1=file.path(dsnlayer, NomDirMasqueVIDE, racilayerTA, "Dalles",paste0(racidalle_,"_Masque1.gpkg"))
   Masque1P="Masque1Poly"
+  Masque1P_2="Masque1Poly_2"
   cmd=paste0("v.in.ogr  -o --quiet --overwrite input=",nomM1," output=",Masque1P," -r")
   print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
   
@@ -147,10 +149,13 @@ FILINO_7_CreationMNT_Grass_Mer = function(NomTIF,Val,reso,SecteurGRASS,nomMasque
   cmd=paste0("v.to.rast --quiet --overwrite input=",Masque1P," output=",Masque1P," use=cat value=0")
   print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
   
+  cmd=paste0("r.resample --quiet --overwrite input=",Masque1P," output=",Masque1P_2)
+  print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
+  
   cmd=paste0("r.mask -r")
   print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
   
-  cmd=paste0("r.mask -i --quiet --overwrite vector=",Masque1P)
+  cmd=paste0("r.mask -i --quiet --overwrite raster=",Masque1P_2)
   print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
   
   

@@ -11,7 +11,7 @@ for (iPasDz in PasDz)
 {
   Cycli=Ncouleur*iPasDz
   
-  nompalette=file.path(chem_routine,paste0("PaletteFILINO",iPasDz,".txt"))
+  nompalette=file.path(chem_routine,paste0("PaletteFILINO","_Mini",Mini,"_Maxi",Maxi,"_Pas",iPasDz,".txt"))
   
   write("# Fichier d'export QGIS de palette de couleur",nompalette)
   write("INTERPOLATION:DISCRETE",nompalette,append=T)

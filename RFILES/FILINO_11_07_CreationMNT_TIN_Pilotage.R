@@ -57,13 +57,50 @@ for (iTypeTIN in nTypeTIN)
       require(foreach)
       cl <- parallel::makeCluster(nb_proc)
       registerDoParallel(cl)
-      foreach(idalle = 1:dim(TA_Zone)[1]) %dopar% 
+      foreach(idalle = 1:dim(TA_Zone)[1],
+              .combine = 'c',
+              .packages = c("sf")
+              )%dopar% 
+              # ,
+              # .inorder = FALSE) %dopar% 
+        
         {
-          library(sf)
           FILINO_11_07_Job(idalle,TA_Zone,NomDirMNTTIN,type,TA,TAPtsVirtu,listeMasq2,Masques2Mer)
         }
       
       stopCluster(cl)
     }
+  }
+}
+for (iTypeTIN in nTypeTIN)
+{
+  
+  type=TypeTIN[iTypeTIN]
+  
+  listeBADALLOCPDAL=list.files(file.path(dsnlayer,NomDirMNTTIN,racilayerTA,NomDossDalles),pattern="BADALLOCPDAL")
+  
+  if (length(listeBADALLOCPDAL)>0)
+  {
+    cat(type," Nombre BAD Allocation",length(listeBADALLOCPDAL),"\n")
+    print(listeBADALLOCPDAL)
+    cat("vous devriez supprimer ces fichiers dans\n")
+    cat(file.path(dsnlayer,NomDirMNTTIN,racilayerTA,NomDossDalles),"\n")
+    cat("et relancer avec moins de processeurs\n")
+    
+    commun=intersect(substr(TA$NOM,1,17),substr(listeBADALLOCPDAL,1,17))
+    
+    nb=which(substr(TA$NOM,1,17) %in% commun)
+    
+    listSect=cbind("Ne rien faire","Supprimer LAZ","SupprimerBADALLOC")
+    nchoixZS = select.list(
+      listSect,
+      title = "Quefaire ATTENTION",
+      multiple = T,
+      graphics = T
+    )
+    nlalz = which(listSect %in% nchoixZS)
+    
+    if (length(which(nlalz==2))){unlink(file.path(dsnlayerTA,TA$DOSSIER,TA$NOM)[nb])}
+    if (length(which(nlalz==3))){unlink(file.path(dsnlayer,NomDirMNTTIN,racilayerTA,NomDossDalles,listeBADALLOCPDAL))}
   }
 }

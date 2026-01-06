@@ -41,7 +41,9 @@ if (length(n_int)>0)
       cl <- parallel::makeCluster(nb_proc)
       registerDoParallel(cl)
       
-      foreach(iLAZ = 1:dimTA1) %dopar% 
+      foreach(iLAZ = 1:dimTA1,
+              .combine = 'c',
+              .inorder = FALSE) %dopar% 
         {
           FILINO_03_01a_Job(iLAZ,TA[iLAZ,],dimTA1,NomLaz,reso,largdalle,paramXYTA,iTA,dsnTALidar,dsnlayer)
         }

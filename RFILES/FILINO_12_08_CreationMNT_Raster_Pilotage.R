@@ -19,7 +19,7 @@ if (length(n_int)>0)
   {
     for (idalle in 1:dim(TAHDCla)[1])
     {
-      TA_tmp=TA_TA_OLD[iLAZ,]
+      # TA_tmp=TAHDCla[idalle,]
       
       FILINO_12_08_CreationMNT_Raster_Job(idalle)
     }
@@ -29,7 +29,9 @@ if (length(n_int)>0)
     cl <- parallel::makeCluster(nb_proc)
     registerDoParallel(cl)
     
-    foreach(idalle = 1:dim(TAHDCla)[1]) %dopar% 
+    foreach(idalle = 1:dim(TAHDCla)[1],
+            .combine = 'c',
+            .inorder = FALSE) %dopar% 
       {
         FILINO_12_08_CreationMNT_Raster_Job(idalle)
       }

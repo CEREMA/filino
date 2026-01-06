@@ -1,5 +1,6 @@
 FILINO_11_07_Job=function(idalle,TA_Zone,NomDirMNTTIN,type,TA,TAPtsVirtu,listeMasq2,Masques2Mer)
 {
+  cat("\014") # Nettoyage de la console
   # print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
   racidalle=TA_Zone[idalle,]$NOM
   racidalle=substr(racidalle,1,nchar(racidalle)-4)  
@@ -64,7 +65,6 @@ FILINO_11_07_Job=function(idalle,TA_Zone,NomDirMNTTIN,type,TA,TAPtsVirtu,listeMa
   cat("Points Virtuels de FILINO\n")
   print(file.path(TAPtsVirtu[n_intVirt,]$DOSSIER,TAPtsVirtu[n_intVirt,]$NOM))
   write(file.path(basename(TAPtsVirtu[n_intVirt,]$DOSSIER),TAPtsVirtu[n_intVirt,]$NOM),NomTXT,append=T)
-  
   if (file.exists(NomTXT_old)==T)
   {
     
@@ -93,7 +93,7 @@ FILINO_11_07_Job=function(idalle,TA_Zone,NomDirMNTTIN,type,TA,TAPtsVirtu,listeMa
   if (Alancer==1 & file.exists(nomBADPDAL)==F)
   {
     #Regroupement des fichiers de points virtuels s'il y en a trop pour éviter l'erreur
-    
+    # browser()
     NbreFichierVirt=length(file.path(dsnlayer,TAPtsVirtu[n_intVirt,]$DOSSIER,TAPtsVirtu[n_intVirt,]$NOM))
     NomFichierVirt=file.path(dsnlayer,TAPtsVirtu[n_intVirt,]$DOSSIER,TAPtsVirtu[n_intVirt,]$NOM)
     if (NbreFichierVirt>nLimit)
@@ -137,6 +137,14 @@ FILINO_11_07_Job=function(idalle,TA_Zone,NomDirMNTTIN,type,TA,TAPtsVirtu,listeMa
     write("[",nomjson)
     
     ############### Import des fichiers Laz IGN
+    if (length(n_intHD)>1)
+    {
+      cat("Repositionnement des n° de dalles pour lire celle du milieu en dernier - A priori meilleure optimisation - 16/04/2025")
+      n_milieu=which(TA$NOM==paste0(racidalle,".laz"))
+      print(n_intHD)
+      n_intHD=c(n_intHD[-which(n_intHD==n_milieu)],n_milieu)
+      print(n_intHD)
+    }
     
     # for (NOMLAZ in file.path(TA[n_intHD,]$CHEMIN,TA[n_intHD,]$NOM))
     for (NOMLAZ in file.path(dsnlayerTA,TA[n_intHD,]$DOSSIER,TA[n_intHD,]$NOM))
@@ -147,27 +155,34 @@ FILINO_11_07_Job=function(idalle,TA_Zone,NomDirMNTTIN,type,TA,TAPtsVirtu,listeMa
       write(paste0("       ",shQuote("override_srs"),":",shQuote(paste0("EPSG:",nEPSG)),","),nomjson,append=T)
       write(paste0("       ",shQuote("nosrs"),":",shQuote("true")),nomjson,append=T)
       write("    },",nomjson,append=T)
-    } 
-    
-    ############## On ne garde que les classification sol, les 60 et + de 'IGN et 80 et plus du Cerema
-    write("    {",nomjson,append=T)
-    write(paste0("       ",shQuote("type"),":",shQuote("filters.range"),","),nomjson,append=T)
-    write(paste0("       ",shQuote("limits"),":",shQuote(ClassPourMNTTIN)),nomjson,append=T)
-    write("    },",nomjson,append=T)
-    
-    ############# Fusion des fichiers
-    if ((length(n_intHD)+length(n_intVirt))>1)
-    {
+      
+      # Modif 16/04/2025 pour optimiser les temps
+      # Teste manuellement utilise que 3/5 de la rame et met 3/5 de temps
+      # à se rappelelr, pdal vide sa rame lentement à la fin du calcul...
+      
+      ############## On ne garde que les classification sol, les 60 et + de 'IGN et 80 et plus du Cerema
       write("    {",nomjson,append=T)
-      write(paste0("       ",shQuote("type"),":",shQuote("filters.merge")),nomjson,append=T)
+      write(paste0("       ",shQuote("type"),":",shQuote("filters.range"),","),nomjson,append=T)
+      write(paste0("       ",shQuote("limits"),":",shQuote(ClassPourMNTTIN)),nomjson,append=T)
       write("    },",nomjson,append=T)
+      
+      if (NOMLAZ!= file.path(dsnlayerTA,TA[n_intHD,]$DOSSIER,TA[n_intHD,]$NOM)[length(n_intHD)])
+      {
+        ############# Découpage à 100m autour sauf pour celui du milieu
+        write("    {",nomjson,append=T)
+        write(paste0("       ",shQuote("type"),":",shQuote("filters.crop"),","),nomjson,append=T)
+        write(paste0("       ",shQuote("polygon"),":",shQuote(Polygon_Contour_CE)),nomjson,append=T)
+        write("    },",nomjson,append=T)
+      }
     }
     
-    ############# Découpage à 100m autour
-    write("    {",nomjson,append=T)
-    write(paste0("       ",shQuote("type"),":",shQuote("filters.crop"),","),nomjson,append=T)
-    write(paste0("       ",shQuote("polygon"),":",shQuote(Polygon_Contour_CE)),nomjson,append=T)
-    write("    },",nomjson,append=T)
+    # ############# Fusion des fichiers
+    # if ((length(n_intHD)+length(n_intVirt))>1)
+    # {
+    #   write("    {",nomjson,append=T)
+    #   write(paste0("       ",shQuote("type"),":",shQuote("filters.merge")),nomjson,append=T)
+    #   write("    },",nomjson,append=T)
+    # }
     
     ################ Import des fichiers Laz virtuels Cerema
     # for (NOMLAZ in file.path(TAPtsVirtu[n_intVirt,]$CHEMIN,TAPtsVirtu[n_intVirt,]$NOM))
@@ -232,6 +247,8 @@ FILINO_11_07_Job=function(idalle,TA_Zone,NomDirMNTTIN,type,TA,TAPtsVirtu,listeMa
     
     print(cmd);toto=system(cmd)
     
+    
+    
     if (file.exists(NomTIF)==F)
     { 
       write("VIDE",nomBADPDAL)
@@ -251,14 +268,14 @@ FILINO_11_07_Job=function(idalle,TA_Zone,NomDirMNTTIN,type,TA,TAPtsVirtu,listeMa
       {
         unlink(nomjson)
       }
-
+      
       # Gestion du bord de mer si nécesaire
       if (length(listeMasq2)>0)
       {
         if (dim(Masques2Mer)[1]>0)
         {
+          browser()
           nbMasq=st_intersects(Masques2Mer,TA_Zone[idalle,])
-          
           
           n_intMasq = which(sapply(nbMasq, length)>0)
           if (length(n_intMasq)>0)
@@ -273,7 +290,20 @@ FILINO_11_07_Job=function(idalle,TA_Zone,NomDirMNTTIN,type,TA,TAPtsVirtu,listeMa
             
             MasqMer=Masques2Mer[n_intMasq,]
             
-            nomType=file.path(dsnlayer,NomDirSurfEAU,racilayerTA,paste0(raciSurfEau,MasqMer$IdGlobal),"Type_Mer.txt")
+            TA_tmp=TApourFunc_RepSurfCoursEau(TA,MasqMer)
+            
+            # if (nrow(TA_tmp)>1)
+            # {
+            #   TA_tmp=st_intersection(TA_tmp,MasqMer)
+            #   Masques2Mer_tmp_Aire=st_area(Masques2Mer_tmp)
+            #   
+            #   n_intMasq=n_intMasq[which(Masques2Mer_tmp_Aire==max(Masques2Mer_tmp_Aire))]
+            # }
+            
+            # nomType=file.path(dsnlayer,NomDirSurfEAU,racilayerTA,paste0(raciSurfEau,MasqMer$IdGlobal),"Type_Mer.txt")
+            rep_SURFEAU=Func_RepSurfCoursEau(st_bbox(MasqMer),TA_tmp$NOM,dsnlayer,NomDirSurfEAU,racilayerTA,raciSurfEau)
+            nomType=file.path(rep_SURFEAU,paste0(raciSurfEau,MasqMer$IdGlobal),"Type_Mer.txt")
+            
             nomType=nomType[file.exists(nomType)==T]
             if (length(nomType)>0)
             {
@@ -332,24 +362,26 @@ FILINO_11_07_Job=function(idalle,TA_Zone,NomDirMNTTIN,type,TA,TAPtsVirtu,listeMa
       
     }
     
-    Boite=st_bbox(TA_Zone[idalle,1])
-    Boite_tmp=Boite/reso
-    Boite_tmp[1]=reso*floor(Boite_tmp[1])
-    Boite_tmp[2]=reso*floor(Boite_tmp[2])
-    Boite_tmp[3]=reso*ceiling(Boite_tmp[3])
-    Boite_tmp[4]=reso*ceiling(Boite_tmp[4])
-    Boite=Boite_tmp
-    
-    #Creation d'un monde GRASS
-    SecteurGRASS=paste0(dirname(SecteurGRASS_),"_",idalle,"_",format(Sys.time(),format="%Y%m%d_%H%M%S"),"/",basename(SecteurGRASS_))
-    system(paste0(BatGRASS," -c EPSG:",nEPSG," ",dirname(SecteurGRASS)," --text"))
-    system(paste0(BatGRASS," -c ",SecteurGRASS," --text"))
-    
-    # source(file.path(chem_routine,"FILINO_11_07_CreationMNT_TIN_Grass.R"),encoding = "utf-8")
-    FILINO_7_CreationMNT_Grass_Boite_et_Cuvettes(NomTIF,NomGPKG,NomMNTFill,NomMNTCuv,Boite,reso,SecteurGRASS)
-    
-    unlink(dirname(SecteurGRASS),recursive=TRUE)
-    
+    if (file.exists(NomTIF)==T)
+    {
+      Boite=st_bbox(TA_Zone[idalle,1])
+      Boite_tmp=Boite/reso
+      Boite_tmp[1]=reso*floor(Boite_tmp[1])
+      Boite_tmp[2]=reso*floor(Boite_tmp[2])
+      Boite_tmp[3]=reso*ceiling(Boite_tmp[3])
+      Boite_tmp[4]=reso*ceiling(Boite_tmp[4])
+      Boite=Boite_tmp
+      
+      #Creation d'un monde GRASS
+      SecteurGRASS=paste0(dirname(SecteurGRASS_),"_",idalle,"_",format(Sys.time(),format="%Y%m%d_%H%M%S"),"/",basename(SecteurGRASS_))
+      system(paste0(BatGRASS," -c EPSG:",nEPSG," ",dirname(SecteurGRASS)," --text"))
+      system(paste0(BatGRASS," -c ",SecteurGRASS," --text"))
+      
+      # source(file.path(chem_routine,"FILINO_11_07_CreationMNT_TIN_Grass.R"),encoding = "utf-8")
+      FILINO_7_CreationMNT_Grass_Boite_et_Cuvettes(NomTIF,NomGPKG,NomMNTFill,NomMNTCuv,Boite,reso,SecteurGRASS)
+      
+      unlink(dirname(SecteurGRASS),recursive=TRUE)
+    }
     # ConvertGPKG(NomTIF,0)
     unlink(NomTIF)
     unlink(NomMNTFill)

@@ -24,7 +24,7 @@ FILINO1a_Vide_Grass =   function(iLAZ,NomLaz,nom_Rast_INV_VIDEetEAU,nom_RastEAU,
     # Limitation de la région de travail et gestion de la résolution
     cmd=paste0("g.region --quiet --overwrite raster=",nomMNT," n=",Nord," s=",Sud," e=",Est," w=",Ouest," res=",as.character(reso))
     print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
-    
+
     # Test pour voir si tout s'est bien passé, certaines dalles rendent des NULL...
     NomUnivar=file.path(dsnlayer,paste0(raci,"_runivarE1.txt"))
     cmd=paste0("r.univar --quiet --overwrite map=",nomMNT," output=",NomUnivar)

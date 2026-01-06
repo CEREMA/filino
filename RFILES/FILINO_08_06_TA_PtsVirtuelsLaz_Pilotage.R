@@ -4,12 +4,20 @@ source(file.path(chem_routine,"FILINO_08_06_TA_PtsVirtuelsLaz.R"),encoding = "ut
 cat("\014")
 cat("FILINO_10_06_TA_PtsVirtuelsLaz.R\n")
 cat(" Liste des fichiers _PtsVirt_copc.laz\n")
-cat("Parfois long...\n")
-listeLazVirt=list.files(dsnlayer,pattern="_PtsVirt.copc.laz",recursive = T)
 
-# Récupération que des nom des dossiers en cours de travail
-listeLazVirt=listeLazVirt[c(which(dirname(dirname(dirname(listeLazVirt)))==NomDirSurfEAU),
-which(dirname(dirname(dirname(listeLazVirt)))==nomDirViSOLssVEGE))]
+# listeLazVirt=list.files(dsnlayer,pattern="_PtsVirt.copc.laz",recursive = T)
+
+listeVirt=function(dsnlayer,SousDir)
+{
+
+  cat(paste0("Analyse ",SousDir," - Parfois long...\n"))
+  listeLazVirt=list.files(file.path(dsnlayer,SousDir),pattern="_PtsVirt.copc.laz",recursive = T)
+  listeLazVirt=file.path(SousDir,listeLazVirt)
+}
+listeLazVirtl=list()
+listeLazVirtl[[1]]=data.frame(liste=listeVirt(dsnlayer,NomDirSurfEAU))
+listeLazVirtl[[2]]=data.frame(liste=listeVirt(dsnlayer,nomDirViSOLssVEGE))
+listeLazVirt=do.call(rbind,listeLazVirtl)
 
 listeLazVirt_tmp=listeLazVirt[grep(listeLazVirt,pattern=racilayerTA)]
 ici=grep(listeLazVirt_tmp,pattern="old")
@@ -18,10 +26,10 @@ if (length(ici)>0){listeLazVirt_tmp=listeLazVirt_tmp[-ici]}
 ici=grep(listeLazVirt_tmp,pattern=paste0("/",racilayerTA,"/"))
 if (length(ici)>0){listeLazVirt_tmp=listeLazVirt_tmp[ici]}else{listeLazVirt_tmp=NULL}
 
+#Bidouille pour changer le data frame en qqch de mieux...
+listeLazVirt_tmp=listeLazVirt_tmp[1:nrow(listeLazVirt_tmp),]
 cat("Nombre de fichiers trouves",length(listeLazVirt_tmp),"\n")
 
-
-# listeLazVirt_tmp=listeLazVirt_tmp[1:50]
 if (length(listeLazVirt_tmp)>0)
 {
   Res=list()
@@ -45,6 +53,7 @@ if (length(listeLazVirt_tmp)>0)
     cl <- parallel::makeCluster(nb_proc)
     registerDoParallel(cl)
     foreach(iLAZ=1:length(listeLazVirt_tmp),
+            .combine = 'c',
             .packages = c("rjson","sf"))  %dopar% 
       {
         Res[[iLAZ]]=FILINO_08_06_TA_PtsVirtuelsLaz_Job(iLAZ,listeLazVirt_tmp[iLAZ],nb_proc)
