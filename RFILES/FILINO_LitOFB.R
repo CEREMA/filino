@@ -16,7 +16,6 @@ FILINO_LitOFB=function(cdstationhydro,date_mesure,dt,AltProche)
   library(dplyr)
   library(rjson)
   
-  
   # Liste des URL des fichiers TAR et leurs plages de lettres associées
   folder_path="C:/AFFAIRES/INRAE/Hydrometrie"
   
@@ -103,6 +102,12 @@ FILINO_LitOFB=function(cdstationhydro,date_mesure,dt,AltProche)
     # 6. Déterminer l'année de la date de mesure
     date_time <- ymd_hms(date_mesure[1])
     year <- year(date_time)
+    
+    if (is.na(year)==T)
+    {
+      cat("bugdedatemettre00:00:01")
+      browser()
+    }
     
     # 5. Lister les fichiers CSV compressés dans le dossier de la station
     # csv_files <- list.files(station_folder, pattern = "\\d{4}_H.csv.gz$", full.names = TRUE)
@@ -281,7 +286,7 @@ FILINO_LitOFB=function(cdstationhydro,date_mesure,dt,AltProche)
       # date_mesure <- lubridate::ymd_hms(date_mesure)
       # hydro_filtered_data <- hydro_data %>%
       #   filter(dtmesure >= (date_mesure[1] - dt) & dtmesure <= (date_mesure[2] + dt))
-
+      
       nmoins=which(hydro_data$dtmesure<=ymd_hms(date_mesure[1]) - dt);nmoins=nmoins[length(nmoins)]
       nplus =which(hydro_data$dtmesure>=ymd_hms(date_mesure[2]) + dt);nplus =nplus[1]
       if (is.na(nmoins)==T | is.na(nplus)==T)

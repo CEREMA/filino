@@ -62,7 +62,7 @@ paramTALidar=as.data.frame(rbind(
 colnames(paramTALidar)=cbind("Lancement","DossLAZ","NomTALAZ","Reso","NbreCaratere","Xdeb","Xfin","Ydeb","Yfin","COPC")
 
 #------------------------------------- Paramètres FILINO_01_00b_DownloadSiteIGN.R ------------------------------------------------------
-nomTA_SiteIGN=file.path("0_0_TA_IGN_7z","ignf_lidarhd_tanuagedalle.gpkg")
+nomTA_SiteIGN=file.path("0_0_TA_IGN_7z","TA_Lidar20260105_161941_IGN.gpkg")
 # à mettre dans le répertoire défini dans paramTALidar où vous souhaitez mettre vos données LidarHD
 
 #------------------------------------- Paramètres FILINO_04_01b_MasqueEau.R ------------------------------------------------------
@@ -88,6 +88,11 @@ paramTARaster=as.data.frame(rbind(
   cbind(0,file.path(dsnlayer,nomDirViSOLssVEGE) ,"TA_VegeTropDense.shp"      ,"VegeTropDense.gpkg$",9,12,14,17),
   
   cbind(1,file.path(dsnlayer,NomDirMNTTIN_F)    ,"TA_TIN_Filino.shp"         ,"TIN_Filino.gpkg$",9,12,14,17),
+  cbind(1,"C:\\Cartino2D\\France\\_Strickler","TA_Strickler_MTP20240705.gpkg"            ,".gpkg$",11,14,16,19),
+  cbind(1,"J:\\MAMP\\06b_MNTTIN_FILINO_L3D","TA_TIN_Filino_L3D.shp"         ,".gpkg$",25,28,30,33),
+  cbind(1,"J:\\MAMP\\06c_MNTTIN_FILINO_L3D_PT","TA_TIN_Filino_L3D_PT.shp"         ,".gpkg$",25,28,30,33),
+  cbind(1,"J:\\MAMP\\06d_MNTTIN_FILINO_L3D_PT_PRC","TA_TIN_Filino_L3D_PT_PRC.shp"         ,".gpkg$",25,28,30,33),
+  cbind(1,"J:\\MAMP\\06e_MNTTIN_FILINO_L3D_PT_PRC_0","TA_TIN_Filino_L3D_PT_PRC_0.shp"         ,".gpkg$",25,28,30,33),
   cbind(1,file.path(dsnlayer,NomDirMNTTIN_F)    ,"TA_TIN_Filino_Cuvettes.shp","TIN_Filino_cuvettes.gpkg$",9,12,14,17),
   
   cbind(1,file.path(dsnlayer,NomDirMNTTIN_D)    ,"TA_TIN_Direct.shp"         ,"TIN_Direct.gpkg$",9,12,14,17),
@@ -111,7 +116,8 @@ paramTARaster=as.data.frame(rbind(
   cbind(1,"C:\\Cartino2D\\France\\_Strickler","TA_Strickler_MTP20240705.gpkg"            ,".gpkg$",11,14,16,19),
   cbind(1,"C:\\Cartino2D\\France\\_Strickler\\CNIR","TA_CN_CNIR.gpkg"            ,".gpkg$",6,9,11,14),
   cbind(1,"C:\\Cartino2D\\France\\_MNT\\MAMP_2024","TA_MNTC2D_MAMP2024.gpkg"   ,".gpkg$",17,20,22,25),
-  cbind(1,"G:\\MNT_Frontaliers\\Allemagne\\Rhenanie_Palatinat","TA_Allemagne_RLP.gpkg",".tif$",10,12,14,17),
+  cbind(1,"C:\\Cartino2D\\France\\_Strickler\\EAIM\\Strickler\\_Reso025","TA_Strickler_Reso025.gpkg",".gpkg$",11,14,16,19),
+    cbind(1,"G:\\MNT_Frontaliers\\Allemagne\\Rhenanie_Palatinat","TA_Allemagne_RLP.gpkg",".tif$",10,12,14,17),
   cbind(1,"G:\\MNT_Frontaliers\\Allemagne\\Baden_Wurttemberg\\Dalles","TA_Allemagne_BW_XYZ.gpkg",".xyz$",9,11,13,16),
   cbind(1,"G:\\MNT_Frontaliers\\Allemagne\\Baden_Wurttemberg\\DallesGPKG","TA_Allemagne_BW_GPKG.gpkg",".gpkg$",9,11,13,16),
   cbind(1,"G:\\MNT_Frontaliers\\Suisse","TA_Suisse.gpkg",".tif$",4,1,4,0),

@@ -1,6 +1,6 @@
 FILINO1a_Vege_Grass=function(iLAZ,NomLaz,nom_RastTSF,nom_Rast_VEGE,SecteurGRASS,Nord,Sud,Est,Ouest)
 {
-
+  
   raci=gsub(".copc","_copc",paste0(substr(NomLaz,1,nchar(NomLaz)-4)))
   # Récupération du raster, création d'un masque inversé et export en adoicissant les bords.
   nomMNT_Reste=paste0("MNT_ToutSaufVege",iLAZ)
@@ -16,12 +16,18 @@ FILINO1a_Vege_Grass=function(iLAZ,NomLaz,nom_RastTSF,nom_Rast_VEGE,SecteurGRASS,
     print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
     
     # Test pour voir si tout s'est bien passé, certaines dalles rendent des NULL...
-    NomUnivar=file.path(dsnlayer,paste0(raci,"_runivarv1.txt"))
-    cmd=paste0("r.univar --quiet --overwrite map=",nomMNT_Vege," output=",NomUnivar)
-    print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
+    # NomUnivar=file.path(dsnlayer,paste0(raci,"_runivarv1.txt"))
+    # cmd=paste0("r.univar --quiet --overwrite map=",nomMNT_Vege," output=",NomUnivar)
+    # print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
+    #     nvaleur=as.numeric(scan(file=NomUnivar,NomUnivar,sep=":",skip=5,nlines=1,dec=".")[2])
+    # unlink(NomUnivar)
+    cmd=paste0("r.univar --quiet --overwrite map=",nomMNT_Vege)
+    print(cmd);toto=system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd),intern=T)
+    nlig=grep(toto,pattern="n: ")[1]
+    nvaleur=as.numeric(strsplit(toto[nlig],":")[[1]][2])
+    cat(toto[nlig],"\n")
+    cat("Nombre de valeur: ",nvaleur, "\n")
     
-    nvaleur=as.numeric(scan(file=NomUnivar,NomUnivar,sep=":",skip=5,nlines=1,dec=".")[2])
-    unlink(NomUnivar)
     # S'il y a plus d'une valeur non nulle...
     if (nvaleur>0)
     {
@@ -75,11 +81,17 @@ FILINO1a_Vege_Grass=function(iLAZ,NomLaz,nom_RastTSF,nom_Rast_VEGE,SecteurGRASS,
       FILINO_Creat_Dir(dir_tmp_)
       
       # Test pour voir s'il y a des zones sinon on crée un fichier vide
-      NomUnivar=file.path(dsnlayer,paste0(raci,"_runivarv2.txt"))
-      cmd=paste0("r.univar --quiet --overwrite map=",nomMNT_VegeMasque," output=",NomUnivar)
-      print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
-      nvaleur=as.numeric(scan(file=NomUnivar,NomUnivar,sep=":",skip=5,nlines=1,dec=".")[2])
-      unlink(NomUnivar)
+      # NomUnivar=file.path(dsnlayer,paste0(raci,"_runivarv2.txt"))
+      # cmd=paste0("r.univar --quiet --overwrite map=",nomMNT_VegeMasque," output=",NomUnivar)
+      # print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
+      # nvaleur=as.numeric(scan(file=NomUnivar,NomUnivar,sep=":",skip=5,nlines=1,dec=".")[2])
+      # unlink(NomUnivar)
+      cmd=paste0("r.univar --quiet --overwrite map=",nomMNT_VegeMasque)
+      print(cmd);toto=system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd),intern=T)
+      nlig=grep(toto,pattern="n: ")[1]
+      nvaleur=as.numeric(strsplit(toto[nlig],":")[[1]][2])
+      cat(toto[nlig],"\n")
+      cat("Nombre de valeur: ",nvaleur, "\n")
       
       nommasqueveget=file.path(dsnlayer,NomDirMasqueVEGE,racilayerTA,NomDossDalles,nom_masque_gpkg)
       if (nvaleur>0)

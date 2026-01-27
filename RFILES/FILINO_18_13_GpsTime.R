@@ -48,7 +48,7 @@ FILINO_18_13_GpsTime_Job=function(idalle,TA_)
       cat("---------------------------------------------\n")
       cat("PDAL ",basename(NomLaz)," GpsTime ",nom_method,"\n")
       toto=system(cmd)
-
+      
       # Test pour voir si Pdal passe, si ce n'est pas le cas, grande chance que le fichier soit corrompu
       if (toto!=0){file.create(paste0(nominput,"BUG"))}
       

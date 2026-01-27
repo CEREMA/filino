@@ -9,7 +9,7 @@ cat(" Liste des fichiers _PtsVirt_copc.laz\n")
 
 listeVirt=function(dsnlayer,SousDir)
 {
-
+  
   cat(paste0("Analyse ",SousDir," - Parfois long...\n"))
   listeLazVirt=list.files(file.path(dsnlayer,SousDir),pattern="_PtsVirt.copc.laz",recursive = T)
   listeLazVirt=file.path(SousDir,listeLazVirt)
@@ -69,7 +69,7 @@ if (length(listeLazVirt_tmp)>0)
   }
   
   # TA=do.call(rbind,Res)
-
+  
   st_write(TA,file.path(dsnlayer,paste0(racilayerTA,"_PtsVirt.shp")), delete_layer=T, quiet=T)
   file.copy(file.path(dsnlayer,NomDirSIGBase,"TA_ACTION_LAZ.qml"),
             file.path(dsnlayer,paste0(racilayerTA,"_PtsVirt.qml")),

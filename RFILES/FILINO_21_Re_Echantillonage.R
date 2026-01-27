@@ -152,12 +152,17 @@ FILINO_21_Job=function(idalle,TA_Rast_Zone,ResoNew,SecteurGRASS_,nEPSG,dsnTApRe)
         print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
         
         # Test pour voir les dalles avec du vide
-        cmd=paste0("r.univar --quiet --overwrite map=",nomMNTg," output=",NomUnivar)
-        print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
+        # cmd=paste0("r.univar --quiet --overwrite map=",nomMNTg," output=",NomUnivar)
+        # print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
+        # nvaleur=as.numeric(scan(file=NomUnivar,NomUnivar,sep=":",skip=5,nlines=1,dec=".")[2])
+        # unlink(NomUnivar)
+        cmd=paste0("r.univar --quiet --overwrite map=",nomMNTg)
+        print(cmd);toto=system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd),intern=T)
+        nlig=grep(toto,pattern="n: ")[1]
+        nvaleur=as.numeric(strsplit(toto[nlig],":")[[1]][2])
+        cat(toto[nlig],"\n")
+        cat("Nombre de valeur: ",nvaleur, "\n")
         
-        nvaleur=as.numeric(scan(file=NomUnivar,NomUnivar,sep=":",skip=5,nlines=1,dec=".")[2])
-        
-        unlink(NomUnivar)
         
         if (nvaleur>0)
         {
@@ -212,11 +217,18 @@ FILINO_21_Job=function(idalle,TA_Rast_Zone,ResoNew,SecteurGRASS_,nEPSG,dsnTApRe)
             print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
             
             # Test pour voir les dalles avec du vide
-            cmd=paste0("r.univar --quiet --overwrite map=",nomMing," output=",NomUnivar)
-            print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
-            Mini=as.numeric(scan(file=NomUnivar,NomUnivar,sep=":",skip=6,nlines=1,dec=".")[2])
-            print(Mini)
-            unlink(NomUnivar)
+            # cmd=paste0("r.univar --quiet --overwrite map=",nomMing," output=",NomUnivar)
+            # print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
+            # Mini=as.numeric(scan(file=NomUnivar,NomUnivar,sep=":",skip=6,nlines=1,dec=".")[2])
+            # print(Mini)
+            # unlink(NomUnivar)
+            cmd=paste0("r.univar --quiet --overwrite map=",nomMNT)
+            print(cmd);toto=system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd),intern=T)
+            nlig=grep(toto,pattern="minimum: ")[1]
+            Mini=as.numeric(strsplit(toto[nlig],":")[[1]][2])
+            cat(toto[nlig],"\n")
+            cat("Minimum: ",Mini, "\n")
+            
             
             # Création de la couche des vides au niveau minimal
             nomComble="Comble"

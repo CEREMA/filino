@@ -1,3 +1,5 @@
+# Routine pour sélectionner les stations de la banque hydro qui intersecte des surfaces en eau de la BDTopo
+
 library(sf)
 
 cat("\014")
@@ -23,7 +25,6 @@ source(file.path(chem_routine,listSect), encoding="utf-8")
 # Ancienne maniere 23/04/2025 source(file.path(chem_routine,"FILINO__User_Chemin_et_Nom.R"))
 
 source(file.path(chem_routine,"FILINO_Utils.R"))
-
 
 
 ###############################################################################
@@ -120,9 +121,3 @@ surfhydro_=st_intersection(surfhydro_,BufStations)
 
 # export de la zone d'intérêt
 st_write(surfhydro_,file.path(dsnlayer,nomDirHYDROMETRIE,"surfhydro_tmp.gpkg"),delete_layer=T, quiet=T)
-
-
-
-
-
-

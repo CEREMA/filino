@@ -15,7 +15,7 @@ library(png)
 library(foreach)
 library(doParallel)
 library(raster)
-library(ggrepel)
+# library(purrr)
 
 cat("\014") # Nettoyage de la console
 
@@ -35,6 +35,16 @@ if (length(listSect)>1)
   nlal = which(listSect %in% nchoixZS)
   listSect=listSect[nlal]
 }
+
+cat("#-----------------------------------------------------------------------------------\n")
+cat("Si vous n'arrivez pas à disposer de la table d'assemblage des dalles de points Lidar HD IGN\n")
+cat("disponible avec \n")
+cat("lien WFS: https://data.geopf.fr/wfs/ows?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetCapabilities\n")
+cat("Couche: IGNF_NUAGES-DE-POINTS-LIDAR-HD:dalle\n")
+cat("\n")
+cat("Vous pouvez utiliser manuellement la routine: FILINO_Charge_WFS.R\n")
+cat("#-----------------------------------------------------------------------------------\n")
+
 cat("FILINO__User_Chemin_et_Nom choisi: ",listSect,"\n")
 source(file.path(chem_routine,listSect), encoding="utf-8")
 # Ancienne maniere 23/04/2025 source(file.path(chem_routine,"FILINO__User_Chemin_et_Nom.R"))

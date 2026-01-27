@@ -1,6 +1,5 @@
 FILINO_7_CreationMNT_Grass_Mer = function(NomTIF,Val,reso,SecteurGRASS,nomMasques2T,racidalle_,nomType,BoiteBuf_tmp)
 {
-  browser()
   # Suppression du masque (s'il existe)
   cmd=paste0("r.mask -r")
   print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
@@ -135,7 +134,7 @@ FILINO_7_CreationMNT_Grass_Mer = function(NomTIF,Val,reso,SecteurGRASS,nomMasque
   Masque2F="Masque2F"
   cmd=paste0("v.in.ogr  -o --quiet --overwrite input=",nomM2_FILINO_Mer," output=",Masque2F," -r")
   print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
-
+  
   nomM1=file.path(dsnlayer, NomDirMasqueVIDE, racilayerTA, "Dalles",paste0(racidalle_,"_Masque1.gpkg"))
   Masque1P="Masque1Poly"
   Masque1P_2="Masque1Poly_2"

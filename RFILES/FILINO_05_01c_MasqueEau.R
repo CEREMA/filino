@@ -478,7 +478,6 @@ if (Opt_Manuel==1)
           
           cat("les masques de ",file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("M2_et_M2Seuil_RecupManu","Coupe",".gpkg"))," \n")
           cat("touchent plusieurs de vos zones ",file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("ManueltouchetropMasques2",".gpkg"))," \n")
-          browser()
           BOOM=BOOOM
         }else{
           M2_et_M2Seuil_RecupManu=rbind(M2_et_M2Seuil_RecupManu[-n_intMC,1],Masques2troptouche)

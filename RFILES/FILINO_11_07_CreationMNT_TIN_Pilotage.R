@@ -60,9 +60,9 @@ for (iTypeTIN in nTypeTIN)
       foreach(idalle = 1:dim(TA_Zone)[1],
               .combine = 'c',
               .packages = c("sf")
-              )%dopar% 
-              # ,
-              # .inorder = FALSE) %dopar% 
+      )%dopar% 
+        # ,
+        # .inorder = FALSE) %dopar% 
         
         {
           FILINO_11_07_Job(idalle,TA_Zone,NomDirMNTTIN,type,TA,TAPtsVirtu,listeMasq2,Masques2Mer)

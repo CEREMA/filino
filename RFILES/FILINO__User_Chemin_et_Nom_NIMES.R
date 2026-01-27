@@ -29,7 +29,7 @@ nEPSG = 2154
 SecteurGRASS_="C:/GRASSDATA/FILINO/Temp" # Creation automatique
 
 # Repertoire de travail
-dsnlayer="J:/NIMES"
+dsnlayer="D:/FILINO_Nimes"
 # dsnlayer="C:/FILINO_Travail_NH"
 
 # Zones a traiter à mettre dans le répertoire dsnlayer
@@ -40,15 +40,11 @@ NomDirSIGBase ="00_SIGBase" # à mettre dans le répertoire dsnlayer
 # Repertoire de la BDTopo
 dsnDepartement="G:/BDTopo"
 
-
-
-
-
 paramTALidar=as.data.frame(rbind(
-  cbind(1,"D:/LidarHD_DC"                       ,"TA_HD.shp"                 ,0.5,41, 9,12,14,17,1),
-  cbind(0,"F:/LidarHD_DC"                       ,"TA_HD_surF.shp"            ,0.5,41, 9,12,14,17,1),
-  cbind(0,"E:/VieuxLidarIGN_SMMAR_test"         ,"TA_4_1_4_FP_TestSMMAR.gpkg",1  , 0, 4, 1, 4, 0,0), #le 4 1 4  correspond à la recherche de 4 chiffres pour les X, un saut de 1 caractère et 4 chiffres pour les Y
-  cbind(0,"E:/VieuxLidarIGN_Orb"         ,"TA_4_1_4_IR_Orb.gpkg"      ,1  , 0, 4, 1, 4, 0,0) #le 4 1 4  correspond à la recherche de 4 chiffres pour les X, un saut de 1 caractère et 4 chiffres pour les Y
+  cbind(1,"H:/LidarHD_DC"                       ,"TA_HD.shp"                 ,0.5,41, 9,12,14,17,1)
+  # cbind(0,"F:/LidarHD_DC"                       ,"TA_HD_surF.shp"            ,0.5,41, 9,12,14,17,1),
+  # cbind(0,"E:/VieuxLidarIGN_SMMAR_test"         ,"TA_4_1_4_FP_TestSMMAR.gpkg",1  , 0, 4, 1, 4, 0,0), #le 4 1 4  correspond à la recherche de 4 chiffres pour les X, un saut de 1 caractère et 4 chiffres pour les Y
+  # cbind(0,"E:/VieuxLidarIGN_Orb"         ,"TA_4_1_4_IR_Orb.gpkg"      ,1  , 0, 4, 1, 4, 0,0) #le 4 1 4  correspond à la recherche de 4 chiffres pour les X, un saut de 1 caractère et 4 chiffres pour les Y
 ))
 #le 4 1 4  correspond à la recherche de 4 chiffres pour les X, un saut de 1 caractère et 4 chiffres pour les Y
 #ceci a été fait pour la gestion de divers chantiers lidar historique IGN
@@ -61,8 +57,19 @@ paramTALidar=as.data.frame(rbind(
 colnames(paramTALidar)=cbind("Lancement","DossLAZ","NomTALAZ","Reso","NbreCaratere","Xdeb","Xfin","Ydeb","Yfin","COPC")
 
 #------------------------------------- Paramètres FILINO_01_00b_DownloadSiteIGN.R ------------------------------------------------------
-nomTA_SiteIGN=file.path("0_0_TA_IGN_7z","ignf_lidarhd_tanuagedalle.gpkg")
+nomTA_SiteIGN=file.path("0_0_TA_IGN_7z","TA_Lidar20260105_161941_IGN.gpkg")
 # à mettre dans le répertoire défini dans paramTALidar où vous souhaitez mettre vos données LidarHD
+
+#------------------------------------- Paramètres FILINO_02_00c_TablesAssemblagesLazIGN.R -----------------------------------------
+# QGIS Calul du nombre de points parfois long si fichier LAZ
+# 1 oui
+# 0 Non
+CalcNptsLAZ=1
+# PDAL calcul du nombre de pixels par dalles si fichier RASTER
+CalcPixel=0
+# 1 oui
+# 0 Non
+
 
 #------------------------------------- Paramètres FILINO_04_01b_MasqueEau.R ------------------------------------------------------
 nomZICAD=        file.path(dsnlayer,NomDirSIGBase,"Arrete_ZICAD_01-2023.kml")

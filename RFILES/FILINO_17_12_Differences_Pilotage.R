@@ -22,7 +22,7 @@ if (length(n_int)>0)
   if (length(n_int)>0)
   {
     TA1_=TA1[n_int,]
-   
+    
     if(nb_proc==0)
     {
       for (idalle in 1:dim(TA2_)[1])
@@ -41,7 +41,7 @@ if (length(n_int)>0)
         {
           FILINO_17_12_Job(idalle,nomTA1_,nomTA2_,TA1,TA2_[idalle,],nCalcDiff)
         }
-
+      
       stopCluster(cl)
     }
   }

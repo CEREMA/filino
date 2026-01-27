@@ -166,7 +166,7 @@ FILINO_06_02c_creatPtsVirtuels=function(nomcsv,rep_COURSEAU,Cas,raci_exp,nomPtsV
                     dt=3600
                     
                     listeOFB=FILINO_LitOFB(StHydro_$CdStationHydro[isth],c(GpsTimeSummary$MinDateTime[iGpstime],GpsTimeSummary$MaxDateTime[iGpstime]),3600,mean(PtsCSV_sf$Z))
-                     ZeroEchelle=listeOFB[[1]]
+                    ZeroEchelle=listeOFB[[1]]
                     cat("ZeroEchelle=",ZeroEchelle,"\n")
                     hydro_data=listeOFB[[2]]
                     # browser()
@@ -181,7 +181,7 @@ FILINO_06_02c_creatPtsVirtuels=function(nomcsv,rep_COURSEAU,Cas,raci_exp,nomPtsV
                     if (length(hydro_data)>1)
                     {
                       incStHl=incStHl+1
-                     
+                      
                       resultat <- hydro_data %>%
                         summarise(
                           min_dtmesure = min(dtmesure, na.rm = TRUE),
@@ -216,7 +216,7 @@ FILINO_06_02c_creatPtsVirtuels=function(nomcsv,rep_COURSEAU,Cas,raci_exp,nomPtsV
                 }
               }
             }
-
+            
             ################################################################
             # s'il y a une classification sol
             if (length(which(sort(as.numeric(unique(PtsCSV$Classification)))==2)))
@@ -677,7 +677,7 @@ FILINO_06_02c_creatPtsVirtuels=function(nomcsv,rep_COURSEAU,Cas,raci_exp,nomPtsV
                     axis.ticks.y = element_blank(),  # Supprime les ticks à gauche
                     axis.text.y.right = element_text()  # Affiche les valeurs de l'axe y à droite
                   )
-                  
+                
                 # }
                 # Conversion des dates
                 debGpsTimeLidar <- "14/09/2011 00:00:00"
@@ -738,7 +738,7 @@ FILINO_06_02c_creatPtsVirtuels=function(nomcsv,rep_COURSEAU,Cas,raci_exp,nomPtsV
               } 
               dev.off()
               cat("Le plot est fini","\n")
-
+              
               PtsVirtuels_sf=st_cast(st_cast(st_cast(st_segmentize(Masque1,1.01*reso),"MULTILINESTRING"),"LINESTRING"),"POINT")
               PtsVirtuels_sf$balayage=st_nearest_feature(PtsVirtuels_sf,trhydro_Pts[Rives$balayage,])
               PtsVirtuels_sf$Z=Rives$Rives_1_et_2[PtsVirtuels_sf$balayage]

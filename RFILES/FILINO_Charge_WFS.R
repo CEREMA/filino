@@ -5,6 +5,9 @@ library(sf)
 # URL GetCapabilities
 url <- "https://data.geopf.fr/wfs/ows?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetCapabilities"
 
+# layer_names[490]
+layer_name <- "IGNF_NUAGES-DE-POINTS-LIDAR-HD:dalle"
+
 # Export
 dsnexport="C:\\StockageLIDAR\\TA_IGN_WFS\\TA_Lidar"
 
@@ -24,9 +27,6 @@ print(layers)
 
 layer_names <- xml2::xml_text(layers)
 print(layer_names)
-
-# layer_names[490]
-layer_name <- "IGNF_NUAGES-DE-POINTS-LIDAR-HD:dalle"
 
 wfs_dsn <- "WFS:https://data.geopf.fr/wfs/ows"
 dalles_lidar <- st_read(

@@ -19,7 +19,7 @@ FILINO_17_12_Job=function(idalle,nomTA1,nomTA2,TA1,TA2,nCalcDiff)
     if (nCalcDiff[2]==0 & nCalcDiff[3]==1){Signe="<"}
     if (nCalcDiff[2]==1 & nCalcDiff[3]==1){Signe=c(">","<")}
     if (nCalcDiff[1]==1){Signe="<"}
-
+    
     nomMNTb   =file.path(dirname(nomTA2)[1],TA2$DOSSIERASC,TA2$NOM_ASC)
     listMNTa  =file.path(dirname(nomTA1),TA1$DOSSIERASC,TA1$NOM_ASC)
     nomMNTa=file.path(dsnlayer,NomDIFF,NomDossDalles,paste0(strsplit(basename(nomMNTb),"\\.")[[1]][1],"pourcompa.vrt"))

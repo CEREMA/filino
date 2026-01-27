@@ -274,7 +274,6 @@ FILINO_11_07_Job=function(idalle,TA_Zone,NomDirMNTTIN,type,TA,TAPtsVirtu,listeMa
       {
         if (dim(Masques2Mer)[1]>0)
         {
-          browser()
           nbMasq=st_intersects(Masques2Mer,TA_Zone[idalle,])
           
           n_intMasq = which(sapply(nbMasq, length)>0)

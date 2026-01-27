@@ -15,12 +15,12 @@ nombase=basename(listDossFILINO)
 CasAbs=0
 if (CasAbs==1)
 {
-Absc=as.numeric(substr(nombase,9,12))
-nb=which(is.na(Absc)==F)
-Absc=Absc[nb]
-listDossFILINO=listDossFILINO[nb]
-nb=which(Absc>768)
-listDossFILINO=listDossFILINO[nb]
+  Absc=as.numeric(substr(nombase,9,12))
+  nb=which(is.na(Absc)==F)
+  Absc=Absc[nb]
+  listDossFILINO=listDossFILINO[nb]
+  nb=which(Absc>768)
+  listDossFILINO=listDossFILINO[nb]
 }
 
 ############################################

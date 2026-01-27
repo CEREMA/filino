@@ -46,7 +46,7 @@ if (length(n_int)>0)
     cat("\014")
     cat("FILINO_04_01b_MasqueEau.R - Etap1b[1]\n")
     Masques1brut=FILINO_FusionMasque(NomDirMasqueVIDE,TA,"Masque",1)
- 
+    
     # Ajout 25/09/2025 pour diminuer l'emrpise des masques sur les bords surtout en mer
     # st_differnce peut être mis en qgis au besoin
     Masques1=st_difference(Masques1brut,TA_UnionBuf)
@@ -55,7 +55,7 @@ if (length(n_int)>0)
     Masques1=Masques1[order(Masques1$Aire,decreasing=TRUE),]
     Masques1$Id=1:dim(Masques1)[1]
     st_write(Masques1,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques1.gpkg"), delete_layer=T, quiet=T)
-       
+    
     ##############################################################
     Masques2=FILINO_FusionMasque(NomDirMasqueVIDE,TA,"Masque",2)
     st_write(Masques2,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2.gpkg"), delete_layer=T, quiet=T)
@@ -351,7 +351,7 @@ if (length(n_int)>0)
     iMer=st_contains_properly(Dpt_Inv_Mer,surfhydro)
     if (dim(surfhydro[iMer[[1]],])[1]>0) {surfhydro=surfhydro[iMer[[1]],]}
     st_write(surfhydro,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"surfhydro.gpkg"), delete_layer=T, quiet=T)
-
+    
     ############################################################################
     
     # Appareillage des types de surfaces en eau sur les masques
@@ -418,7 +418,7 @@ if (length(n_int)>0)
       ## Détéction des masques touchant la mer
       iMer=st_contains_properly(Dpt_Inv_Mer,trhydro_)
       if (dim(trhydro_[iMer[[1]],])[1]>0) {trhydro_=trhydro_[iMer[[1]],]}
-
+      
       ############################################################################
       
       
@@ -499,13 +499,13 @@ if (length(n_int)>0)
       if (iFShTr=="Ecoulement")
       {
         nbFShFr=which(Masques2$F_Sh_Tr==iFShTr)
-        distbufAsso=15
+        distbufAsso=distbufAssoE
       }
       
       if (iFShTr=="Canal")
       {
         nbFShFr=which(Masques2$F_Sh=="Canal" & (Masques2$F_Sh_Tr=="Canal" | Masques2$F_Sh_Tr=="PlanEau_Tr"))
-        distbufAsso=10
+        distbufAsso=distbufAssoC
       }
       
       print(length(nbFShFr))
@@ -616,16 +616,51 @@ if (length(n_int)>0)
           n_int_ms2 = which(sapply(nbms2, length)>0)
           if (length(n_int_ms2)>0)
           {
+            # browser()
             surfhydro_tmp=surfhydro_tmp[n_int_ms2,]
-            ##### PARAMETRES SUBJECTIF ATTENTION
-            bufMer=10
-            
+
             # Récupération de la partie estuaire
-            Estuaires=st_intersection(Masques2[im,], st_buffer(surfhydro_tmp,bufMer))
+            Estuaires=st_intersection(Masques2[im,], st_union(st_buffer(surfhydro_tmp,bufMer)))
             if (verif==1){st_write(Estuaires,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Estuaires.gpkg"), delete_layer=T, quiet=T)}
             Estuaires=Estuaires[,colnames(Masques2)]
+            # plot(Estuaires[,1])
+            # browser()
+            #----------------------------------
+            # ajout 20260115
+            Estuaires=st_cast(Estuaires,"POLYGON")
+            Estuaires$Aire=st_area(Estuaires)
+            units(Estuaires$Aire)=NULL
+            nbestuaire=st_intersects(Estuaires,surfhydro_tmp)
+            n_int_estuaire=which(sapply(nbestuaire, length)>0)
+            if (length(n_int_estuaire)>0)
+            {
+              Estuaires=Estuaires[n_int_estuaire,]
+            }
+            if (verif==1){st_write(Estuaires,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Estuaires2.gpkg"), delete_layer=T, quiet=T)}
             
+            # 
+            # # Analyse des mini-morceaux
+            Mer2=st_difference(Masques2[im,],st_union(Estuaires))
+            Mer2=st_cast(Mer2,"POLYGON")
+            Mer2$Aire=st_area(Mer2)
+            units(Mer2$Aire)=NULL
+
+            iciR=which(Mer2$Aire<SeuilRecombine)
+            if (length(iciR)>0)
+            {
+              # browser()
+              if (verif==1){st_write(Mer2[iciR,],file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Mer2rajout.gpkg"), delete_layer=T, quiet=T)}
+              Estuaires=rbind(Estuaires,Mer2[iciR,])
+            }
+            
+            Estuaires_=st_union(Estuaires)
+            dat=Estuaires[1,]
+            st_geometry(dat)=NULL
+            Estuaires=st_sf(dat,Estuaires_)
+            if (verif==1){st_write(Estuaires,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Estuaires3.gpkg"), delete_layer=T, quiet=T)}
+            # browser()
             # Codification des estuaires en recroisant avec les surface en eau
+            Estuaires=st_cast(Estuaires,"POLYGON")
             for (iest in 1:dim(Estuaires)[1])
             {
               # browser()
@@ -637,12 +672,11 @@ if (length(n_int)>0)
               IndMasq=IndMasq+1
               Estuaires[iest,]$Id=IndMasq
             }
-            
+            # browser()
             # Récupération de la partie Mer
             Mer2=st_difference(Masques2[im,],st_union(Estuaires))
             if (verif==1){st_write(Mer2,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Mer2.gpkg"), delete_layer=T, quiet=T)}
             # browser()
-            
             # 2024 05 21
             # je ne sais plus pourquoi j'éclatais et je changeais de codification, à revoir mais
             # Gestion pour vérifier que l'on ne prend en compte que la grosse mer, pas les petits morceaux associés
@@ -702,6 +736,7 @@ if (length(n_int)>0)
                              Mer2)
               paspasse=0
             }
+            
           }else{
             Masques2[im,]$F_Sh_Tr_Me="Mer"
           }
@@ -827,10 +862,7 @@ if (length(n_int)>0)
       Masques2=Masques2[order(Masques2$Aire),]
       
     }
-    ####################################################
-    ###### MATHIEU A TESTER SUR MAMP 19/04/2024
-    ######################################################
-    
+
     st_write(Masques2,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydroMer2.gpkg"), delete_layer=T, quiet=T)
     
   } 
@@ -934,7 +966,6 @@ if (length(n_int)>0)
                 coord=coord[-which(diff==min(diff)),]
                 distances=sapply(1:dim(coord)[1], function(x) {((coord[x,1]-jonction[1])^2+(coord[x,2]-jonction[2])^2)^0.5})
                 #Paramètre
-                reduction=95/100
                 
                 distbuffok=min(distances[which(distances>0)])*reduction
                 
@@ -1100,7 +1131,7 @@ if (length(n_int)>0)
     if (Nettoyage==1)
     {
       unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydroMerConf.gpkg"))
-      unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_Gros_et_SurfEauBDTopo.gpkg"))
+      # unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_Gros_et_SurfEauBDTopo.gpkg"))
       unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("Masques2_tmp.gpkg")))
       unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("Masques2_Gros_et_SurfEauBDTopo_IndicesFusion.gpkg")))
       unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_Gros_et_Petits_SurfEauBDTopo_Plane.gpkg"))
@@ -1108,9 +1139,9 @@ if (length(n_int)>0)
       unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEau.gpkg"))
       unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_tmp.gpkg"))
       unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydro.gpkg"))
-      unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydroMer.gpkg"))
+      # unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydroMer.gpkg"))
       unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_im.gpkg"))
-      unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydroMer2.gpkg"))
+      # unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydroMer2.gpkg"))
       unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydroMerConf.gpkg"))
       unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"surfhydro_tmp.gpkg"))
       unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"trhydro_tmp.gpkg"))

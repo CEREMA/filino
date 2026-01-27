@@ -166,7 +166,7 @@ FILINO_FusionMasque = function(nomDir,TA,motcle,nombre)
                paste0(" --CRS=QgsCoordinateReferenceSystem('EPSG:",nEPSG,"') "),
                " --OUTPUT=",shQuote(paste0(motcle,nombre,"_Concat_Qgis.gpkg")))
     system(cmd)
-
+    
     if(is.null(TA)==F)
     {
       cat("----------------------------------------------------------------------\n")
@@ -351,4 +351,42 @@ TApourFunc_RepSurfCoursEau=function(TA,Masque2)
   n_int = which(sapply(nb, length)>0)
   TA_tmp=TA_tmp[n_int,]
   return(TA_tmp)
+}
+
+############################################################################################
+FILINO_00c_TA_NbrePOINTS=function(ilaz,Gagne_MultiTA,Doss_ExpRastCount,NomTIF)
+{
+  # Chemin du fichier de sortie
+  racidalle=Gagne_MultiTA$NOM[ilaz]
+  racidalle=gsub(".copc","_copc",substr(racidalle,1,nchar(racidalle)-4))
+  # Doss_ExpRastCount=file.path(dsnlayer,NomDirMNTGDAL,racilayerTA,NomDossDalles)
+  
+  NomTIF=file.path(Doss_ExpRastCount,paste0(racidalle,"_","NbrePOINTS","_","count",".tif"))
+  
+  if (dir.exists(dirname(NomTIF))==F){dir.create(dirname(NomTIF),recursive=T)}
+  
+  if (!file.exists(NomTIF))
+  {
+    nomlaz=file.path(Gagne_MultiTA$CHEMIN[ilaz],Gagne_MultiTA$NOM[ilaz])
+    cmd=paste0(shQuote(pdal_exe)," info ",nomlaz," --summary")
+    toto=system(cmd,intern=T)
+    
+    # Utiliser la fonction grep pour trouver la ligne contenant "num_points"
+    num_points_line <- grep("num_points", toto, value = TRUE)
+    
+    # Extraire la valeur numérique
+    num_points_value <- as.numeric(sub(".*\"num_points\": ([0-9]+),.*", "\\1", num_points_line))
+    if (is.na(num_points_value)){num_points_value=as.numeric(strsplit(num_points_line,":")[[1]][2])}
+    # Définir les paramètres du raster
+    
+    bbox=st_bbox(Gagne_MultiTA[ilaz,])
+    resolution <- 1000
+    extent <- extent(c(xmin = bbox[1], xmax = bbox[3], ymin = bbox[2], ymax = bbox[4]))  # Étendue de 1 km²
+    # Créer un raster vide
+    POINTS_count <- raster(nrows = 1, ncols = 1, ext = extent, res = resolution)
+    POINTS_count[1]=num_points_value
+    
+    # Exporter le raster
+    writeRaster(POINTS_count, filename = NomTIF, format = "GTiff", overwrite = TRUE)
+  }
 }

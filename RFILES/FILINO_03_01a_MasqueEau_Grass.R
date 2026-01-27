@@ -24,16 +24,23 @@ FILINO1a_Vide_Grass =   function(iLAZ,NomLaz,nom_Rast_INV_VIDEetEAU,nom_RastEAU,
     # Limitation de la région de travail et gestion de la résolution
     cmd=paste0("g.region --quiet --overwrite raster=",nomMNT," n=",Nord," s=",Sud," e=",Est," w=",Ouest," res=",as.character(reso))
     print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
-
-    # Test pour voir si tout s'est bien passé, certaines dalles rendent des NULL...
-    NomUnivar=file.path(dsnlayer,paste0(raci,"_runivarE1.txt"))
-    cmd=paste0("r.univar --quiet --overwrite map=",nomMNT," output=",NomUnivar)
-    print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
     
-    #Lancement GRASS externe
+    # # Test pour voir si tout s'est bien passé, certaines dalles rendent des NULL...
+    # NomUnivar=file.path(dsnlayer,paste0(raci,"_runivarE1.txt"))
+    # cmd=paste0("r.univar --quiet --overwrite map=",nomMNT," output=",NomUnivar)
     # print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
-    nvaleur=as.numeric(scan(file=NomUnivar,NomUnivar,sep=":",skip=5,nlines=1,dec=".")[2])
-    unlink(NomUnivar)
+    #     #Lancement GRASS externe
+    # # print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
+    # nvaleur=as.numeric(scan(file=NomUnivar,NomUnivar,sep=":",skip=5,nlines=1,dec=".")[2])
+    # unlink(NomUnivar)
+    
+    # Test pour voir si tout s'est bien passé, certaines dalles rendent des NULL...
+    cmd=paste0("r.univar --quiet --overwrite map=",nomMNT)
+    print(cmd);toto=system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd),intern=T)
+    nlig=grep(toto,pattern="n: ")[1]
+    nvaleur=as.numeric(strsplit(toto[nlig],":")[[1]][2])
+    cat(toto[nlig],"\n")
+    cat("Nombre de valeur: ",nvaleur, "\n")
     
     # S'il y a plus d'une valeur non nulle...
     if (nvaleur>0)
@@ -47,14 +54,20 @@ FILINO1a_Vide_Grass =   function(iLAZ,NomLaz,nom_Rast_INV_VIDEetEAU,nom_RastEAU,
       cmd=paste0("r.resample --quiet --overwrite input=MASK output=",nomMNTMasque1)
       print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
       
-      # vérification qu'il y a un secteur touché
-      NomUnivar=file.path(dsnlayer,paste0(raci,"_runivarE2.txt"))
-      cmd=paste0("r.univar --quiet --overwrite map=",nomMNTMasque1," output=",NomUnivar)
-      print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
+      # # vérification qu'il y a un secteur touché
+      # NomUnivar=file.path(dsnlayer,paste0(raci,"_runivarE2.txt"))
+      # cmd=paste0("r.univar --quiet --overwrite map=",nomMNTMasque1," output=",NomUnivar)
+      # print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
+      #       # print(scan(file=NomUnivar,NomUnivar,sep=":",skip=5,nlines=1,dec="."))
+      # nvaleur2=as.numeric(scan(file=NomUnivar,NomUnivar,sep=":",skip=5,nlines=1,dec=".")[2])
+      # unlink(NomUnivar)
       
-      # print(scan(file=NomUnivar,NomUnivar,sep=":",skip=5,nlines=1,dec="."))
-      nvaleur2=as.numeric(scan(file=NomUnivar,NomUnivar,sep=":",skip=5,nlines=1,dec=".")[2])
-      unlink(NomUnivar)
+      cmd=paste0("r.univar --quiet --overwrite map=",nomMNTMasque1)
+      print(cmd);toto=system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd),intern=T)
+      nlig=grep(toto,pattern="n: ")[1]
+      nvaleur2=as.numeric(strsplit(toto[nlig],":")[[1]][2])
+      cat(toto[nlig],"\n")
+      cat("Nombre de valeur2: ",nvaleur2, "\n")
       
       # Suppression du masque
       cmd=paste0("r.mask -r")

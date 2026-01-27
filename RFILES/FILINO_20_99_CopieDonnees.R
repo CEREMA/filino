@@ -34,7 +34,7 @@ if (length(n_int)>0)
       {
         cat(liste_BDDLidar[nb1]," Copie\n")
         file.copy(file.path(dsnlayerTA,liste_BDDLidar[nb1]),
-          file.path(dir_export,liste_BDDLidar[nb1]))
+                  file.path(dir_export,liste_BDDLidar[nb1]))
       }else{   cat(liste_BDDLidar[nb1]," Présent\n")}
     }
     

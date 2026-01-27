@@ -37,7 +37,7 @@ for (idecoup in 1:dim(Tronhydro)[1])
     cat("st_nearest_feature","cela peut être long","\n")
     PtsLAZ_tmp$Distance1=st_distance(PtsLAZ_tmp,Tronhydro[idecoup,])
     PtsLAZ_tmp$Distance2=st_nearest_feature(PtsLAZ_tmp,Tronhydro_Pts)
-
+    
     cat("st_nearest_feature","fini","\n")
     
     racinomPtsLaz=paste0("PtsLAZ","_",racilayerTA,"_",formatC(idecoup,width=2, flag="0"))
@@ -90,7 +90,7 @@ for (idecoup in 1:dim(Tronhydro)[1])
       theme(panel.background = element_blank())+
       xlab(NULL)+ylab(NULL)+theme(axis.ticks=element_blank(),axis.text = element_blank())
     
-        st_write(PtsLAZ_tmp[nb,],
+    st_write(PtsLAZ_tmp[nb,],
              file.path(paste0(racinomPtsLaz,"_fond.gpkg")), delete_layer=T, quiet=T)
     
     jpeg(filename = file.path(paste0(raci_exp,".jpg")), width = 59.8*2/3 , height = 33.6*2/3, units = "cm", quality = 75, res = 300)
@@ -99,6 +99,6 @@ for (idecoup in 1:dim(Tronhydro)[1])
     multiplot(Gp0,Gp1,layout=mise_en_page3)
     dev.off()
     
-
+    
   }
 }

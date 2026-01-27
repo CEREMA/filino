@@ -223,7 +223,7 @@ FILINO_06_02ab_Job23=function(iMasq,Masques1,Masques2,NbCharIdGlobal,NomDirTmp,r
             #Hydrométrie
             # if (file.exists(file.path(rep_COURSEAU,"StHydro.gpkg"))==T)
             # {
-              write(paste0("       ",shQuote("order"),":",shQuote("X,Y,Z,Classification,GpsTime"),","),nomjson,append=T)
+            write(paste0("       ",shQuote("order"),":",shQuote("X,Y,Z,Classification,GpsTime"),","),nomjson,append=T)
             # }else{
             #   write(paste0("       ",shQuote("order"),":",shQuote("X,Y,Z,Classification"),","),nomjson,append=T)
             # }

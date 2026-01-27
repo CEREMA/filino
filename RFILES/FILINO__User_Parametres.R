@@ -56,6 +56,15 @@ CE_BalFen=50 # moyenne sur x pixels
 CE_PenteMax=1/100 # pente max sur
 NumCourBox=1
 
+reduction=95/100 # Facteur de réduction pour calculer la distance de buffer autour des jonctions.
+distbufAssoE=15 #Distance de buffer (en mètres) pour associer les polygones de type "Ecoulement".
+distbufAssoC=10 # Distance de buffer (en mètres) pour associer les polygones de type "Canal".
+bufMer=10  # Buffer (en mètres) autour des surfaces hydrographiques pour identifier les estuaires.
+SeuilRecombine=50000 # Seuil d’aire (en m²) pour fusionner les petits morceaux de mer qui ont été découpé par le tampon sur les surfaces en eau BDTopo
+
+
+
+
 #------------------------------------- Paramètres FILINO_06_02ab_ExtraitLazMasquesEau.R ------------------------------------------------------
 # ClassPourSurfEau="Classification[1:2],Classification[9:9]"
 ClassPourSurfEau="Classification[2:2],Classification[9:9]"
@@ -106,6 +115,9 @@ Mini=0;Maxi=10*24*3600;PasDz=5*60 # Temps
 Mini=0;Maxi=3000;PasDz=c(10,5,2,1,0.5,0.25) # Temps
 Mini=-5;Maxi=0;PasDz=0.25 # Négatif
 Mini=-2.5;Maxi=2.5;PasDz=0.25 # Négatif
+Mini=0;Maxi=500;PasDz=25 # Négatif
+Mini=-10;Maxi=10;PasDz=0.01 # Négatif
+Mini=1401000;Maxi=2612000;PasDz=10 # Négatif
 # Mini=63;Maxi=65;PasDz=0.01 # Temps
 Mini=-5.5;Maxi=4.5;PasDz=0.25 # Lafaute
 #------------------------------------- Processeurs en mode parallèle ------------------------------------------------------
@@ -145,7 +157,7 @@ nb_proc_Filino=rbind(
   cbind(0,  9, 15, 10, 65),#8  #FILINO_08_06_TA_PtsVirtuelsLaz
   cbind(0,NaN,NaN,NaN,NaN),#9
   cbind(0,  6, 15, 10, 65),#10 #FILINO_10_04_ExtraitLazPonts_Pilotage
-  cbind(0,  1,  4, 10, 25),#11 #FILINO_11_07_CreationMNT_TIN.R
+  cbind(0,  1,  4, 10, 40),#11 #FILINO_11_07_CreationMNT_TIN.R
   cbind(0,  8, 15, 10, 50),#12 #FILINO_12_08_CreationMNT_Raster.R limité par accès au disque si pas SSD
   cbind(0,  6, 15, 10, 16),#13
   cbind(0,NaN,NaN,NaN,NaN),#14

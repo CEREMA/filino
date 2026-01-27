@@ -14,7 +14,7 @@ FILINO_03_01a_Job=function(iLAZ,TA_tmp,dimTA1,NomLaz,reso,largdalle,paramXYTA,iT
   # Sud=as.character(Nord-largdalle-decalgrille)
   # Ouest=as.character(Ouest-decalgrille)
   # Nord=as.character(Nord+decalgrille)
-
+  
   raci=gsub(".copc","_copc",paste0(substr(NomLaz,1,nchar(NomLaz)-4)))
   
   cat("###############################################################\n")
