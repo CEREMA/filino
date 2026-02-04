@@ -1,49 +1,87 @@
-# FILINO
-FILINO FIgnolage des données Lidar pour les INOdations
+# **FILINO**
+**FIgnolage des données Lidar pour les INOdations**
 
-## Version
-1er référencement
+---
+*Un outil développé par le CEREMA pour automatiser le traitement des données Lidar et améliorer la modélisation des inondations.*
 
-## Contenu
-Code source en langage R nommée FILINO_xxx.R
+---
 
-Voir les releases pour l'installation et les dossiers type:https://github.com/CEREMA/filino/releases/tag/DossiersTypePourFILINO.
-Des docs pour les 1ères présentations sont aussi disponibles
-Rapport d'étude "FILINO - FILINO Fignolage des données LIdar pour les INOdations - Juillet 2023"
-Présentation club Modélisation Juin 2023
-Vidéo Hérault
+## **📌 Version**
+- **Dernière mise à jour** : 04/02/2026
+- **Dépôt APP** : [Certificat APP (Juillet 2023)](https://secure2.iddn.org/app.server/certificate/?sn=2023240031000&key=f1b340d417b4cbd12af52d26f7bdacee869d9477484e00c394e699e761733d67&lang=fr)
+- **État du projet** : En développement (évolutions possibles, pas de garantie de prise en compte des demandes externes).
 
-## Objet de FILINO
-Le programme LidarHD porté par l’IGN vise à couvrir la France entière avec des données topographiques de précision d’ici 2025 (https://geoservices.ign.fr/lidarhd).
-Les routines FILINO permettent d'automatiser le calcul des limites Terre/Eau sur 4 grands types d'objets, la mer, les plans d'eau, les canaux et les grands cours d'eau, travail chronophage souvent réalisé par des opérateurs.
-Des ébauches d’idées pour le travail sur les fonds de thalwegs secs sont aussi présentes.
-Les Lidar anciens peuvent aussi être utilisés pour combler les manques du LidarHD sous fort couvert végétal.
-Les résultats de FILINO sont la réalisation de points virtuels numérotés en fonction des types d'objets traités (mer, plans d'eau, canaux, grands cours d'eau, petits cours d'eau, souscouvertvégétal).
-L'ajout des points virtuels FILINO aux points Lidar initiaux classifiés permet d'augmenter grandement la qualité du MNT final en particulier pour les inondations.
+---
 
-## Description
-Ce dépôt contient l’ensemble des scripts R pour faire tourner FILINO.
+## **📂 Contenu du dépôt**
+- **Code source** : Scripts en langage **R** (`FILINO_xxx.R`).
+- **Releases** :
+  - [Dossiers types pour FILINO](https://github.com/CEREMA/filino/releases/tag/DossiersTypePourFILINO) (exemples de structures de données).
+  - [Installation et versions stables](https://github.com/CEREMA/filino/releases).
+- **Documentation** :
+  - Rapport d'étude : *"FILINO - Fignolage des données Lidar pour les INOdations"* (Juillet 2023).
+  - Présentation au Club Modélisation (Juin 2023).
+  - Vidéo de démonstration (cas d'usage dans l'Hérault).
 
-FILINO pour « FIgnolage des données Lidar pour les INONDations » rassemble des routines permettant d'automatiser le calcul des limites Terre/Eau à partir de Lidar classifié.
-4 grands types d'objets, la mer, les plans d'eau, les canaux et les grands cours d'eau sont actuellement traités.
-Des ébauches d’idées pour le travail sur les fonds de thalwegs secs sont aussi présentes mais non abouties.
+---
 
-FILINO est développé dans le cadre de l'ANR MUFFINS (Projet-ANR-21-CE04-0021), des travaux pour la DDTM de l'Hérault et des conventions de R&D dans le cadre du PAPI 3 sur le Vistre (Secteur de Nîmes), de l’expérimentation de la cartographie Nationale pour les inondations (DGPR), ou de travaux sur le ruissellement pour la Métropole Aix-Marseille-Provence.
+## **🎯 Objet de FILINO**
+### **Contexte**
+Le programme **[LidarHD](https://geoservices.ign.fr/lidarhd)** (IGN) vise à couvrir la France entière avec des données topographiques haute précision. Cependant, le traitement manuel des limites **Terre/Eau** (mer, plans d’eau, canaux, cours d’eau) est chronophage et sujet à des erreurs.
 
-FILINO a fait l'objet d'un dépôt à l'Agence de Protection des Programmes (APP) en Juin 2023:
-https://secure2.iddn.org/app.server/certificate/?sn=2023240031000&key=f1b340d417b4cbd12af52d26f7bdacee869d9477484e00c394e699e761733d67&lang=fr).
+### **Solution proposée**
+**FILINO** automatise ce processus en :
+- Générant des **points virtuels** classifiés par type d’objet (mer, plans d’eau, canaux, grands cours d’eau, thalwegs secs, sous-couvert végétal).
+- Améliorant la qualité des **Modèles Numériques de Terrain (MNT)** pour les études d’inondation.
+- Intégrant des **Lidar anciens** pour combler les lacunes du LidarHD (zones à fort couvert végétal).
 
-L'originalité vient de l’automatisation de ces calculs terre/mer s'appuyant sur la création de masques de vides, d'eau, de sol issus de la classification du LidarHD.
+### **Résultats**
+Les points virtuels produits par FILINO, combinés aux données Lidar initiales, permettent d’obtenir des **MNT plus précis**, essentiels pour :
+- La modélisation des inondations.
+- La gestion des risques naturels.
+- L’aménagement du territoire.
+- Les évolutions du littoral
 
-D’autres applications comme la gestion de plusieurs sources de Lidar, l’interpolation des nuages de points pour la réalisation du MNT sont aussi fournis mais ne présentent pas le même caractère innovant. 
+---
 
-Ces travaux sont issus de nombreux échanges avec l'IGN, de l'université Gustave Eiffel et de l’INRAE en particulier dans le cadre du programme LidarHD IGN (https://geoservices.ign.fr/lidarhd).
+## **🔧 Description technique**
+### **Fonctionnalités clés**
+- **Automatisation** : Calcul des limites Terre/Eau pour 4 types d’objets (mer, plans d’eau, canaux, grands cours d’eau).
+- **Multi-sources** : Gestion de plusieurs jeux de données Lidar (LidarHD + anciens Lidar).
+- **Interopérabilité** : Export des résultats pour une intégration dans des logiciels comme **QGIS**, **GRASS** ou **PDAL**.
+- **Réalisation de MNT précis** avec des calculs de **cuvettes**
+- Autres outils de **statistiques** (Min/Max/Date...), **différences de topographie optimisée**
 
-La configuration matérielle nécessaire est un PC Windows 10 – 8 à 16 Go RAM.
+### **Environnement requis**
+- **Système** : Windows 11 (obligatoire).
+- **Matériel** : 8 à 16 Go de RAM.
+- **Dépendances** :
+  - **Langage** : R (librairies spécifiques listées dans le code).
+  - **Logiciels** : PDAL, GRASS, QGIS.
 
-Il existe des dépendances par rapport à des librairies R, les logiciels PDAL, GRASS et Qgis.
+### **Limites et responsabilités**
+- **Phase de développement** : Le dépôt évoluera, mais aucune garantie n’est donnée pour les demandes externes.
+- **Responsabilité** : Les auteurs ne sont pas responsables des données produites par les utilisateurs.
 
-La phase de développement est en cours, le dépôt sera amené à évoluer.
-Cependant, les auteurs ne s’engagent pas à la prise en compte de demandes externes et ne sont pas responsables des données produites par des utilisateurs.
+---
 
-Dernière mise à jour : 26/01/2024
+## **📚 Partenariats et collaborations**
+FILINO est développé dans le cadre de :
+- **Projet ANR MUFFINS** [**ANR MUFFINS**](https://anr.fr/Projet-ANR-21-CE04-0021) (Projet-ANR-21-CE04-0021) piloté par l'[**INRAE**](https://www.inrae.fr/).
+- Des travaux d'**aléas inondations** pour la [**DDTM34**](https://www.herault.gouv.fr/Actions-de-l-Etat/Environnement-eau-chasse-risques-naturels-et-technologiques/Risques-naturels-et-technologiques/Transmission-des-informations-aux-maires-TIM/Les-Porter-a-connaissance-PAC-de-l-Herault/MONTPELLIER)
+- **Conventions R&D** :
+- [**PAPI 3 Vistre**](https://papi3.vistre-vistrenque.fr/synthese-programme) (secteur de Nîmes).
+- Des conventions de R&D sur le ruissellement pour la [**Métropole Aix-Marseille-Provence**](https://deliberations.ampmetropole.fr/documents/metropole/deliberations/2023/03/16/ANNEXE/49593_49593_cerema_annexe.pdf).
+- L’[**ANR MUFFINS**](https://anr.fr/Projet-ANR-21-CE04-0021) (Projet-ANR-21-CE04-0021) piloté par l'[**INRAE**](https://www.inrae.fr/).
+- L’expérimentation de la **cartographie nationale des inondations** (DGPR).
+- **Collaborations scientifiques** : IGN, Université Gustave Eiffel, INRAE.
+
+---
+
+## **📢 Ressources complémentaires**
+- **LidarHD (IGN)** : [https://geoservices.ign.fr/lidarhd](https://geoservices.ign.fr/lidarhd)
+- **Documentation R** : Voir les commentaires dans les scripts `FILINO_xxx.R`.
+- **Support** : Pour toute question, ouvrir une [Issue](https://github.com/CEREMA/filino/issues) sur GitHub.
+
+---
+*© CEREMA – Dernière mise à jour : 04/02/2026*
