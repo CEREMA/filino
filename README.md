@@ -15,7 +15,7 @@
 
 ## **📂 Contenu du dépôt**
 - **Code source** : Scripts en langage **R** (`FILINO_xxx.R`).
-- **Releases** :
+- [**Releases** :](https://github.com/CEREMA/filino/releases)
   - [Dossiers types pour FILINO](https://github.com/CEREMA/filino/releases/tag/DossiersTypePourFILINO) (exemples de structures de données).
   - [Installation et versions stables](https://github.com/CEREMA/filino/releases).
 - **Documentation** :
@@ -72,7 +72,6 @@ FILINO est développé dans le cadre de :
 - **Conventions R&D** :
 - [**PAPI 3 Vistre**](https://papi3.vistre-vistrenque.fr/synthese-programme) (secteur de Nîmes).
 - Des conventions de R&D sur le ruissellement pour la [**Métropole Aix-Marseille-Provence**](https://deliberations.ampmetropole.fr/documents/metropole/deliberations/2023/03/16/ANNEXE/49593_49593_cerema_annexe.pdf).
-- L’[**ANR MUFFINS**](https://anr.fr/Projet-ANR-21-CE04-0021) (Projet-ANR-21-CE04-0021) piloté par l'[**INRAE**](https://www.inrae.fr/).
 - L’expérimentation de la **cartographie nationale des inondations** (DGPR).
 - **Collaborations scientifiques** : IGN, Université Gustave Eiffel, INRAE.
 
