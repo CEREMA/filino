@@ -17,8 +17,9 @@
 - **Code source** : Scripts en langage **R** (`FILINO_xxx.R`).
 - [**Releases** :](https://github.com/CEREMA/filino/releases)
   - [Dossiers types pour FILINO](https://github.com/CEREMA/filino/releases/tag/DossiersTypePourFILINO) (exemples de structures de données).
-  - [Installation et versions stables](https://github.com/CEREMA/filino/releases).
-- **Documentation** :
+  - [Installation](https://github.com/CEREMA/filino/blob/main/install.md).
+  - [Prise en main](https://github.com/CEREMA/filino/blob/main/Prise_Main_Rapide.md)
+- [**Documentation**](https://github.com/CEREMA/filino/releases) :
   - Rapport d'étude : *"FILINO - Fignolage des données Lidar pour les INOdations"* (Juillet 2023).
   - Présentation au Club Modélisation (Juin 2023).
   - Vidéo de démonstration (cas d'usage dans l'Hérault).
@@ -83,4 +84,4 @@ FILINO est développé dans le cadre de :
 - **Support** : Pour toute question, ouvrir une [Issue](https://github.com/CEREMA/filino/issues) sur GitHub.
 
 ---
-*© CEREMA – Dernière mise à jour : 04/02/2026*
+*© CEREMA – Dernière mise à jour : 05/02/2026*
