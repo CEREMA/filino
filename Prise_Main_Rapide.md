@@ -57,7 +57,7 @@ Voici la liste des options disponibles pour le traitement des données LiDAR et 
 - **Ces étapes sont très liées au contexte français, avec la BDTopo**. Des adaptations doivent être réalisées pour d'autres territoires.
 
 ---
-**Dans votre SIG QGIS**, entre les deux menus :
+**Dans votre SIG QGIS**, entre les deux étapes du menu :
 - **[Travail manuel à réaliser pour reprendre l'appareillage automatique avec la BDTopo](https://github.com/CEREMA/filino/releases/tag/Travail_SIG_Manuel_Modification_Masques)**
   - Ouvrir le fichier `Masques.qgs` créé à l'étape précédente qui permet de disposer de nombreux styles (refermez le projet pour les étapes ultérieures).
   - Utiliser le fichier `Travail_Manuelxxx` en exemple.
@@ -85,7 +85,7 @@ Voici la liste des options disponibles pour le traitement des données LiDAR et 
 - **Description** : Récupération des données de sol à partir d'autres jeux de données LiDAR dans les zones de végétation trop dense.
 - **Objectif** : Améliorer la précision du MNT dans les zones où la végétation dense empêche une bonne détection du sol pour le LiDARHD.
 - **De nombreux fichiers `copc.laz` avec les "vieux sols" sont créés**. Un changement de numéro de classification est appliqué.
-- **Il est parfois nécessaire de modifier les systèmes de projection préalablement à ce travail**, une pipeline PDAL est à privilégier. Tout fonctionne dans le même système de coordonnées.
+- **Il est parfois nécessaire de modifier les systèmes de projection préalablement à ce travail**, une pipeline PDAL est à privilégier. Les systèmes de coordonnées doivent être identiques.
 
 ---
 
@@ -161,7 +161,7 @@ Voici la liste des options disponibles pour le traitement des données LiDAR et 
 #### **17_12. Différences entre deux types de données**
 - **Description** : Calcul des différences entre deux types de données (ex : avant/après traitement).
 - **Objectif** : Évaluer les changements et les améliorations apportées par les traitements.
-- **Ce calcul des différences s'appuie sur des analyses de voisins pour limiter les potentiels "décalages" entre deux LiDAR produits par plusieurs opérateurs ou à plusieurs dates**.
+- **Ce calcul de différences s'appuie sur des analyses de voisinages pour limiter les potentiels "décalages" entre deux LiDAR produits par plusieurs opérateurs ou à plusieurs dates**.
 
 ---
 
@@ -189,3 +189,5 @@ Voici la liste des options disponibles pour le traitement des données LiDAR et 
 #### **21_16. Ré-échantillonnage Raster**
 - **Description** : Ré-échantillonnage des données raster pour adapter leur résolution.
 - **Objectif** : Optimiser la taille des fichiers et adapter leur résolution aux besoins spécifiques.
+
+#### L'ordre du menu risque d'évoluer au fil du temps.
