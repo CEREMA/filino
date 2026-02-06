@@ -1,5 +1,3 @@
-nb_proc=nb_proc_Filino_[10]
-
 source(file.path(chem_routine,"FILINO_06_02ab_ExtraitLazMasquesEau.R"),encoding = "utf-8")
 source(file.path(chem_routine,"FILINO_06_02c_creatPtsVirtuels.R"),encoding = "utf-8")
 source(file.path(chem_routine,"FILINO_Utils.R"),encoding = "utf-8")
@@ -54,6 +52,7 @@ if (length(n_int)>0)
   {
     cat("\014")
     cat("FILINO_06_02ab_ExtraitLazPontsEau - Etap10_04[1]\n")
+    nb_proc=min(nb_proc_Filino_[10],dim(TA)[1])
     if(nb_proc==0)
     {
       for (iLAZ in 1:dim(TA)[1])
@@ -67,6 +66,8 @@ if (length(n_int)>0)
       cl <- parallel::makeCluster(nb_proc)
       registerDoParallel(cl)
       foreach(iLAZ = 1:dim(TA)[1],
+              .combine = 'c',
+              .inorder = FALSE,
               .packages = c("sf")) %dopar% 
         {
           TA_tmp=TA[iLAZ,]
@@ -96,6 +97,8 @@ if (length(n_int)>0)
       registerDoParallel(cl)
       
       foreach(iMasq = paste0(raciSurfEau,Ponts2$IdGlobal),
+              .combine = 'c',
+              .inorder = FALSE,
               .packages = c("sf","ggplot2")) %dopar% 
         {
           

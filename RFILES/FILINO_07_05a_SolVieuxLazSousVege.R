@@ -29,7 +29,8 @@ FILINO_07_05a_Job=function(iLAZ,TA_tmp,racilayerTAold,TA_Old,Classe_New)
       if (length(n_int)>0)
       {
         TA_Old_tmp=TA_Old[n_int,]
-        NomOld=file.path(TA_Old_tmp$CHEMIN,TA_Old_tmp$NOM)
+        # NomOld=file.path(TA_Old_tmp$CHEMIN,TA_Old_tmp$NOM)
+        NomOld=file.path(dsnTALidarOld,TA_Old_tmp$DOSSIER,TA_Old_tmp$NOM)
         
         nomjson=file.path(dsnlayer,nomDirViSOLssVEGE,racilayerTA,NomDossDalles,paste0(raci,"_",racilayerTAold,"_VegeTropDense.json"))
         

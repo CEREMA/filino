@@ -1,4 +1,10 @@
-library(sf)
+#Paramètres à ajouter
+# 04_01b association ecoulement et canaux
+# 02_00 calcul du nbre de points très longs
+# pq il relance des calculs sur des endroits où il est déjà passé...
+
+Sys.unsetenv("PROJ_LIB") # Suppression uniquement dans R d'une variable environnement associée à PostGre qui posait des problème de projection dans R
+library(sf) # si vous avez des problème avec st_crs et PROJ.LIB, merci de réinstaller le package sf après avoir relancer la 1ère ligne
 library(dplyr)
 library(rjson)
 library(ggplot2)
@@ -8,6 +14,8 @@ library(jpeg)
 library(png)
 library(foreach)
 library(doParallel)
+library(raster)
+# library(purrr)
 
 cat("\014") # Nettoyage de la console
 
@@ -15,7 +23,32 @@ chem_routine=dirname(rstudioapi::getActiveDocumentContext()$path)
 print(chem_routine)
 source(file.path(chem_routine,"FILINO__User_LienOutilsPC.R"))
 source(file.path(chem_routine,"FILINO__User_Parametres.R"))
-source(file.path(chem_routine,"FILINO__User_Chemin_et_Nom.R"))
+listSect=list.files(file.path(chem_routine), pattern="FILINO__User_Chemin_et_Nom")
+if (length(listSect)>1)
+{
+  nchoixZS = select.list(
+    listSect,
+    title = "Choix de la zone des secteurs à traiter",
+    multiple = F,
+    graphics = T
+  )
+  nlal = which(listSect %in% nchoixZS)
+  listSect=listSect[nlal]
+}
+
+cat("#-----------------------------------------------------------------------------------\n")
+cat("Si vous n'arrivez pas à disposer de la table d'assemblage des dalles de points Lidar HD IGN\n")
+cat("disponible avec \n")
+cat("lien WFS: https://data.geopf.fr/wfs/ows?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetCapabilities\n")
+cat("Couche: IGNF_NUAGES-DE-POINTS-LIDAR-HD:dalle\n")
+cat("\n")
+cat("Vous pouvez utiliser manuellement la routine: FILINO_Charge_WFS.R\n")
+cat("#-----------------------------------------------------------------------------------\n")
+
+cat("FILINO__User_Chemin_et_Nom choisi: ",listSect,"\n")
+source(file.path(chem_routine,listSect), encoding="utf-8")
+# Ancienne maniere 23/04/2025 source(file.path(chem_routine,"FILINO__User_Chemin_et_Nom.R"))
+
 source(file.path(chem_routine,"FILINO_Utils.R"))
 
 ChoixFILINO = cbind(
@@ -30,12 +63,16 @@ ChoixFILINO = cbind(
   "09_03.      NON FAIT Gestion des thalwegs secs (voir travaux avec Univ G.Eiffel",
   "10_04.      En COURS DE DVT - Traitement des ponts",
   "11_07.      MNT TIN s'appyant sur TA LidarHD et TA virtuels",
-  "12_08.      MNT Minimum Raster (non continu)",# On peut faire un MN sol, un MN batiment, un MN végétation un MN Ponts
+  "12_08.      MNT Statistiques Raster (non continu)",# On peut faire un MN sol, un MN batiment, un MN végétation un MN Ponts, un min max...
   "13_00c.     Table d'assemblage des données Raster (TIF ou GPKG)",
   "14_10.      Palette de couleur",
   "15_11.      Videos démonstration",
   "16_12.      Création de vrt et gpkg par zone",
-  "17_12.      Différences entre deux types de données"
+  "17_12.      Différences entre deux types de données",
+  "18_13.      Raster GpsTime",
+  "19_14.      Herbe sur champs à faible relief",
+  "20_15.      Copie vers autre disques durs",
+  "21_16.      Ré-échantillonage Raster"
 )
 titre="Menu principal FILINO"
 preselec=NULL
@@ -67,7 +104,7 @@ if (nFILINO[3]==1)
   Etap3a=1 # 1 si fusion à la fin sinon O à voir si on le sort...
   ChoixFILINO_03_01a = cbind(
     "Calcul des masques des Vides et Eau, Végétation trop dense et Ponts",
-    "Fusion des végétations trop dense (peut-être très/trop long",
+    "Fusion des végétations trop dense (peut-être très/trop long - Petite centaine de dalles maxi) - Inutile pour la suite, juste plus sympa dans qgis",
     "Fusion des ponts (peut-être très/trop long",
     "Aucune fusion"
   )
@@ -101,7 +138,7 @@ if (nFILINO[6]==1)
 {
   Auto=apply(rbind(Auto,c(0,0)), 2,min)
   ChoixFILINO_06_02ab = cbind(
-    "Extraction des points Laz dans les masques VIDE/EAU par dalles Lidar de base",
+    "Extraction des points Laz dans les masques VIDE/EAU par dalles Lidar de base - LANCER SEUL en parallèle et PASSAGE FINAL en mode classique",
     "Fusion des Laz Masques/Dalles",
     "Travail sur les Laz et création des points virtuels"
   )
@@ -155,13 +192,12 @@ if (nFILINO[10]==1)
 
 
 
-
+TypeTIN=cbind("TIN_Filino","TIN_Direct")
 # "11_07.  MNT TIN s'appyant sur TA LidarHD et TA virtuels",
 if (nFILINO[11]==1)
 {
   Auto=apply(rbind(Auto,c(0,0)), 2,min)
   
-  TypeTIN=cbind("TIN_Filino","TIN_Direct")
   nTypeTIN = select.list(TypeTIN,preselect = TypeTIN[1],
                          title = "Choix du type de TIN",multiple = T,graphics = T)
   nTypeTIN = which(TypeTIN %in% nTypeTIN)
@@ -238,30 +274,99 @@ if (nFILINO[16]==1)
 # "17_12.      Différences entre deux types de données"
 if (nFILINO[17]==1)
 {
+  cat("\n")
+  cat("\014")
+  cat("########################################################################################################\n")
+  cat("######################### A LIRE SVP ###############################################################\n")
+  cat("\n")
+  cat("Ce menu permet de faire des différences entre Raster en analysant les voisinages pour éviter des écarts sur des pentes fortes\n")
+  cat("A priori, cela peut être utile pour:\n")
+  cat("     - analyser si des points de végétations basses peuvent être en dessous du modèle numérique de terrain\n")
+  cat("       Dans ce cas, des points virtuels laz peuvent être créés et intégrer au MNT FILINO\n")
+  cat("\n")
+  cat("     - des comparaisons des MNT avant/après des évènements morphologiques (inondations torrentielles, submersions de plages ou mouvements de terrain)\n")
+  cat("\n")
+  cat("La première option du menu est prioritaire sur les options 2 et 3\n")
+  cat("Les options 2 et 3 peuvent être choisies ensemble\n")
+  cat("\n")
+  cat("Les données Raster 1 et 2 sont demandées à la suite de ce menu\n")
+  cat("\n")
+  cat("######################### Fin A LIRE ###############################################################\n")
+  
+  CalcDiffPlus=cbind("Travail sur Raster 2 VEGETATION_MIN < Raster 1 TIN et possible création de points virtuels (végétation plus basse que le TIN, et si ça peut exister!)",
+                     "Raster 2 > Raster 1 par voisinage",
+                     "Travail sur Raster 2 < Raster 1 par voisinage",
+                     "Difference directe Raster 2 - Raster 1")
+  nCalcDiffPlus = select.list(CalcDiffPlus,preselect = CalcDiffPlus[1],
+                              title = "Lire dans la consolle quelques explications svp",multiple = T,graphics = T)
+  # nCalcDiffPlus = which(CalcDiffPlus %in% nCalcDiffPlus)
+  
+  if (length(which(CalcDiffPlus %in% nCalcDiffPlus))==0){print("VOUSAVEZVOULUQUECAFASSEBADABOOM_CESTGAGNE");BOOM=BOOOM}
+  nCalcDiff=c(0,0,0,0)
+  nCalcDiff[which(CalcDiffPlus %in% nCalcDiffPlus)]=1
+  
+  if (nCalcDiff[1]==1 & nCalcDiff[2]==1){nCalcDiff[2]=0}
+  if (nCalcDiff[1]==1 & nCalcDiff[3]==1){nCalcDiff[3]=0}
+  
   Auto=apply(rbind(Auto,c(1,0)), 2,min)
   chois1=paste(paramTARaster$Doss,paramTARaster$NomTA)
-  titre="Menu FILINO_16_11_VRTGPKG.R"
+  titre="Choix du Raster n°1"
   preselec=chois1[which(paramTARaster$Lancement==1)]
   Etap_02_00c2=FILINO_BDD(titre,preselec,chois1)
   paramTARaster1=paramTARaster[which(Etap_02_00c2==1)[1],]
   
-  
   chois2=paste(paramTARaster$Doss,paramTARaster$NomTA)
-  titre="Menu FILINO_16_11_VRTGPKG.R"
+  titre="Choix du Raster n°2"
   preselec=chois2[which(paramTARaster$Lancement==1)]
   Etap_02_00c2=FILINO_BDD(titre,preselec,chois2)
   paramTARaster2=paramTARaster[which(Etap_02_00c2==1),]
-  
-  CalcDiffPlus=cbind("Garder toutes les valeurs","Ne garder que les valeurs positives")
-  nCalcDiffPlus = select.list(CalcDiffPlus,preselect = CalcDiffPlus[1],
-                              title = "Différences",multiple = F,graphics = T)
-  nCalcDiffPlus = which(CalcDiffPlus %in% nCalcDiffPlus)
-  if (length(nCalcDiffPlus)==0){print("VOUSAVEZVOULUQUECAFASSEBADABOOM_CESTGAGNE");BOOM=BOOOM}
 }
 
+
+# 18_13.Raster GpsTime
+if (nFILINO[18]==1)
+{
+  Auto=apply(rbind(Auto,c(0,0)), 2,min)
+}
+
+# 19_14.      Herbe sur champs à faible relief
+if (nFILINO[19]==1)
+{
+  Auto=apply(rbind(Auto,c(0,0)), 2,min)
+}
+
+
+# 
+if (nFILINO[20]==1)
+{
+  Auto=apply(rbind(Auto,c(0,0)), 2,min)
+  # dsnlayerRaster=choose.dir(default = "", caption = "Select folder")
+}
+
+# "21_16. Ré-échantillonage",
+if (nFILINO[21]==1)
+{ 
+  Auto=apply(rbind(Auto,c(1,0)), 2,min)
+  # titre="Menu FILINO_04_01b"
+  # preselec=".gpkg$"
+  # extensionRAST=cbind(".gpkg$",".tif$")
+  # Etap_02_00c1=FILINO_BDD(titre,preselec,extensionRAST)
+  # extensionRAST=extension[which(Etap_02_00c1==1)]
+  
+  chois=paste(paramTARaster$Doss,paramTARaster$NomTA)
+  titre="Menu FILINO_21_16"
+  preselec=chois[which(paramTARaster$Lancement==1)]
+  Etap_21_16=FILINO_BDD(titre,preselec,chois)
+  paramTARaster=paramTARaster[which(Etap_21_16==1),]
+  
+  ResoNew=c(5,25)
+}
+
+
+# Ce serait bien de ne pas ouvrir si pas de besoin...
 Choixmode=FILINO_BDD("Mode de calcul",preselect_nb_proc_Filino,colnames(nb_proc_Filino))
 nb_proc_Filino_=nb_proc_Filino[,which(Choixmode==1)[1]]
-  
+
 source(file.path(chem_routine,"FILINO_00_00a_Initialisation.R"))
 
 #-----------------------------------------------------------------------------------
@@ -276,7 +381,7 @@ for (iTA in 1:length(dsnTALidar))
   reso=as.numeric(resoTALidar[iTA])
   
   paramXYTA=paraXYLidar[iTA,]
-  racilayerTA=substr(nomlayerTA,1,nchar(nomlayerTA)-4)
+  racilayerTA=strsplit(nomlayerTA,"\\.")[[1]][1]
   
   # "01_0b. Téléchargement des données LidarHD classifiées IGN",
   if (nFILINO[1]==1){source(file.path(chem_routine,"FILINO_01_00b_DownloadSiteIGN.R"))}
@@ -285,7 +390,8 @@ for (iTA in 1:length(dsnTALidar))
   if (nFILINO[2]==1)
   {
     source(file.path(chem_routine,"FILINO_02_00c_TablesAssemblagesLazIGN.R"))
-    FILINO_00c_TA(dsnlayerTA,nomlayerTA,extensionLAZ,paramXYTA)
+    Doss_ExpRastCount=file.path(dsnlayer,NomDirMNTGDAL,racilayerTA,NomDossDalles) # doffiser pour l'export du nombre de points
+    FILINO_00c_TA(chem_routine,dsnlayerTA,nomlayerTA,extensionLAZ,paramXYTA,qgis_process,Doss_ExpRastCount,pdal_exe)
   }
   
   # "03_01a. Masques Vides et Eau par dalles",
@@ -302,7 +408,7 @@ for (iTA in 1:length(dsnTALidar))
   if (nFILINO[4]==1){source(file.path(chem_routine,"FILINO_04_01b_MasqueEau.R"))}
   
   # "05_01c. Masques Relations des 2 (un peu plus large) et 1 (bords sur lesquelq des points virtuels sont créés)",
-  if (nFILINO[5]==1){source(file.path(chem_routine,"FILINO_05_01c_MasqueEau.R"))}
+  if (nFILINO[5]==1){suppressWarnings(source(file.path(chem_routine,"FILINO_05_01c_MasqueEau.R")))}
   
   # "06_02ab.SurfEau Exctraction des points Lidar des masques 2 et calculs des points virtuels",
   if (nFILINO[6]==1)
@@ -342,16 +448,27 @@ for (iTA in 1:length(dsnTALidar))
     FILINO_Creat_Dir(file.path(dsnlayer,NomDirMNTGDAL,racilayerTA))
     source(file.path(chem_routine,"FILINO_12_08_CreationMNT_Raster_Pilotage.R"))
   }
+  
+  # 18_13.Raster GpsTime
+  if (nFILINO[18]==1)
+  {
+    source(file.path(chem_routine,"FILINO_18_13_GpsTime_Pilotage.R"))
+  }
+  
+  if (nFILINO[20]==1)
+  { 
+    source(file.path(chem_routine,"FILINO_20_99_CopieDonnees.R"))
+  }
 }
 
-# "13_00c. Table d'assemblage des données Lidar (classifiées ou autre)",
+# "13_00c. Table d'assemblage des données Lidar (classifiées ou autre)",☺
 if (nFILINO[13]==1)
 {
   source(file.path(chem_routine,"FILINO_02_00c_TablesAssemblagesLazIGN.R"))
   
   for (ita in 1:dim(paramTARaster)[1])
   {
-    FILINO_00c_TA(paramTARaster$Doss[ita],paramTARaster$NomTA[ita],paramTARaster$extension[ita],cbind(0,0,paramTARaster[ita,cbind("Xdeb","Xfin","Ydeb","Yfin")]))
+    FILINO_00c_TA(chem_routine,paramTARaster$Doss[ita],paramTARaster$NomTA[ita],paramTARaster$extension[ita],cbind(0,0,paramTARaster[ita,cbind("Xdeb","Xfin","Ydeb","Yfin")]),qgis_process,"","")
   }
 }
 
@@ -375,4 +492,22 @@ if (nFILINO[16]==1)
 if (nFILINO[17]==1)
 { 
   source(file.path(chem_routine,"FILINO_17_12_Differences_Pilotage.R"))
+}
+
+# 19_14.      Herbe sur champs à faible relief
+if (nFILINO[19]==1)
+{
+  source(file.path(chem_routine,"FILINO_19_14_Herbe_Pilotage.R"))
+}
+
+if (nFILINO[21]==1)
+{ 
+  
+  # reso=0.5
+  # reso=1
+  # browser()
+  for (ita in 1:dim(paramTARaster)[1])
+  {
+    source(file.path(chem_routine,"FILINO_21_Re_Echantillonage_Pilotage.R"))
+  }
 }

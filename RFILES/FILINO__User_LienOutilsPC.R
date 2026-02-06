@@ -1,33 +1,62 @@
-# Dans R, pour recherhcer où une variable est appliquées
-#Ctrl Shift F, mettre le nom de la varianle et le dossier dans lequel chercher
+# =============================================================================
+# FILINO - Configuration des chemins vers les outils externes
+# =============================================================================
+# Instructions :
+# - Aucun espace dans les chemins de dossiers.
+# - Les séparateurs "/" ou "\\" dépendent des outils utilisés.
+# - Installer QGIS directement dans "C:/QGIS" pour éviter les conflits.
+# =============================================================================
 
-#-------------------------------------Chemins des outils utilisés------------------------------------------------------
-# Aucun espace n'est accepté dans les chemins des dossiers
+# ----------------------------------------------------------------------------
+# 🔍 Astuce pour rechercher une variable dans RStudio :
+#   - Utilisez "Ctrl + Shift + F" pour rechercher une variable dans un dossier.
+# ----------------------------------------------------------------------------
 
-##### ****************    TRES IMPORTANT    **************** ##### 
-##### ****************    TRES IMPORTANT    **************** ##### 
-##### ****************    TRES IMPORTANT    **************** ##### 
-##### ****************    TRES IMPORTANT    **************** ##### 
-# LES "/" OU "\\" DANS LES CHEMINS DES REPERTOIRES NE SONT PAS 
-# LE FRUIT DU HASARD MAIS UN BESOIN DEPENDANT DES OUTILS UTILISES
-##### ****************    TRES IMPORTANT    **************** ##### 
-##### ****************    TRES IMPORTANT    **************** ##### 
-##### ****************    TRES IMPORTANT    **************** ##### 
-##### ****************    TRES IMPORTANT    **************** ##### 
+# =============================================================================
+# CHEMINS VERS LES OUTILS (À ADAPTER SELON VOTRE ENVIRONNEMENT)
+# =============================================================================
 
-# Installer Qgis directement sur C:/QGIS
-# Lien vers Osgeo (dans dossier osgeo ou qgis)
-OSGeo4W_path = "C:/QGIS/OSGeo4W.bat" #chemin OSGeo4w.bat
+# --------------------------
+# 📌 OSGeo4W (pour QGIS/GRASS)
+# --------------------------
+# Chemin vers le fichier OSGeo4W.bat (nécessaire pour exécuter QGIS/GRASS en ligne de commande)
+OSGeo4W_path <- "C:/QGIS/OSGeo4W.bat"
 
-# Lien pour utiliser des fonction GRASS
-BatGRASS="C:\\QGIS\\bin\\grass83.bat"
+# --------------------------
+# 🌿 GRASS GIS
+# --------------------------
+# Chemin vers le fichier batch de GRASS (version 8.4)
+BatGRASS <- "C:\\QGIS\\bin\\grass84.bat"
 
-# Lien pour utiliser Pdal
-pdal_exe="C:/QGIS/bin/pdal.exe"
+# --------------------------
+# 🗺️ PDAL (Point Data Abstraction Library)
+# --------------------------
+# Chemin vers l'exécutable PDAL (pour le traitement des nuages de points LiDAR)
+pdal_exe <- "C:/QGIS/bin/pdal.exe"
 
-# Lien pour utiliser des fonction Qgis
-qgis_process <- "C:/QGIS/bin/qgis_process-qgis.bat"
+# --------------------------
+# 🖥️ QGIS (traitements en ligne de commande)
+# --------------------------
+# Chemin vers qgis_process (pour exécuter des algorithmes QGIS en script)
+# Deux versions possibles selon votre installation :
+# qgis_process <- "C:/QGIS/bin/qgis_process-qgis-ltr.bat"  # Version LTR (Long Term Release)
+qgis_process <- "C:/QGIS/bin/qgis_process-qgis-qt6.bat"  # Version Qt6
 
-# Lien pour faire des vidéos de démo
-# ffmpeg peut être installé après la 1ère utilisation de l'extension Crayfish dans Qgis
-ffmpeg="C:\\Users\\frederic.pons\\AppData\\Roaming\\QGIS\\QGIS3\\profiles\\default\\python\\plugins\\crayfish\\ffmpeg.exe"
+# --------------------------
+# 🎥 FFmpeg (pour les vidéos de démonstration)
+# --------------------------
+# Chemin vers ffmpeg (installé avec l'extension Crayfish dans QGIS)
+# Note : FFmpeg est généralement installé automatiquement après la première utilisation de Crayfish.
+ffmpeg <- "C:\\Users\\frederic.pons\\AppData\\Roaming\\QGIS\\QGIS3\\profiles\\default\\python\\plugins\\crayfish\\ffmpeg.exe"
+
+# =============================================================================
+# NOTES IMPORTANTES :
+# =============================================================================
+# 1. Vérifiez que tous les chemins correspondent à votre installation.
+# 2. Si un outil n'est pas trouvé, vérifiez :
+#    - L'orthographe du chemin.
+#    - Que le fichier existe bien à l'emplacement indiqué.
+# 3. Pour FFmpeg, si le chemin ne fonctionne pas, installez FFmpeg manuellement :
+#    - Téléchargez FFmpeg depuis https://ffmpeg.org/
+#    - Ajoutez-le à votre PATH ou spécifiez le chemin absolu ici.
+# =============================================================================

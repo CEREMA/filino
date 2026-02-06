@@ -1,4 +1,3 @@
-nb_proc=nb_proc_Filino_[12]
 source(file.path(chem_routine,"FILINO_12_08_CreationMNT_Raster.R"))
 source(file.path(chem_routine,"FILINO_Utils.R"))
 
@@ -14,12 +13,12 @@ if (length(n_int)>0)
   
   FILINO_Creat_Dir(file.path(dsnlayer,NomDirMNTGDAL,racilayerTA))
   
-  
+  nb_proc=min(nb_proc_Filino_[12],dim(TAHDCla)[1])
   if(nb_proc==0)
   {
     for (idalle in 1:dim(TAHDCla)[1])
     {
-      TA_tmp=TA_TA_OLD[iLAZ,]
+      # TA_tmp=TAHDCla[idalle,]
       
       FILINO_12_08_CreationMNT_Raster_Job(idalle)
     }
@@ -29,7 +28,9 @@ if (length(n_int)>0)
     cl <- parallel::makeCluster(nb_proc)
     registerDoParallel(cl)
     
-    foreach(idalle = 1:dim(TAHDCla)[1]) %dopar% 
+    foreach(idalle = 1:dim(TAHDCla)[1],
+            .combine = 'c',
+            .inorder = FALSE) %dopar% 
       {
         FILINO_12_08_CreationMNT_Raster_Job(idalle)
       }

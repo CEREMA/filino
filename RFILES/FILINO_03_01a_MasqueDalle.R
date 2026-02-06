@@ -1,24 +1,19 @@
 FILINO_03_01a_Job=function(iLAZ,TA_tmp,dimTA1,NomLaz,reso,largdalle,paramXYTA,iTA,dsnTALidar,dsnlayer)
 {
-  # Gestion des noms de champs de mes tables d'assemblage
-  # if (is.null(TA_tmp$CHEMIN))
-  # {
-    # Lidar Hd brut
-    NomLaz=basename(file.path(dsnlayerTA,TA_tmp$DOSSIER,TA_tmp$NOM))
-    ChemLaz=dirname(file.path(dsnlayerTA,TA_tmp$DOSSIER,TA_tmp$NOM))
-  # }else{
-  #   # Lidar HD classif
-  #   NomLaz=TA_tmp$NOM
-  #   ChemLaz=TA_tmp$CHEMIN
-  # }
-
+  NomLaz=basename(file.path(dsnlayerTA,TA_tmp$DOSSIER,TA_tmp$NOM))
+  ChemLaz=dirname(file.path(dsnlayerTA,TA_tmp$DOSSIER,TA_tmp$NOM))
+  
+  
   decalgrille=reso
   Ouest=largdalle*as.numeric(substr(NomLaz,paramXYTA[2],paramXYTA[3]))
   Nord=largdalle*as.numeric(substr(NomLaz,paramXYTA[4],paramXYTA[5]))
-  Est=as.character(Ouest+largdalle+decalgrille)
-  Sud=as.character(Nord-largdalle-decalgrille)
-  Ouest=as.character(Ouest-decalgrille)
-  Nord=as.character(Nord+decalgrille)
+  Est=as.character(Ouest+largdalle)
+  Sud=as.character(Nord-largdalle)
+  # ancien 05/08/2025
+  # Est=as.character(Ouest+largdalle+decalgrille)
+  # Sud=as.character(Nord-largdalle-decalgrille)
+  # Ouest=as.character(Ouest-decalgrille)
+  # Nord=as.character(Nord+decalgrille)
   
   raci=gsub(".copc","_copc",paste0(substr(NomLaz,1,nchar(NomLaz)-4)))
   
@@ -57,7 +52,6 @@ FILINO_03_01a_Job=function(iLAZ,TA_tmp,dimTA1,NomLaz,reso,largdalle,paramXYTA,iT
     }
     unlink(NomTXT_old)
   }
-  
   
   if (Alancer==0 &
       ((file.exists(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,NomDossDalles,paste0(raci,"_Masque1.gpkg")))==T & 
@@ -122,8 +116,11 @@ FILINO_03_01a_Job=function(iLAZ,TA_tmp,dimTA1,NomLaz,reso,largdalle,paramXYTA,iT
       system(paste0(BatGRASS," -c EPSG:",nEPSG," ",dirname(SecteurGRASS)," --text"))
       system(paste0(BatGRASS," -c ",SecteurGRASS," --text"))
       
-      # source(file.path(chem_routine,"FILINO_03_01a_MasqueEau_Grass.R"),encoding = "utf-8")
+      # Ancien
       FILINO1a_Vide_Grass(iLAZ,NomLaz,nom_Rast_INV_VIDEetEAU,nom_RastEAU,nom_RastSOL,SecteurGRASS,Nord,Sud,Est,Ouest)
+      # Nouveau du 05/08/2025 voir si cela ne plante pas pour d'autres choix que reso 0.5...
+      # FILINO1a_Vide_Grass(iLAZ,NomLaz,nom_Rast_INV_VIDEetEAU,nom_RastEAU,nom_RastSOL,SecteurGRASS,as.numeric(Nord)-reso,as.numeric(Sud)+reso,as.numeric(Est)-reso,as.numeric(Ouest)+reso)
+      
       
       unlink(dirname(SecteurGRASS),recursive=TRUE)
       cat("\014")
@@ -210,7 +207,7 @@ FILINO_03_01a_Job=function(iLAZ,TA_tmp,dimTA1,NomLaz,reso,largdalle,paramXYTA,iT
     nominput=file.path(ChemLaz,NomLaz)
     Ch_Classif="Classification[3:5]"
     FILINO_writers_gdal(nomjson,nominput,Ch_Classif,nom_method,Mult_Reso*reso,Ouest,Est,Sud,Nord,nom_Rast_VEGE)
-
+    
     if (file.exists(file.path(dirname(nomjson),nom_RastTSF))==T)
     {
       #Creation d'un monde GRASS
@@ -225,9 +222,9 @@ FILINO_03_01a_Job=function(iLAZ,TA_tmp,dimTA1,NomLaz,reso,largdalle,paramXYTA,iT
       cat("\014")
       if (Nettoyage==1)
       {
-        unlink(nomjson)
-        unlink(nom_RastTSF)
-        unlink(nom_Rast2)
+        if (file.exists(nomjson)){unlink(nomjson)}
+        if (file.exists(nom_RastTSF)){unlink(nom_RastTSF)}
+        if (file.exists(nom_Rast2)){unlink(nom_Rast2)}
       }
     }
     # }else{

@@ -1,7 +1,7 @@
 FILINO_08_06_TA_PtsVirtuelsLaz_Job=function(iLAZ,nomlaz,nb_proc)
 {
+  nomlaz=as.character(nomlaz)
   tour=list()
-  
   nomjson=paste0(basename(nomlaz))
   nomjson=paste0(substr(nomjson,1,nchar(nomjson)-4),iLAZ,".json")
   cmd=paste0(shQuote(pdal_exe)," info ",shQuote(file.path(dsnlayer,nomlaz))," --summary")
@@ -9,7 +9,6 @@ FILINO_08_06_TA_PtsVirtuelsLaz_Job=function(iLAZ,nomlaz,nb_proc)
   write(toto,nomjson)
   
   myData <- rjson::fromJSON(file=nomjson)
-  
   
   Xmin=myData$summary$bounds$minx
   Xmax=myData$summary$bounds$maxx
@@ -30,5 +29,6 @@ FILINO_08_06_TA_PtsVirtuelsLaz_Job=function(iLAZ,nomlaz,nb_proc)
   
   voila=st_sf(data.frame(CHEMIN=chem,DOSSIER=doss,NOM=basename(nomlaz),TypeLidar=racilayerTA,Type=nomType),"geometry" =st_sfc(st_polygon(tour,dim="XY"),crs=nEPSG))
   if (nb_proc>0){st_write(voila,file.path(dir_tmp,paste0(iLAZ,".gpkg")), delete_layer=T, quiet=T)}
+  return(voila)
   # return(st_sf(data.frame(CHEMIN=chem,DOSSIER=doss,NOM=basename(nomlaz),TypeLidar=racilayerTA,Type=nomType),"geometry" =st_sfc(st_polygon(tour,dim="XY"),crs=nEPSG)))
 }

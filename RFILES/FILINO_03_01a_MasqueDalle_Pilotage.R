@@ -1,5 +1,3 @@
-nb_proc=nb_proc_Filino_[3]
-
 source(file.path(chem_routine,"FILINO_03_01a_MasqueDalle.R"))
 source(file.path(chem_routine,"FILINO_03_01a_MasqueEau_Grass.R"),encoding = "utf-8")
 source(file.path(chem_routine,"FILINO_03_01a_MasquePont_Grass.R"),encoding = "utf-8")
@@ -27,6 +25,7 @@ if (length(n_int)>0)
   {
     dimTA1=dim(TA)[1]
     
+    nb_proc=min(nb_proc_Filino_[3],dimTA1)
     if(nb_proc==0)
     {
       
@@ -36,12 +35,15 @@ if (length(n_int)>0)
         FILINO_03_01a_Job(iLAZ,TA[iLAZ,],dimTA1,NomLaz,reso,largdalle,paramXYTA,iTA,dsnTALidar,dsnlayer)
       }
     }else{
+      
       cat("------ ",nb_proc," CALCULS MODE PARALLELE -------------\n")
       require(foreach)
       cl <- parallel::makeCluster(nb_proc)
       registerDoParallel(cl)
       
-      foreach(iLAZ = 1:dimTA1) %dopar% 
+      foreach(iLAZ = 1:dimTA1,
+              .combine = 'c',
+              .inorder = FALSE) %dopar% 
         {
           FILINO_03_01a_Job(iLAZ,TA[iLAZ,],dimTA1,NomLaz,reso,largdalle,paramXYTA,iTA,dsnTALidar,dsnlayer)
         }
@@ -49,12 +51,13 @@ if (length(n_int)>0)
       stopCluster(cl)
     }
   }
+  
   # Fusion de toutes les zones de végétation
   # lecture des zones militaires pour les exclure
   ZICAD=st_transform(
     st_read(nomZICAD),
     st_crs(nEPSG))
-
+  
   if (Etap3a[2]==1)
   {
     setwd(file.path(dsnlayer,NomDirMasqueVEGE,racilayerTA,NomDossDalles))

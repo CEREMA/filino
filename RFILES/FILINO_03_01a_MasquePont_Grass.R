@@ -17,15 +17,21 @@ FILINO1a_Pont_Grass = function(iLAZ,NomLaz,nom_RastPONT,SecteurGRASS,Nord,Sud,Es
     cmd=paste0("g.region --quiet --overwrite raster=",nomMNTPONT," n=",Nord," s=",Sud," e=",Est," w=",Ouest," res=",as.character(reso))
     print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
     
-    # Test pour voir si tout s'est bien passé, certaines dalles rendent des NULL...
-    NomUnivar=file.path(dsnlayer,paste0(raci,"_runivarP1.txt"))
-    cmd=paste0("r.univar --quiet --overwrite map=",nomMNTPONT," output=",NomUnivar)
-    print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
-    
-    #Lancement GRASS externe
+    # # Test pour voir si tout s'est bien passé, certaines dalles rendent des NULL...
+    # NomUnivar=file.path(dsnlayer,paste0(raci,"_runivarP1.txt"))
+    # cmd=paste0("r.univar --quiet --overwrite map=",nomMNTPONT," output=",NomUnivar)
     # print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
-    nvaleur=as.numeric(scan(file=NomUnivar,NomUnivar,sep=":",skip=5,nlines=1,dec=".")[2])
-    unlink(NomUnivar)
+    #     #Lancement GRASS externe
+    # # print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
+    # nvaleur=as.numeric(scan(file=NomUnivar,NomUnivar,sep=":",skip=5,nlines=1,dec=".")[2])
+    # unlink(NomUnivar)
+    
+    cmd=paste0("r.univar --quiet --overwrite map=",nomMNTPONT)
+    print(cmd);toto=system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd),intern=T)
+    nlig=grep(toto,pattern="n: ")[1]
+    nvaleur=as.numeric(strsplit(toto[nlig],":")[[1]][2])
+    cat(toto[nlig],"\n")
+    cat("Nombre de valeur: ",nvaleur, "\n")
     
     if (nvaleur>0)
     {

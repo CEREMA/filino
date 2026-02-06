@@ -1,5 +1,3 @@
-nb_proc=nb_proc_Filino_[7]
-
 source(file.path(chem_routine,"FILINO_07_05a_SolVieuxLazSousVege.R"))
 source(file.path(chem_routine,"FILINO_Utils.R"))
 
@@ -48,6 +46,7 @@ if (length(n_int)>0)
       TA_TA_OLD=TA[n_int,]
       
       # Boucle sur les fichiers Laz
+      nb_proc=min(nb_proc_Filino_[7],dim(TA_TA_OLD)[1])
       
       if(nb_proc==0)
       {
@@ -62,6 +61,8 @@ if (length(n_int)>0)
         registerDoParallel(cl)
         
         foreach(iLAZ = 1:dim(TA_TA_OLD)[1],
+                .combine = 'c',
+                .inorder = FALSE,
                 .packages = c("sf")) %dopar% 
           {
             FILINO_07_05a_Job(iLAZ,TA_TA_OLD[iLAZ,],racilayerTAold,TA_Old,Classe_New)
