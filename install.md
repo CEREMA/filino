@@ -42,7 +42,7 @@ Avant de commencer, assurez-vous :
   **Chemin d’installation** : `C:\TauDEM`
 - Lors de l’installation, choisissez l’option :
   **Type de configuration** : *Typical*
-- l’**antivirus bloque l’exécutable TauDEM** de manière fréquente sous Windows. Sur les essaies Cerema, TauDEM537_setup.exe fonctionne, TauDEM540_setup_x64.exe est bloqué
+- l’**antivirus bloque l’exécutable TauDEM** de manière fréquente sous Windows. Sur les essais Cerema, TauDEM537_setup.exe fonctionne, TauDEM540_setup_x64.exe est bloqué
 
 ---
 
