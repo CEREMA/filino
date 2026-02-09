@@ -67,7 +67,7 @@ Avant de commencer, assurez-vous :
 
 ---
 
-### 12. Lancement de FILINO
+### 8. Lancement de FILINO
 - Allez dans `C:\R\R-x.x.x\Cerema\FILINO` et lancez **FILINO__Run**.
 - **RStudio** s’ouvrira automatiquement.
 - Dans l’interface, installez les librairies demandées.
