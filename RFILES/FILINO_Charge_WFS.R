@@ -60,4 +60,5 @@ dalles_lidar=dalles_lidar[order(dalles_lidar$id),]
 dalles_lidar$Affichage=as.numeric(dalles_lidar$name_IDEM)+as.numeric(dalles_lidar$url_IDEM)
 
 nomexport=paste0(dsnexport,format(Sys.time(),format="%Y%m%d_%H%M%S"),"_Doublons.gpkg")
+dir.create(dirname(nomexport),recursive = T)
 st_write(dalles_lidar,nomexport, delete_dsn = T,delete_layer = T, quiet = T)

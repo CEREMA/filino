@@ -224,7 +224,7 @@ FILINO_03_01a_Job=function(iLAZ,TA_tmp,dimTA1,NomLaz,reso,largdalle,paramXYTA,iT
       {
         if (file.exists(nomjson)){unlink(nomjson)}
         if (file.exists(nom_RastTSF)){unlink(nom_RastTSF)}
-        if (file.exists(nom_Rast2)){unlink(nom_Rast2)}
+        # if (exists("nom_Rast2")==T){if (file.exists(nom_Rast2)){unlink(nom_Rast2)}}
       }
     }
     # }else{

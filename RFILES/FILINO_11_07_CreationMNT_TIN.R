@@ -341,7 +341,7 @@ FILINO_11_07_Job=function(idalle,TA_Zone,NomDirMNTTIN,type,TA,TAPtsVirtu,listeMa
         }
       }
     }
-    browser()
+    # browser()
     if (nCalcTaudem==1 & file.exists(NomTIF)==T)
     {
       # nproc=4
