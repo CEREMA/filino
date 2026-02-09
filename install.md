@@ -9,14 +9,13 @@
 Avant de commencer, assurez-vous :
 - D’avoir les **droits d’administration** sur votre machine.
 - D’utiliser un **système d’exploitation Windows**.
-- Prendre en main **Telemac 2D** avant de vous lancer dans Cartino2D ([http://www.opentelemac.org/](http://www.opentelemac.org/))
 
 ---
 
 ### 2. Installation de QGIS
 - Téléchargez et installez **QGIS** depuis : [https://qgis.org/](https://qgis.org/)
   **Chemin d’installation recommandé** : `C:\QGIS`
-- **Attention** : Si le fichier `grassxxx.bat` appelé dans Cartino2D ne fonctionne pas correctement, installez **GRASS GIS** depuis : [https://grass.osgeo.org/](https://grass.osgeo.org/).
+- **Attention** : Si le fichier `grassxxx.bat` appelé dans FILINO ne fonctionne pas correctement, installez **GRASS GIS** depuis : [https://grass.osgeo.org/](https://grass.osgeo.org/).
 - Il peut être utile d'installer [ffmpeg](https://www.ffmpeg.org/) par l'intermédiaire du plugin [crayfish](https://plugins.qgis.org/plugins/crayfish/) (production de vidéo)
 
 ---
@@ -68,7 +67,7 @@ Avant de commencer, assurez-vous :
 
 ---
 
-### 12. Lancement de Cartino2D
+### 12. Lancement de FILINO
 - Allez dans `C:\R\R-x.x.x\Cerema\FILINO` et lancez **FILINO__Run**.
 - **RStudio** s’ouvrira automatiquement.
 - Dans l’interface, installez les librairies demandées.
