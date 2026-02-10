@@ -121,8 +121,6 @@ FILINO_06_02ab_Job23=function(iMasq,Masques1,Masques2,NbCharIdGlobal,NomDirTmp,r
   cat("On en est où ",iMasq,which(iMasq==paste0(raciTmp,Masque2$IdGlobal)),"\n")
   cat(Masque2$IdGlobal)
   
-  if (Masque2$IdGlobal=="001_000000kmX0874500Y6262500"){browser()}#arrêt sur une surface en eau coquine
-  
   # Lecture du cas à traiter dans Masque2$FILINO, ordre important
   Cas=0
   cat(Masque2$IdGlobal,"\n")

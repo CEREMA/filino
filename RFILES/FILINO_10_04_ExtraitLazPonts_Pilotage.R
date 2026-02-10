@@ -52,7 +52,7 @@ if (length(n_int)>0)
   {
     cat("\014")
     cat("FILINO_06_02ab_ExtraitLazPontsEau - Etap10_04[1]\n")
-    nb_proc=min(nb_proc_Filino_[10],dim(TA)[1])
+    nb_proc=min(floor(0.6*detectCores()),nb_proc_Filino_[10],dim(TA)[1])
     if(nb_proc==0)
     {
       for (iLAZ in 1:dim(TA)[1])

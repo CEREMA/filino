@@ -17,12 +17,22 @@ library(doParallel)
 library(raster)
 # library(purrr)
 
-cat("\014") # Nettoyage de la console
+cat("##################### FILINO A LIRE SVP ##############################\n")
+cat("SI VOUS AVEZ CETTE ERREUR AU DESSOUS\n")
+cat("Erreur dans file(filename, r, encoding = encoding) : \n")
+cat("impossible d'ouvrir la connexion\n")
+cat("De plus : Message davis :\n")
+cat("Dans file(filename, r, encoding = encoding) :\n")
+cat("impossible d ouvrir le fichier /C2D_ParamUser/C2D_LienOutilsPC.R : No such file or directory\n")
+cat("\n")
+cat("===> RELANCER             'Source'           de RStudio\n")
+cat("##################### FILINO Fin ##############################\n")
 
 chem_routine=dirname(rstudioapi::getActiveDocumentContext()$path)
 print(chem_routine)
 source(file.path(chem_routine,"FILINO__User_LienOutilsPC.R"))
 source(file.path(chem_routine,"FILINO__User_Parametres.R"))
+cat("\014") # Nettoyage de la console
 listSect=list.files(file.path(chem_routine), pattern="FILINO__User_Chemin_et_Nom")
 if (length(listSect)>1)
 {
@@ -392,6 +402,22 @@ for (iTA in 1:length(dsnTALidar))
     source(file.path(chem_routine,"FILINO_02_00c_TablesAssemblagesLazIGN.R"))
     Doss_ExpRastCount=file.path(dsnlayer,NomDirMNTGDAL,racilayerTA,NomDossDalles) # doffiser pour l'export du nombre de points
     FILINO_00c_TA(chem_routine,dsnlayerTA,nomlayerTA,extensionLAZ,paramXYTA,qgis_process,Doss_ExpRastCount,pdal_exe)
+    cat("\n")
+    cat("\n")
+    cat("########################################################################################################\n")
+    cat("######################### FILINO A LIRE SVP ###############################################################\n")
+    cat("---------------- ETAPE FILINO_02_00c_TablesAssemblagesLazIGN.R #######################################\n")
+    cat("\n")
+    cat("Votre table d'assemblage est: ",file.path(dsnlayerTA,nomlayerTA),"\n")
+    cat("Dans Qgis, vous pouvez l'ouvrir et utiliser les actions pour ouvrir les nuages de points.\n")
+    cat("\n")
+    cat("Des fichiers associés permettent de voir s'il n'y a pas des manques de chargements.\n")
+    cat("\n")
+    cat("Parfois, rien ne s'affiche, changez la symbologie dans QGIS\n")
+    cat("\n")
+    cat("######################### Fin FILINO A LIRE ###############################################################\n")
+    cat("######################### Ne pas lire les messages d'avis ou warnings en dessous###########################\n")
+    cat("\n")
   }
   
   # "03_01a. Masques Vides et Eau par dalles",
@@ -461,7 +487,7 @@ for (iTA in 1:length(dsnTALidar))
   }
 }
 
-# "13_00c. Table d'assemblage des données Lidar (classifiées ou autre)",☺
+# "13_00c. Table d'assemblage des données produites"
 if (nFILINO[13]==1)
 {
   source(file.path(chem_routine,"FILINO_02_00c_TablesAssemblagesLazIGN.R"))
@@ -470,6 +496,19 @@ if (nFILINO[13]==1)
   {
     FILINO_00c_TA(chem_routine,paramTARaster$Doss[ita],paramTARaster$NomTA[ita],paramTARaster$extension[ita],cbind(0,0,paramTARaster[ita,cbind("Xdeb","Xfin","Ydeb","Yfin")]),qgis_process,"","")
   }
+  cat("\n")
+  cat("########################################################################################################\n")
+  cat("######################### FILINO A LIRE SVP ###############################################################\n")
+  cat("---------------- ETAPE Table d'assemblage des données Raster (TIF ou GPKG) #######################################\n")
+  cat("\n")
+  cat("Votre dernière table d'assemblage est: ",paramTARaster$Doss[ita],paramTARaster$NomTA[ita],"\n")
+  cat("Dans Qgis, vous pouvez l'ouvrir et utiliser les actions pour ouvrir les données.\n")
+  cat("\n")
+  cat("Ensuite, vous pouvez refusionner sur vos secteurs avec l'option 'Création de vrt et gpkg par zone'\n")
+  cat("\n")
+  cat("######################### Fin FILINO A LIRE ###############################################################\n")
+  cat("######################### Ne pas lire les messages d'avis ou warnings en dessous###########################\n")
+  cat("\n")
 }
 
 # ""14_09   FILINO_14_09_CycleCouleur.R"

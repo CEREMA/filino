@@ -1,5 +1,5 @@
 source(file.path(chem_routine,"FILINO_19_14_Herbe.R"))
-nb_proc=min(nb_proc_Filino_[19],dim(ZONE)[1])
+nb_proc=min(floor(0.6*detectCores()),nb_proc_Filino_[19],dim(ZONE)[1])
 if(nb_proc==0)
 {
   for (iZone in 1:dim(ZONE)[1])

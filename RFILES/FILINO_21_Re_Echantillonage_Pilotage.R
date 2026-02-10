@@ -10,7 +10,7 @@ n_int = which(sapply(nb, length)>0)
 if (length(n_int)>0)
 {
   TA_Rast_Zone=TA_Rast[n_int,]
-  nb_proc=min(nb_proc_Filino_[21],dim(TA_Rast_Zone)[1])
+  nb_proc=min(floor(0.6*detectCores()),nb_proc_Filino_[21],dim(TA_Rast_Zone)[1])
   if(nb_proc==0)
   {
     for (idalle in 1:dim(TA_Rast_Zone)[1])

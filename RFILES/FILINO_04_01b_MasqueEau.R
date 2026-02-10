@@ -618,7 +618,7 @@ if (length(n_int)>0)
           {
             # browser()
             surfhydro_tmp=surfhydro_tmp[n_int_ms2,]
-
+            
             # Récupération de la partie estuaire
             Estuaires=st_intersection(Masques2[im,], st_union(st_buffer(surfhydro_tmp,bufMer)))
             if (verif==1){st_write(Estuaires,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Estuaires.gpkg"), delete_layer=T, quiet=T)}
@@ -644,7 +644,7 @@ if (length(n_int)>0)
             Mer2=st_cast(Mer2,"POLYGON")
             Mer2$Aire=st_area(Mer2)
             units(Mer2$Aire)=NULL
-
+            
             iciR=which(Mer2$Aire<SeuilRecombine)
             if (length(iciR)>0)
             {
@@ -808,7 +808,6 @@ if (length(n_int)>0)
           units(FusionPetitsVoisins$Aire)=NULL
           MerDecoupee=rbind(MersansPetit[-n_intnbmdp,],FusionPetitsVoisins)
         }else{
-          
           MerDecoupee$Aire[npetit]=seuilmerdec
         }
       }
@@ -821,23 +820,28 @@ if (length(n_int)>0)
       ngrosmer=dim(MerDecoupee[-nNRacc,1])[1]
       if (length(nNRacc)>0)
       {
-        
-        GrosseMer=MerDecoupee[-nNRacc,]
-        PetiteMer=MerDecoupee[nNRacc,]
-        distaC=st_distance(PetiteMer,GrosseMer)
-        GrosseMer$Id=1:ngrosmer
-        
-        PetiteMer$Id=0
-        for (ifmer in 1:length(nNRacc))
+        if (length(nNRacc)<nrow(MerDecoupee))
         {
-          PetiteMer[ifmer,]$Id=GrosseMer[which(distaC[ifmer,]==min(distaC[ifmer,])),]$Id
+          GrosseMer=MerDecoupee[-nNRacc,]
+          PetiteMer=MerDecoupee[nNRacc,]
+          distaC=st_distance(PetiteMer,GrosseMer)
+          GrosseMer$Id=1:ngrosmer
+          
+          PetiteMer$Id=0
+          for (ifmer in 1:length(nNRacc))
+          {
+            PetiteMer[ifmer,]$Id=GrosseMer[which(distaC[ifmer,]==min(distaC[ifmer,])),]$Id
+          }
+          if (verif==1)
+          {
+            st_write(PetiteMer,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"PetiteMer.gpkg"), delete_layer=T, quiet=T)
+            st_write(GrosseMer,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"GrosseMer.gpkg"), delete_layer=T, quiet=T)
+          }
+          GrosseMer2=rbind(GrosseMer,PetiteMer)
+        }else{
+          GrosseMer=MerDecoupee
+          GrosseMer$Id=1:ngrosmer
         }
-        if (verif==1)
-        {
-          st_write(PetiteMer,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"PetiteMer.gpkg"), delete_layer=T, quiet=T)
-          st_write(GrosseMer,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"GrosseMer.gpkg"), delete_layer=T, quiet=T)
-        }
-        GrosseMer2=rbind(GrosseMer,PetiteMer)
         GrosseMer2DF=GrosseMer2
         st_geometry(GrosseMer2DF)=NULL
         GrosseMer2=do.call(rbind,
@@ -862,7 +866,7 @@ if (length(n_int)>0)
       Masques2=Masques2[order(Masques2$Aire),]
       
     }
-
+    
     st_write(Masques2,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2_AppareillageSurfaceEauTronconhydroMer2.gpkg"), delete_layer=T, quiet=T)
     
   } 
@@ -1151,3 +1155,25 @@ if (length(n_int)>0)
     }
   }
 }
+
+cat("\n")
+cat("\n")
+cat("########################################################################################################\n")
+cat("######################### FILINO A LIRE SVP ###############################################################\n")
+cat("---------------- ETAPE FILINO_04_01b_MasqueEau.R #######################################\n")
+cat("\n")
+cat("\ Si vous avez lancé toutes les étapes.\n")
+cat("\n")
+cat("\ Ouvrir :  ",file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques.qgz"),"    \n")
+cat("\n")
+cat("\ Toutes les couches ne peuvent pas encore s'ouvrir comme 'Masques2_FILINO'...\n")
+cat("\ Adaptez certains chemins si vous avez changé le nom de Zone_A_Traiter...\n")
+cat("\n")
+cat("\ Vous pouvez enregistrer le fichier Masques.qgz avec vos préférences de couleurs...\n")
+cat("\ et le remettre dans le dossier ",file.path(dsnlayer,NomDirSIGBase)," ...\n")
+cat("\n")
+cat("\ Fermer le projet Qgis avant de lancer la suite! ...\n")
+cat("\n")
+cat("######################### Fin FILINO A LIRE ###############################################################\n")
+cat("######################### Ne pas lire les messages d'avis ou warnings en dessous###########################\n")
+cat("\n")

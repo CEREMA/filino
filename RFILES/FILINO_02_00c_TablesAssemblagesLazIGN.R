@@ -200,7 +200,7 @@ FILINO_00c_TA=function(chem_routine,dsnlayerTA,nomlayerTA,extension,paramXYTA,qg
         # for (iasc in 1:nrow(Gagne_MultiTA))
         # {
         #   setTxtProgressBar(pb, iasc)
-        nb_proc=min(nb_proc_Filino_[13],nrow(Gagne_MultiTA))
+        nb_proc=min(floor(0.6*detectCores()),nb_proc_Filino_[13],nrow(Gagne_MultiTA))
         cat("## ------ ",nrow(Gagne_MultiTA)," dalles à analyser -------------##\n")
         cat("------ ",nb_proc            ," CALCULS MODE PARALLELE -------------\n")
         require(foreach)
@@ -310,16 +310,7 @@ FILINO_00c_TA=function(chem_routine,dsnlayerTA,nomlayerTA,extension,paramXYTA,qg
       print(cmd);system(cmd)
       
       file.copy(file.path(dsnlayer,NomDirSIGBase,Nom_qml),
-                file.path(dsnlayerTA,paste0(substr(nomlayerTA,1,nchar(nomlayerTA)-4),".qml")),
-                overwrite = T)
-      file.copy(file.path(dsnlayer,NomDirSIGBase,Nom_qml),
-                file.path(dsnlayerTA,paste0(substr(nomlayerTA,1,nchar(nomlayerTA)-5),".qml")),
-                overwrite = T)
-      file.copy(file.path(NomDirSIGBase),
-                file.path(dsnlayerTA,paste0(substr(nomlayerTA,1,nchar(nomlayerTA)-4),".qml")),
-                overwrite = T)
-      file.copy(file.path(NomDirSIGBase),
-                file.path(dsnlayerTA,paste0(substr(nomlayerTA,1,nchar(nomlayerTA)-5),".qml")),
+                file.path(dsnlayerTA,paste0(strsplit(nomlayerTA,"\\.")[[1]][1],".qml")),
                 overwrite = T)
     }
   }

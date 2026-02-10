@@ -13,7 +13,7 @@ if (length(n_int)>0)
   
   FILINO_Creat_Dir(file.path(dsnlayer,NomDirMNTGDAL,racilayerTA))
   
-  nb_proc=min(nb_proc_Filino_[12],dim(TAHDCla)[1])
+  nb_proc=min(floor(0.6*detectCores()),nb_proc_Filino_[12],dim(TAHDCla)[1])
   if(nb_proc==0)
   {
     for (idalle in 1:dim(TAHDCla)[1])

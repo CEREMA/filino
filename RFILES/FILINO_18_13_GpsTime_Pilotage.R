@@ -13,7 +13,7 @@ n_int = which(sapply(nb, length)>0)
 if (length(n_int)>0)
 {
   TA_=TA[n_int,]
-  nb_proc=min(nb_proc_Filino_[18],dim(TA_)[1])
+  nb_proc=min(floor(0.6*detectCores()),nb_proc_Filino_[18],dim(TA_)[1])
   if(nb_proc==0)
   {
     pgb <- txtProgressBar(min = 0, max = dim(TA_)[1],style=3)

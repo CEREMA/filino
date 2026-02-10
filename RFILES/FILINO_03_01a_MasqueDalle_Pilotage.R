@@ -25,7 +25,7 @@ if (length(n_int)>0)
   {
     dimTA1=dim(TA)[1]
     
-    nb_proc=min(nb_proc_Filino_[3],dimTA1)
+    nb_proc=min(floor(0.6*detectCores()),nb_proc_Filino_[3],dimTA1)
     if(nb_proc==0)
     {
       
@@ -70,3 +70,38 @@ if (length(n_int)>0)
   }
   setwd(chem_routine)
 }
+cat("\n")
+cat("\n")
+cat("########################################################################################################\n")
+cat("######################### FILINO A LIRE SVP ###############################################################\n")
+cat("---------------- ETAPE FILINO_03_01a_MasqueDalle_Pilotage.R #######################################\n")
+cat("\n")
+cat("Vous pouvez ouvrir différents fichiers pour voir la progression mais après pratique, le mieux est de continuer le menu FILINO.\n")
+cat("\n")
+if (Etap3a[1]==1)
+{
+  cat("\ Ouvrir :  ",file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,NomDossDalles),"\n")
+  cat("\ et ouvrir des fichiers Masque1.gpkg et Masque2.gpkg pour comprendre le travail.\n")      
+}
+cat("\n")
+if (Etap3a[2]==1)
+{
+  cat("\ Ouvrir :  ",file.path(dsnlayer,NomDirMasqueVEGE,racilayerTA,NomDossDalles),"\n")
+  cat("\ et ouvrir le dernier fichier créé.\n")
+}
+cat("\n")
+if (Etap3a[3]==1)
+{
+  cat("\ Ouvrir :  ",file.path(dsnlayer,NomDirMasquePONT,racilayerTA,NomDossDalles),"\n")
+  cat("\ et ouvrir le dernier fichier créé.\n")
+}
+cat("\n")
+cat("\n")
+cat("\ De très nombreux fichiers raster ont été créés dans ",file.path(dsnlayer,NomDirMNTGDAL),"\n")
+cat("\ A vous de voir si vous voulez voir le détail de chaque process...\n")
+cat("\ mais après les premières utilisations, ce n'est pas pertinent.\n")
+cat("\n")
+
+cat("######################### Fin FILINO A LIRE ###############################################################\n")
+cat("######################### Ne pas lire les messages d'avis ou warnings en dessous###########################\n")
+cat("\n")

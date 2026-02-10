@@ -22,7 +22,7 @@ if (length(n_int)>0)
   {
     TA1_=TA1[n_int,]
     
-    nb_proc=min(nb_proc_Filino_[17],dim(TA2_)[1])
+    nb_proc=min(floor(0.6*detectCores()),nb_proc_Filino_[17],dim(TA2_)[1])
     if(nb_proc==0)
     {
       for (idalle in 1:dim(TA2_)[1])

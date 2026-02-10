@@ -43,7 +43,7 @@ for (iTypeTIN in nTypeTIN)
   if (length(n_int)>0)
   {
     TA_Zone=TA[n_int,]
-    nb_proc=min(nb_proc_Filino_[11],dim(TA_Zone)[1])
+    nb_proc=min(floor(0.6*detectCores()),nb_proc_Filino_[11],dim(TA_Zone)[1])
     if(nb_proc==0)
     {
       for (idalle in 1:dim(TA_Zone)[1])
@@ -102,3 +102,18 @@ for (iTypeTIN in nTypeTIN)
     if (length(which(nlalz==3))){unlink(file.path(dsnlayer,NomDirMNTTIN,racilayerTA,NomDossDalles,listeBADALLOCPDAL))}
   }
 }
+cat("\n")
+cat("\n")
+cat("########################################################################################################\n")
+cat("######################### FILINO A LIRE SVP ###############################################################\n")
+cat("---------------- ETAPE FILINO_11_07_CreationMNT_TIN_Pilotage.R #######################################\n")
+cat("\n")
+cat("\ Ouvrir :  ",file.path(dsnlayer,NomDirMNTTIN,racilayerTA,NomDossDalles),"    \n")
+cat("De nombreux fichiers TIN_Filino ou TIN_Direct complétés ou pas de _cuvettes ont été créés\n")
+cat("\n")
+cat("Le plus simple est de gérer ces fichiers dans l'option 'Table d'assemblage des données Raster (TIF ou GPKG)'\n")
+cat("Ensuite, vous pouvez refusionner sur vos secteurs avec l'option 'Création de vrt et gpkg par zone'\n")
+cat("\n")
+cat("######################### Fin FILINO A LIRE ###############################################################\n")
+cat("######################### Ne pas lire les messages d'avis ou warnings en dessous###########################\n")
+cat("\n")

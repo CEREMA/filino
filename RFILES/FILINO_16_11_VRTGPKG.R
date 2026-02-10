@@ -57,3 +57,16 @@ for (ita in 1:dim(paramTARaster)[1])
     }
   }
 }
+cat("\n")
+cat("\n")
+cat("########################################################################################################\n")
+cat("######################### FILINO A LIRE SVP ###############################################################\n")
+cat("---------------- ETAPE FILINO_16_11_VRTGPKG.R #######################################\n")
+cat("\n")
+cat("\ Ouvrir le gpkg qui commence comme:  ",vrtfile,"    \n")
+cat("\n")
+cat("Ensuite, vous pouvez appliquer des styles prédéfinis\n")
+cat("\n")
+cat("######################### Fin FILINO A LIRE ###############################################################\n")
+cat("######################### Ne pas lire les messages d'avis ou warnings en dessous###########################\n")
+cat("\n")

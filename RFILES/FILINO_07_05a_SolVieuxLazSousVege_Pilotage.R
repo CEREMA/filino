@@ -46,7 +46,7 @@ if (length(n_int)>0)
       TA_TA_OLD=TA[n_int,]
       
       # Boucle sur les fichiers Laz
-      nb_proc=min(nb_proc_Filino_[7],dim(TA_TA_OLD)[1])
+      nb_proc=min(floor(0.6*detectCores()),nb_proc_Filino_[7],dim(TA_TA_OLD)[1])
       
       if(nb_proc==0)
       {
@@ -72,3 +72,19 @@ if (length(n_int)>0)
     }
   }
 }
+cat("\n")
+cat("\n")
+cat("########################################################################################################\n")
+cat("######################### FILINO A LIRE SVP ###############################################################\n")
+cat("---------------- ETAPE FILINO_07_05a_SolVieuxLazSousVege_Pilotage.R #######################################\n")
+cat("\n")
+cat("Des fichiers Laz des anciens points SOL sont dans ce dossier:",file.path(dsnlayer,nomDirViSOLssVEGE,racilayerTA,NomDossDalles),"\n")
+cat("\n")
+cat("La meilleure solution sur des gros projets est de lancer l'étape 'FILINO_08_06_TA_PtsVirtuelsLaz.R'\n")
+cat("La table d'assemblage créée à cette étape permet d'ouvrir dans Qgis avec des actions\n")
+cat("   - les points virtuels crées\n")
+cat("   - les répertoires pour voir les fichiers images\n")
+cat("\n")
+cat("######################### Fin FILINO A LIRE ###############################################################\n")
+cat("######################### Ne pas lire les messages d'avis ou warnings en dessous###########################\n")
+cat("\n")

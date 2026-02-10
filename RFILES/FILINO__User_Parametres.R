@@ -166,7 +166,7 @@ nb_proc_Filino=rbind(
   cbind(0,  9, 15, 10, 65),#8  #FILINO_08_06_TA_PtsVirtuelsLaz
   cbind(0,NaN,NaN,NaN,NaN),#9
   cbind(0,  6, 15, 10, 65),#10 #FILINO_10_04_ExtraitLazPonts_Pilotage
-  cbind(0,  1,  4, 10, 40),#11 #FILINO_11_07_CreationMNT_TIN.R
+  cbind(0,  1,  4, 3, 40),#11 #FILINO_11_07_CreationMNT_TIN.R
   cbind(0,  8, 15, 10, 50),#12 #FILINO_12_08_CreationMNT_Raster.R limité par accès au disque si pas SSD
   cbind(0,  6, 15, 10, 16),#13
   cbind(0,NaN,NaN,NaN,NaN),#14
