@@ -35,8 +35,10 @@ FILINO1a_Vide_Grass =   function(iLAZ,NomLaz,nom_Rast_INV_VIDEetEAU,nom_RastEAU,
     # unlink(NomUnivar)
     
     # Test pour voir si tout s'est bien passé, certaines dalles rendent des NULL...
+    # browser()
     cmd=paste0("r.univar --quiet --overwrite map=",nomMNT)
-    print(cmd);toto=system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd),intern=T)
+    # print(cmd);toto=system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd),intern=T)
+    print(cmd);toto = system2(command = BatGRASS,args = c(SecteurGRASS, "--exec", cmd),stdout = TRUE,stderr = TRUE)
     nlig=grep(toto,pattern="n: ")[1]
     nvaleur=as.numeric(strsplit(toto[nlig],":")[[1]][2])
     cat(toto[nlig],"\n")
@@ -63,7 +65,8 @@ FILINO1a_Vide_Grass =   function(iLAZ,NomLaz,nom_Rast_INV_VIDEetEAU,nom_RastEAU,
       # unlink(NomUnivar)
       
       cmd=paste0("r.univar --quiet --overwrite map=",nomMNTMasque1)
-      print(cmd);toto=system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd),intern=T)
+      # print(cmd);toto=system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd),intern=T)
+      print(cmd);toto = system2(command = BatGRASS,args = c(SecteurGRASS, "--exec", cmd),stdout = TRUE,stderr = TRUE)
       nlig=grep(toto,pattern="n: ")[1]
       nvaleur2=as.numeric(strsplit(toto[nlig],":")[[1]][2])
       cat(toto[nlig],"\n")
@@ -81,9 +84,10 @@ FILINO1a_Vide_Grass =   function(iLAZ,NomLaz,nom_Rast_INV_VIDEetEAU,nom_RastEAU,
           
           # Mise à la valeur 1
           nomMNTMasque1EAU=paste0("MNT_Masque1EAU_",iLAZ)
-          cmd=paste0("r.mapcalc --quiet --overwrite ",shQuote(paste0(nomMNTMasque1EAU,"=if(",nomMNTEAU,">",-99,",1,null())")))
+
+          cmd=paste0("r.mapcalc --quiet --overwrite ", shQuote(paste0(nomMNTMasque1EAU, "=if(", nomMNTEAU, ">= -99,1,null())")))
           print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
-          
+
           cmd=paste0("r.mask -r")
           print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
           
@@ -138,7 +142,7 @@ FILINO1a_Vide_Grass =   function(iLAZ,NomLaz,nom_Rast_INV_VIDEetEAU,nom_RastEAU,
         print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
         
         # Raster buffre mis  à 1
-        cmd=paste0("r.mapcalc --quiet --overwrite ",shQuote(paste0(nomMNTMasque2,"=if(",nomMNTMasque1Buf,">",-99,",1,null())")))
+        cmd=paste0("r.mapcalc --quiet --overwrite ", shQuote(paste0(nomMNTMasque2   ,"=if(",nomMNTMasque1Buf,">= -99,1,null())")))
         print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
         
         if (PDAL_EAU==1)
@@ -170,7 +174,7 @@ FILINO1a_Vide_Grass =   function(iLAZ,NomLaz,nom_Rast_INV_VIDEetEAU,nom_RastEAU,
         
         
         # export si nettoyage =0
-        FILINO_Creat_Dir(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA))
+        # FILINO_Creat_Dir(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA))
         
         cat("##################################################################\n")
         nom_masque_gpkg=paste0(raci,"_Masque1.gpkg")
@@ -245,11 +249,11 @@ FILINO1a_Vide_Grass =   function(iLAZ,NomLaz,nom_Rast_INV_VIDEetEAU,nom_RastEAU,
     if (Nettoyage==1)
     {
       
-      unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,NomDossDalles,nom_Rast_INV_VIDEetEAU))
+      Sys.sleep(1);unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,NomDossDalles,nom_Rast_INV_VIDEetEAU))
       if (PDAL_EAU==1)
       {
-        unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,NomDossDalles,nom_RastEAU))
-        unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,NomDossDalles,nom_RastSOL))
+        Sys.sleep(1);unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,NomDossDalles,nom_RastEAU))
+        Sys.sleep(1);unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,NomDossDalles,nom_RastSOL))
       }
     }
   }

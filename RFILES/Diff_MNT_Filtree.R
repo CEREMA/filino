@@ -77,7 +77,8 @@ Diff_MNT_Filtree=function(nomMNTa,nomMNTb,nomMasque,nfiltre,TypeVoisinage,NomExp
   
   # Test pour voir si tout s'est bien passé, certaines dalles rendent des NULL...
   cmd=paste0("r.univar --quiet --overwrite map=",nomDiff2)
-  print(cmd);toto=system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd),intern=T)
+  # print(cmd);toto=system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd),intern=T)
+  print(cmd);toto = system2(command = BatGRASS,args = c(SecteurGRASS, "--exec", cmd),stdout = TRUE,stderr = TRUE)
   nlig=grep(toto,pattern="n: ")[1]
   nvaleur=as.numeric(strsplit(toto[nlig],":")[[1]][2])
   cat(toto[nlig])

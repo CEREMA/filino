@@ -67,7 +67,7 @@ if (length(listeLazVirt_tmp)>0)
     setwd(chem_routine)
     
     TA=st_read(file.path(dir_tmp,"_Concat_Qgis.gpkg"))
-    unlink(dir_tmp,recursive=TRUE)
+    Sys.sleep(1);unlink(dir_tmp,recursive=TRUE)
   }
   
   # TA=do.call(rbind,Res)

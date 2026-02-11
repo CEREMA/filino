@@ -25,9 +25,10 @@ FILINO1a_Pont_Grass = function(iLAZ,NomLaz,nom_RastPONT,SecteurGRASS,Nord,Sud,Es
     # # print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
     # nvaleur=as.numeric(scan(file=NomUnivar,NomUnivar,sep=":",skip=5,nlines=1,dec=".")[2])
     # unlink(NomUnivar)
-    
+
     cmd=paste0("r.univar --quiet --overwrite map=",nomMNTPONT)
-    print(cmd);toto=system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd),intern=T)
+    # print(cmd);toto=system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd),intern=T)
+    print(cmd);toto = system2(command = BatGRASS,args = c(SecteurGRASS, "--exec", cmd),stdout = TRUE,stderr = TRUE)
     nlig=grep(toto,pattern="n: ")[1]
     nvaleur=as.numeric(strsplit(toto[nlig],":")[[1]][2])
     cat(toto[nlig],"\n")
@@ -37,7 +38,7 @@ FILINO1a_Pont_Grass = function(iLAZ,NomLaz,nom_RastPONT,SecteurGRASS,Nord,Sud,Es
     {
       # Mise à la valeur 1
       nomMNTPONT1=paste0("nomMNTPONTVal1_",iLAZ)
-      cmd=paste0("r.mapcalc --quiet --overwrite ",shQuote(paste0(nomMNTPONT1,"=if(",nomMNTPONT,">",-99,",1,null())")))
+      cmd=paste0("r.mapcalc --quiet --overwrite ",shQuote(paste0(nomMNTPONT1,"=if(",nomMNTPONT,"> ",-99,",1,null())")))
       print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
       
       # Conversion de masques et masque buffer en vecteur
@@ -63,7 +64,7 @@ FILINO1a_Pont_Grass = function(iLAZ,NomLaz,nom_RastPONT,SecteurGRASS,Nord,Sud,Es
     }
     if (Nettoyage==1)
     {
-      unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,NomDossDalles,nom_RastPONT))
+      Sys.sleep(1);unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,NomDossDalles,nom_RastPONT))
     }
   }
 }

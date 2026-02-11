@@ -35,7 +35,7 @@ FILINO_07_05a_Job=function(iLAZ,TA_tmp,racilayerTAold,TA_Old,Classe_New)
         nomjson=file.path(dsnlayer,nomDirViSOLssVEGE,racilayerTA,NomDossDalles,paste0(raci,"_",racilayerTAold,"_VegeTropDense.json"))
         
         VectVeget=st_read(nommasqueveget)
-        unlink(nommasqueveget)
+        Sys.sleep(1);unlink(nommasqueveget)
         VectVeget$value=Classe_New
         st_write(VectVeget,nommasqueveget, delete_layer=T, quiet=T)
         

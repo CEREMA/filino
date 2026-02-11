@@ -15,7 +15,7 @@
 largdalle <- 1000
 
 # Nettoyage des fichiers temporaires (1 = activé, 0 = désactivé)
-Nettoyage <- 1
+Nettoyage <- 0
 
 # =============================================================================
 # PARAMÈTRES POUR FILINO_03_01a_MasqueDalle.R

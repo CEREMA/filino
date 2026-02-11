@@ -97,12 +97,12 @@ FILINO_17_12_Job=function(idalle,nomTA1,nomTA2,TA1,TA2,nCalcDiff)
           
           if (Nettoyage==1)
           {
-            unlink(nomPtsVirt_GrassCsv)
-            unlink(nomjson)
+            Sys.sleep(1);unlink(nomPtsVirt_GrassCsv)
+            Sys.sleep(1);unlink(nomjson)
           }
         }
       }
-      unlink(nomMNTa)
+      Sys.sleep(1);unlink(nomMNTa)
     }else{
       
       cat(raci_diff,": Il manque des fichiers d'entrée, il n'y a pas de végétation dense ou c'est déjà fait, on ne sait pas trop!\n")
@@ -217,7 +217,8 @@ Diff_MNT_Filtree=function(nomMNTa,nomMNTb,nomMasque,nomcsv,bbox,nfiltre,TypeVois
       
       # Test pour voir si tout s'est bien passé, certaines dalles rendent des NULL...
       cmd=paste0("r.univar --quiet --overwrite map=",nomDiff2)
-      print(cmd);toto=system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd),intern=T)
+      # print(cmd);toto=system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd),intern=T)
+      print(cmd);toto = system2(command = BatGRASS,args = c(SecteurGRASS, "--exec", cmd),stdout = TRUE,stderr = TRUE)
       nlig=grep(toto,pattern="n: ")[1]
       nvaleur=as.numeric(strsplit(toto[nlig],":")[[1]][2])
       cat(toto[nlig],"\n")
@@ -253,7 +254,7 @@ Diff_MNT_Filtree=function(nomMNTa,nomMNTb,nomMasque,nomcsv,bbox,nfiltre,TypeVois
       print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
     }
   }
-  unlink(dirname(SecteurGRASS),recursive=TRUE)
+  Sys.sleep(1);unlink(dirname(SecteurGRASS),recursive=TRUE)
 }
 
 Creat_vrt=function(listeASC,nom_liste_pour_vrt,vrtfile)
@@ -263,5 +264,5 @@ Creat_vrt=function(listeASC,nom_liste_pour_vrt,vrtfile)
   write(listeASC, file = nom_liste_pour_vrt, append = T)
   cmd = paste(shQuote(OSGeo4W_path),"gdalbuildvrt",vrtfile,"-input_file_list",nom_liste_pour_vrt)
   print(cmd);system(cmd)
-  unlink(nom_liste_pour_vrt)
+  Sys.sleep(1);unlink(nom_liste_pour_vrt)
 }

@@ -25,7 +25,7 @@ FILINO_08_06_TA_PtsVirtuelsLaz_Job=function(iLAZ,nomlaz,nb_proc)
   chem=dirname(file.path(dsnlayer,nomlaz))
   doss=substr(chem,nchar(dsnlayer)+2,nchar(chem))
   
-  if (verif==0){unlink(nomjson)}
+  if (verif==0){Sys.sleep(1);unlink(nomjson)}
   
   voila=st_sf(data.frame(CHEMIN=chem,DOSSIER=doss,NOM=basename(nomlaz),TypeLidar=racilayerTA,Type=nomType),"geometry" =st_sfc(st_polygon(tour,dim="XY"),crs=nEPSG))
   if (nb_proc>0){st_write(voila,file.path(dir_tmp,paste0(iLAZ,".gpkg")), delete_layer=T, quiet=T)}

@@ -22,12 +22,13 @@ FILINO1a_Vege_Grass=function(iLAZ,NomLaz,nom_RastTSF,nom_Rast_VEGE,SecteurGRASS,
     #     nvaleur=as.numeric(scan(file=NomUnivar,NomUnivar,sep=":",skip=5,nlines=1,dec=".")[2])
     # unlink(NomUnivar)
     cmd=paste0("r.univar --quiet --overwrite map=",nomMNT_Vege)
-    print(cmd);toto=system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd),intern=T)
+    # print(cmd);toto=system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd),intern=T)
+    print(cmd);toto = system2(command = BatGRASS,args = c(SecteurGRASS, "--exec", cmd),stdout = TRUE,stderr = TRUE)
     nlig=grep(toto,pattern="n: ")[1]
     nvaleur=as.numeric(strsplit(toto[nlig],":")[[1]][2])
     cat(toto[nlig],"\n")
     cat("Nombre de valeur: ",nvaleur, "\n")
-    
+
     # S'il y a plus d'une valeur non nulle...
     if (nvaleur>0)
     {
@@ -78,7 +79,7 @@ FILINO1a_Vege_Grass=function(iLAZ,NomLaz,nom_RastTSF,nom_Rast_VEGE,SecteurGRASS,
       
       nom_masque_gpkg=paste0(raci,"_VegeTropDense.gpkg")
       dir_tmp_=file.path(dsnlayer,NomDirMasqueVEGE,racilayerTA)
-      FILINO_Creat_Dir(dir_tmp_)
+      # FILINO_Creat_Dir(dir_tmp_)
       
       # Test pour voir s'il y a des zones sinon on crée un fichier vide
       # NomUnivar=file.path(dsnlayer,paste0(raci,"_runivarv2.txt"))
@@ -87,7 +88,8 @@ FILINO1a_Vege_Grass=function(iLAZ,NomLaz,nom_RastTSF,nom_Rast_VEGE,SecteurGRASS,
       # nvaleur=as.numeric(scan(file=NomUnivar,NomUnivar,sep=":",skip=5,nlines=1,dec=".")[2])
       # unlink(NomUnivar)
       cmd=paste0("r.univar --quiet --overwrite map=",nomMNT_VegeMasque)
-      print(cmd);toto=system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd),intern=T)
+      # print(cmd);toto=system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd),intern=T)
+      print(cmd);toto = system2(command = BatGRASS,args = c(SecteurGRASS, "--exec", cmd),stdout = TRUE,stderr = TRUE)
       nlig=grep(toto,pattern="n: ")[1]
       nvaleur=as.numeric(strsplit(toto[nlig],":")[[1]][2])
       cat(toto[nlig],"\n")
