@@ -186,7 +186,7 @@ for (iTA in 1:length(dsnTALidar))
               cmd=paste(pdal_exe,"pipeline",nomjson)
               system(cmd)
               
-              if (Nettoyage==1){Sys.sleep(1);unlink(nomjson)}
+              if (Nettoyage==1){Sys.sleep(0.1);unlink(nomjson)}
             }
           }
         }
@@ -299,7 +299,7 @@ for (iTA in 1:length(dsnTALidar))
         write("]",nomjson,append=T)
         cmd=paste(pdal_exe,"pipeline",nomjson)
         system(cmd)
-        if (Nettoyage==1){Sys.sleep(1);unlink(nomjson)}
+        if (Nettoyage==1){Sys.sleep(0.1);unlink(nomjson)}
         # }
         
         file.copy(file.path(dsnlayer,NomDirSIGBase,"ProjetQgis_CoursEau.qgz"),

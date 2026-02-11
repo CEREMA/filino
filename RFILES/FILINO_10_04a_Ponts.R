@@ -78,7 +78,7 @@ for (iTA in 1:length(dsnTALidar))
       cmd=paste(pdal_exe,"pipeline",nomjson)
       
       system(cmd)
-      if (Nettoyage==1){Sys.sleep(1);unlink(nomjson)}
+      if (Nettoyage==1){Sys.sleep(0.1);unlink(nomjson)}
       
       PtsCSV=read.csv(nomcsv)
       if (dim(PtsCSV)[1]>0)

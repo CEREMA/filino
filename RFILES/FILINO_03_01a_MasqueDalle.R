@@ -50,7 +50,7 @@ FILINO_03_01a_Job=function(iLAZ,TA_tmp,dimTA1,NomLaz,reso,largdalle,paramXYTA,iT
       cat("Les fichiers paramètres sont différents:\n")
       Alancer=1
     }
-    Sys.sleep(1);unlink(NomTXT_old)
+    Sys.sleep(0.1);unlink(NomTXT_old)
   }
   
   if (Alancer==0 &
@@ -126,7 +126,7 @@ FILINO_03_01a_Job=function(iLAZ,TA_tmp,dimTA1,NomLaz,reso,largdalle,paramXYTA,iT
       # Nouveau du 05/08/2025 voir si cela ne plante pas pour d'autres choix que reso 0.5...
       # FILINO1a_Vide_Grass(iLAZ,NomLaz,nom_Rast_INV_VIDEetEAU,nom_RastEAU,nom_RastSOL,SecteurGRASS,as.numeric(Nord)-reso,as.numeric(Sud)+reso,as.numeric(Est)-reso,as.numeric(Ouest)+reso)
       
-      Sys.sleep(1);unlink(dirname(SecteurGRASS),recursive=TRUE)
+      Sys.sleep(0.1);unlink(dirname(SecteurGRASS),recursive=TRUE)
       cat("\014")
     }
     cat("\n")
@@ -166,7 +166,7 @@ FILINO_03_01a_Job=function(iLAZ,TA_tmp,dimTA1,NomLaz,reso,largdalle,paramXYTA,iT
     # source(file.path(chem_routine,"FILINO_03_01a_MasquePont_Grass.R"),encoding = "utf-8")
     FILINO1a_Pont_Grass(iLAZ,NomLaz,nom_RastPONT,SecteurGRASS,Nord,Sud,Est,Ouest)
     
-    Sys.sleep(1);unlink(dirname(SecteurGRASS),recursive=TRUE)
+    Sys.sleep(0.1);unlink(dirname(SecteurGRASS),recursive=TRUE)
     cat("\014")
   }
   
@@ -222,12 +222,12 @@ FILINO_03_01a_Job=function(iLAZ,TA_tmp,dimTA1,NomLaz,reso,largdalle,paramXYTA,iT
       source(file.path(chem_routine,"FILINO_03_01a_MasqueVEGE_Grass.R"),encoding = "utf-8")
       nommasqueveget=FILINO1a_Vege_Grass(iLAZ,NomLaz,nom_RastTSF,nom_Rast_VEGE,SecteurGRASS,Nord,Sud,Est,Ouest)
       print(nommasqueveget)
-      Sys.sleep(1);unlink(dirname(SecteurGRASS),recursive=TRUE)
+      Sys.sleep(0.1);unlink(dirname(SecteurGRASS),recursive=TRUE)
       cat("\014")
       if (Nettoyage==1)
       {
-        if (file.exists(nomjson)){Sys.sleep(1);unlink(nomjson)}
-        if (file.exists(nom_RastTSF)){Sys.sleep(1);unlink(nom_RastTSF)}
+        if (file.exists(nomjson)){Sys.sleep(0.1);unlink(nomjson)}
+        if (file.exists(nom_RastTSF)){Sys.sleep(0.1);unlink(nom_RastTSF)}
         # if (exists("nom_Rast2")==T){if (file.exists(nom_Rast2)){unlink(nom_Rast2)}}
       }
     }

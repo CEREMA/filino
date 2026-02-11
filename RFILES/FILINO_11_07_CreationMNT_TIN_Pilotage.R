@@ -98,8 +98,8 @@ for (iTypeTIN in nTypeTIN)
     )
     nlalz = which(listSect %in% nchoixZS)
     
-    if (length(which(nlalz==2))){Sys.sleep(1);unlink(file.path(dsnlayerTA,TA$DOSSIER,TA$NOM)[nb])}
-    if (length(which(nlalz==3))){Sys.sleep(1);unlink(file.path(dsnlayer,NomDirMNTTIN,racilayerTA,NomDossDalles,listeBADALLOCPDAL))}
+    if (length(which(nlalz==2))){Sys.sleep(0.1);unlink(file.path(dsnlayerTA,TA$DOSSIER,TA$NOM)[nb])}
+    if (length(which(nlalz==3))){Sys.sleep(0.1);unlink(file.path(dsnlayer,NomDirMNTTIN,racilayerTA,NomDossDalles,listeBADALLOCPDAL))}
   }
 }
 cat("\n")

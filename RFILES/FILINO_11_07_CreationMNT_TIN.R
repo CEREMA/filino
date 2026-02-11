@@ -81,13 +81,13 @@ FILINO_11_07_Job=function(idalle,TA_Zone,NomDirMNTTIN,type,TA,TAPtsVirtu,listeMa
       Alancer=0
     } else {
       cat("Les fichiers Laz sont différents:\n")
-      Sys.sleep(1);unlink(NomGPKG)
+      Sys.sleep(0.1);unlink(NomGPKG)
       Alancer=1
     }
-    Sys.sleep(1);unlink(NomTXT_old)
+    Sys.sleep(0.1);unlink(NomTXT_old)
   }else{
     cat("Pas de fichier de comparaison ou de fichier MNT:\n")
-    Sys.sleep(1);unlink(NomGPKG)
+    Sys.sleep(0.1);unlink(NomGPKG)
     Alancer=1
   }
   if (Alancer==1 & file.exists(nomBADPDAL)==F)
@@ -260,13 +260,13 @@ FILINO_11_07_Job=function(idalle,TA_Zone,NomDirMNTTIN,type,TA,TAPtsVirtu,listeMa
         for (iRegroup in seq(1,NbreFichierVirt,nLimit))
         {
           NomLazRegroup_tmp=file.path(dsnlayer,NomDirMNTTIN,racilayerTA,NomDossDalles,paste0(racidalle,"_PtsVirts_Regroup", formatC(iRegroup ,width=4, flag="0"),"_Cerema.copc.laz"))
-          Sys.sleep(1);unlink(NomLazRegroup_tmp)
+          Sys.sleep(0.1);unlink(NomLazRegroup_tmp)
         }
       }
       
       if (Nettoyage==1 & file.exists(NomTIF)==T)
       {
-        Sys.sleep(1);unlink(nomjson)
+        Sys.sleep(0.1);unlink(nomjson)
       }
       
       # Gestion du bord de mer si nécesaire
@@ -333,7 +333,7 @@ FILINO_11_07_Job=function(idalle,TA_Zone,NomDirMNTTIN,type,TA,TAPtsVirtu,listeMa
                   # source(file.path(chem_routine,"FILINO_11_07_CreationMNT_TIN_Grass.R"),encoding = "utf-8")
                   FILINO_7_CreationMNT_Grass_Mer(NomTIF,Val,reso,SecteurGRASS,nomMasques2T,racidalle_,nomType,BoiteBuf_tmp)
                   
-                  Sys.sleep(1);unlink(dirname(SecteurGRASS),recursive=TRUE)
+                  Sys.sleep(0.1);unlink(dirname(SecteurGRASS),recursive=TRUE)
                 }
               }
             }
@@ -383,11 +383,11 @@ FILINO_11_07_Job=function(idalle,TA_Zone,NomDirMNTTIN,type,TA,TAPtsVirtu,listeMa
       # source(file.path(chem_routine,"FILINO_11_07_CreationMNT_TIN_Grass.R"),encoding = "utf-8")
       FILINO_7_CreationMNT_Grass_Boite_et_Cuvettes(NomTIF,NomGPKG,NomMNTFill,NomMNTCuv,Boite,reso,SecteurGRASS)
       
-      Sys.sleep(1);unlink(dirname(SecteurGRASS),recursive=TRUE)
+      Sys.sleep(0.1);unlink(dirname(SecteurGRASS),recursive=TRUE)
     }
     # ConvertGPKG(NomTIF,0)
-    Sys.sleep(1);unlink(NomTIF)
-    Sys.sleep(1);unlink(NomMNTFill)
+    Sys.sleep(0.1);unlink(NomTIF)
+    Sys.sleep(0.1);unlink(NomMNTFill)
   }else{
     if (Alancer==0) cat("Déjà fait ",NomGPKG,"\n") else cat(" Bad alloc de pdal! ",NomGPKG,"\n")
   }

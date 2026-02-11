@@ -52,7 +52,7 @@ FILINO_18_13_GpsTime_Job=function(idalle,TA_)
       # Test pour voir si Pdal passe, si ce n'est pas le cas, grande chance que le fichier soit corrompu
       if (toto!=0){file.create(paste0(nominput,"BUG"))}
       
-      if (Nettoyage==1){Sys.sleep(1);unlink(nomjson)}
+      if (Nettoyage==1){Sys.sleep(0.1);unlink(nomjson)}
       
       # Lire le raster
       nomTps <- raster(nom_Rast)
@@ -124,7 +124,7 @@ FILINO_18_13_GpsTime_Job=function(idalle,TA_)
               paste0(substr(nom_Rast_diff,1,nchar(nom_Rast_diff)-4),".qml"),
               overwrite = T)
     
-    Sys.sleep(1);unlink(nom_Rast1)
-    Sys.sleep(1);unlink(nom_Rast2)
+    Sys.sleep(0.1);unlink(nom_Rast1)
+    Sys.sleep(0.1);unlink(nom_Rast2)
   }
 }

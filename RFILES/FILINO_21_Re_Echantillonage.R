@@ -90,7 +90,7 @@ FILINO_21_Job=function(idalle,TA_Rast_Zone,ResoNew,SecteurGRASS_,nEPSG,dsnTApRe)
     
     if (max(abs(round(LimXY/1000)*1000-LimXY))>0)
     {
-      if (file.exists(nomMNTdecal)==T){Sys.sleep(1);unlink(nomMNTdecal)}
+      if (file.exists(nomMNTdecal)==T){Sys.sleep(0.1);unlink(nomMNTdecal)}
       cmd <- paste0(qgis_process, " run gdal:translate",
                     " --distance_units=meters --area_units=m2 --ellipsoid=EPSG:7019 ",
                     " --INPUT=",nomMNT,
@@ -114,7 +114,7 @@ FILINO_21_Job=function(idalle,TA_Rast_Zone,ResoNew,SecteurGRASS_,nEPSG,dsnTApRe)
         dirReso=file.path(dsnTApRe,DossReso,ifelse(nchar(Dossrangement)==0,DossReso,Dossrangement))
         if(dir.exists(dirReso)==F){dir.create(dirReso,recursive = T)}
         NomGPKG=file.path(dirReso,nomMNT_exp)
-        if (file.exists(NomGPKG)==T){Sys.sleep(1);unlink(NomGPKG)}
+        if (file.exists(NomGPKG)==T){Sys.sleep(0.1);unlink(NomGPKG)}
         
         cmd <- paste0(qgis_process, " run gdal:warpreproject",
                       " --distance_units=meters --area_units=m2 --ellipsoid=EPSG:7019",
@@ -137,7 +137,7 @@ FILINO_21_Job=function(idalle,TA_Rast_Zone,ResoNew,SecteurGRASS_,nEPSG,dsnTApRe)
       {
         ###############################################################################
         SecteurGRASS=paste0(dirname(SecteurGRASS_),format(Sys.time(),format="%Y%m%d_%H%M%S"),"_",idalle,'/',format(Sys.time(),format="%Y%m%d_%H%M%S"),"/",basename(SecteurGRASS_))
-        Sys.sleep(1);unlink(dirname(SecteurGRASS),recursive=TRUE)
+        Sys.sleep(0.1);unlink(dirname(SecteurGRASS),recursive=TRUE)
         system(paste0(BatGRASS," -c EPSG:",nEPSG," ",dirname(SecteurGRASS)," --text"))
         system(paste0(BatGRASS," -c ",SecteurGRASS," --text"))
         
@@ -277,10 +277,10 @@ FILINO_21_Job=function(idalle,TA_Rast_Zone,ResoNew,SecteurGRASS_,nEPSG,dsnTApRe)
             cmd=paste0("r.out.gdal --quiet --overwrite -c -f input=",nomMNTResog," output=",NomGPKG," type=Float32 format=GPKG nodata=-9999")
             print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
           }
-          Sys.sleep(1);unlink(dirname(dirname(SecteurGRASS)),recursive=TRUE)
+          Sys.sleep(0.1);unlink(dirname(dirname(SecteurGRASS)),recursive=TRUE)
         }
-        Sys.sleep(1);unlink(nomMNTinfo)
-        Sys.sleep(1);unlink(nomMNTdecal)
+        Sys.sleep(0.1);unlink(nomMNTinfo)
+        Sys.sleep(0.1);unlink(nomMNTdecal)
         
       }
     }

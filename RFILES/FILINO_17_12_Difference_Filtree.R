@@ -97,12 +97,12 @@ FILINO_17_12_Job=function(idalle,nomTA1,nomTA2,TA1,TA2,nCalcDiff)
           
           if (Nettoyage==1)
           {
-            Sys.sleep(1);unlink(nomPtsVirt_GrassCsv)
-            Sys.sleep(1);unlink(nomjson)
+            Sys.sleep(0.1);unlink(nomPtsVirt_GrassCsv)
+            Sys.sleep(0.1);unlink(nomjson)
           }
         }
       }
-      Sys.sleep(1);unlink(nomMNTa)
+      Sys.sleep(0.1);unlink(nomMNTa)
     }else{
       
       cat(raci_diff,": Il manque des fichiers d'entrée, il n'y a pas de végétation dense ou c'est déjà fait, on ne sait pas trop!\n")
@@ -254,7 +254,7 @@ Diff_MNT_Filtree=function(nomMNTa,nomMNTb,nomMasque,nomcsv,bbox,nfiltre,TypeVois
       print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
     }
   }
-  Sys.sleep(1);unlink(dirname(SecteurGRASS),recursive=TRUE)
+  Sys.sleep(0.1);unlink(dirname(SecteurGRASS),recursive=TRUE)
 }
 
 Creat_vrt=function(listeASC,nom_liste_pour_vrt,vrtfile)
@@ -264,5 +264,5 @@ Creat_vrt=function(listeASC,nom_liste_pour_vrt,vrtfile)
   write(listeASC, file = nom_liste_pour_vrt, append = T)
   cmd = paste(shQuote(OSGeo4W_path),"gdalbuildvrt",vrtfile,"-input_file_list",nom_liste_pour_vrt)
   print(cmd);system(cmd)
-  Sys.sleep(1);unlink(nom_liste_pour_vrt)
+  Sys.sleep(0.1);unlink(nom_liste_pour_vrt)
 }

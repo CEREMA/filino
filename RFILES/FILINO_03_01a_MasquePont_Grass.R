@@ -64,7 +64,7 @@ FILINO1a_Pont_Grass = function(iLAZ,NomLaz,nom_RastPONT,SecteurGRASS,Nord,Sud,Es
     }
     if (Nettoyage==1)
     {
-      Sys.sleep(1);unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,NomDossDalles,nom_RastPONT))
+      Sys.sleep(0.1);unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,NomDossDalles,nom_RastPONT))
     }
   }
 }

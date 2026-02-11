@@ -249,11 +249,11 @@ FILINO1a_Vide_Grass =   function(iLAZ,NomLaz,nom_Rast_INV_VIDEetEAU,nom_RastEAU,
     if (Nettoyage==1)
     {
       
-      Sys.sleep(1);unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,NomDossDalles,nom_Rast_INV_VIDEetEAU))
+      Sys.sleep(0.1);unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,NomDossDalles,nom_Rast_INV_VIDEetEAU))
       if (PDAL_EAU==1)
       {
-        Sys.sleep(1);unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,NomDossDalles,nom_RastEAU))
-        Sys.sleep(1);unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,NomDossDalles,nom_RastSOL))
+        Sys.sleep(0.1);unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,NomDossDalles,nom_RastEAU))
+        Sys.sleep(0.1);unlink(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,NomDossDalles,nom_RastSOL))
       }
     }
   }

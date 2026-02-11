@@ -90,8 +90,8 @@ FILINO_06_02ab_Job1=function(iLAZ,TA_tmp,TA,Masques2,NomDirTmp,raciTmp,ClassTmp)
       cmd=paste(pdal_exe,"pipeline",nomjson)
       toto=system(cmd)
       if (Nettoyage==1){
-        Sys.sleep(1);unlink(nomjson)
-        Sys.sleep(1);unlink(nomMasq_tmp)
+        Sys.sleep(0.1);unlink(nomjson)
+        Sys.sleep(0.1);unlink(nomMasq_tmp)
       }
       
       if (file.exists(NomLaz_tmp)==F)
@@ -240,7 +240,7 @@ FILINO_06_02ab_Job23=function(iMasq,Masques1,Masques2,NbCharIdGlobal,NomDirTmp,r
               atte=1
             }
             
-            if (Nettoyage==1){Sys.sleep(1);unlink(nomjson)}
+            if (Nettoyage==1){Sys.sleep(0.1);unlink(nomjson)}
             
             
             # browser()
@@ -305,7 +305,7 @@ FILINO_06_02ab_Job23=function(iMasq,Masques1,Masques2,NbCharIdGlobal,NomDirTmp,r
           cmd=paste(pdal_exe,"pipeline",nomjson)
           toto=system(cmd)
           
-          if (Nettoyage==1){Sys.sleep(1);unlink(nomjson)}
+          if (Nettoyage==1){Sys.sleep(0.1);unlink(nomjson)}
         }else{
           cat("Pas de ",nomPtsVirtLaz,"\n")
         }

@@ -75,7 +75,7 @@ FILINO_12_08_CreationMNT_Raster_Job=function(idalle)
       # cmd = paste0(shQuote(OSGeo4W_path)," gdaladdo ","--config OGR_SQLITE_SYNCHRONOUS OFF ", "-r AVERAGE ",NomGPKG," 2 4 8 16 32 64 128 256")
       # system(cmd)
       
-      Sys.sleep(1);unlink(NomTIF)
+      Sys.sleep(0.1);unlink(NomTIF)
     }
   }
 }

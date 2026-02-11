@@ -10,7 +10,7 @@ FILINO_06_02c_creatPtsVirtuels=function(nomcsv,rep_COURSEAU,Cas,raci_exp,nomPtsV
     if (file.exists(file.path(rep_COURSEAU,"Masque1.gpkg"))==F | file.exists(file.path(rep_COURSEAU,"Masque2.gpkg"))==F)
     {
       browser()
-      Sys.sleep(1);unlink(nomcsv)
+      Sys.sleep(0.1);unlink(nomcsv)
     }else{
       
       
