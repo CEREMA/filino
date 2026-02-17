@@ -29,7 +29,7 @@ nEPSG = 2154
 SecteurGRASS_="C:/GRASSDATA/FILINO/Temp" # Creation automatique
 
 # Repertoire de travail
-dsnlayer="C:/AFFAIRES/FILINO_Formation"
+dsnlayer="C:/AFFAIRES/FILINO_Hydrometrie"
 
 # Zones a traiter à mettre dans le répertoire dsnlayer
 nomZONE=file.path(dsnlayer,"Zones_LAZ_a_traiter.gpkg")
@@ -40,7 +40,7 @@ NomDirSIGBase ="00_SIGBase" # à mettre dans le répertoire dsnlayer
 dsnDepartement="C:/BDD/BDTopo"
 
 paramTALidar=as.data.frame(rbind(
-  cbind(1,"C:/StockageLIDAR"     ,"TA_HD.gpkg"              ,0.5,41, 9,12,14,17,1),
+  cbind(1,"C:/StockageLIDARHydro" ,"TA_HD.gpkg"              ,0.5,41, 9,12,14,17,1),
   cbind(0,"C:/StockageLidarVieux","TA_4_1_4_Formation.gpkg" ,0.5,41, 9,12,14,17,1)
   # cbind(0,"F:/LidarHD_DC"                       ,"TA_HD_surF.shp"            ,0.5,41, 9,12,14,17,1),
   # cbind(0,"E:/VieuxLidarIGN_SMMAR_test"         ,"TA_4_1_4_FP_TestSMMAR.gpkg",1  , 0, 4, 1, 4, 0,0), #le 4 1 4  correspond à la recherche de 4 chiffres pour les X, un saut de 1 caractère et 4 chiffres pour les Y
@@ -131,5 +131,5 @@ paramTARaster=as.data.frame(rbind(
 # Ne pas modifier le nom des colonnes
 colnames(paramTARaster)=cbind("Lancement","Doss","NomTA","extension","Xdeb","Xfin","Ydeb","Yfin")
 
-QueHydrometrie=0
-NomStHydro="I:\\HYDROMETRIE\\StationHydro_FXX_selectFILINO.gpkg"
+QueHydrometrie=1
+NomStHydro="C:\\BDD\\HYDROMETRIE\\StationHydro_FXX_selectFILINO.gpkg"

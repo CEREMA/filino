@@ -8,6 +8,7 @@ library(sf) # si vous avez des problème avec st_crs et PROJ.LIB, merci de réin
 library(dplyr)
 library(rjson)
 library(ggplot2)
+library(ggrepel)
 library(xml2)
 library(readxl) 
 library(jpeg)

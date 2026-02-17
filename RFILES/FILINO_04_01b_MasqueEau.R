@@ -128,9 +128,12 @@ if (length(n_int)>0)
     surfhydro=do.call(rbind, LSH)
     surfhydro=surfhydro[order(surfhydro$cleabs),]
     surfhydro$doublons=0
-    for (i in 2:dim(surfhydro)[1])
+    if (nrow(surfhydro)>1)
     {
-      if (surfhydro$cleabs[i]==surfhydro$cleabs[i-1]){surfhydro$doublons[i]=1}
+      for (i in 2:dim(surfhydro)[1])
+      {
+        if (surfhydro$cleabs[i]==surfhydro$cleabs[i-1]){surfhydro$doublons[i]=1}
+      }
     }
     surfhydro=surfhydro[which(surfhydro$doublons==0),]
     
@@ -811,69 +814,72 @@ if (length(n_int)>0)
           MerDecoupee$Aire[npetit]=seuilmerdec
         }
       }
-      
+
       verif=1
       if (verif==1){st_write(MerDecoupee,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"MerDecoupee.gpkg"), delete_layer=T, quiet=T)}
       
       # browser()
       nNRacc=which(MerDecoupee$Aire==seuilmerdec)
       ngrosmer=dim(MerDecoupee[-nNRacc,1])[1]
-      if (length(nNRacc)>0)
+      if (ngrosmer>0)
       {
-        if (length(nNRacc)<nrow(MerDecoupee))
+        if (length(nNRacc)>0)
         {
-          
-          GrosseMer=MerDecoupee[-nNRacc,]
-          PetiteMer=MerDecoupee[nNRacc,]
-          distaC=st_distance(PetiteMer,GrosseMer)
-          units(distaC)=NULL
-          
-          GrosseMer$Id=1:ngrosmer
-          ajgrosmer=1
-          
-          PetiteMer$Id=0
-          for (ifmer in 1:length(nNRacc))
+          if (length(nNRacc)<nrow(MerDecoupee))
           {
-            if (min(distaC[ifmer,])<500)
+            
+            GrosseMer=MerDecoupee[-nNRacc,]
+            PetiteMer=MerDecoupee[nNRacc,]
+            distaC=st_distance(PetiteMer,GrosseMer)
+            units(distaC)=NULL
+            
+            GrosseMer$Id=1:ngrosmer
+            ajgrosmer=1
+            
+            PetiteMer$Id=0
+            for (ifmer in 1:length(nNRacc))
             {
-              PetiteMer[ifmer,]$Id=GrosseMer[which(distaC[ifmer,]==min(distaC[ifmer,])),]$Id
-            }else{
-              PetiteMer[ifmer,]$Id=ngrosmer+ajgrosmer
-              ajgrosmer=ajgrosmer+1
+              if (min(distaC[ifmer,])<500)
+              {
+                PetiteMer[ifmer,]$Id=GrosseMer[which(distaC[ifmer,]==min(distaC[ifmer,])),]$Id
+              }else{
+                PetiteMer[ifmer,]$Id=ngrosmer+ajgrosmer
+                ajgrosmer=ajgrosmer+1
+              }
             }
+            
+            if (verif==1)
+            {
+              st_write(PetiteMer,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"PetiteMer.gpkg"), delete_layer=T, quiet=T)
+              st_write(GrosseMer,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"GrosseMer.gpkg"), delete_layer=T, quiet=T)
+            }
+            GrosseMer2=rbind(GrosseMer,PetiteMer)
+          }else{
+            GrosseMer=MerDecoupee
+            GrosseMer$Id=1:ngrosmer
+            GrosseMer2=MerDecoupee
+            GrosseMer2$Id=1:ngrosmer
           }
+          GrosseMer2DF=GrosseMer2
+          st_geometry(GrosseMer2DF)=NULL
+          GrosseMer2=do.call(rbind,
+                             lapply(GrosseMer2$Id,
+                                    function(x) {st_sf(data.frame(GrosseMer2DF[x,]),
+                                                       geometry=st_cast(st_union(GrosseMer2[which(GrosseMer2$Id==x),]),"MULTIPOLYGON"))}))
+          # st_sf(data.frame(liens_vers_cours_d_eau =x),
+          #       geometry=st_line_merge(st_cast(st_union(trhydro_tmp[which(trhydro_tmp$liens_vers_cours_d_eau ==x),]),"MULTILINESTRING")))})))
           
           if (verif==1)
           {
-            st_write(PetiteMer,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"PetiteMer.gpkg"), delete_layer=T, quiet=T)
-            st_write(GrosseMer,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"GrosseMer.gpkg"), delete_layer=T, quiet=T)
+            
+            st_write(GrosseMer2,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"GrosseMer2.gpkg"), delete_layer=T, quiet=T)
           }
-          GrosseMer2=rbind(GrosseMer,PetiteMer)
-        }else{
-          GrosseMer=MerDecoupee
-          GrosseMer$Id=1:ngrosmer
-          GrosseMer2=MerDecoupee
-          GrosseMer2$Id=1:ngrosmer
-        }
-        GrosseMer2DF=GrosseMer2
-        st_geometry(GrosseMer2DF)=NULL
-        GrosseMer2=do.call(rbind,
-                           lapply(GrosseMer2$Id,
-                                  function(x) {st_sf(data.frame(GrosseMer2DF[x,]),
-                                                     geometry=st_cast(st_union(GrosseMer2[which(GrosseMer2$Id==x),]),"MULTIPOLYGON"))}))
-        # st_sf(data.frame(liens_vers_cours_d_eau =x),
-        #       geometry=st_line_merge(st_cast(st_union(trhydro_tmp[which(trhydro_tmp$liens_vers_cours_d_eau ==x),]),"MULTILINESTRING")))})))
-        
-        if (verif==1)
-        {
           
-          st_write(GrosseMer2,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"GrosseMer2.gpkg"), delete_layer=T, quiet=T)
+          GrosseMer2$Aire=st_area(GrosseMer2)
+          units(GrosseMer2$Aire)=NULL
+          Masques2=Masques2[-nMerADecouper,]
+          Masques2=rbind(Masques2,GrosseMer2[,colnames(Masques2)])
         }
-        
-        GrosseMer2$Aire=st_area(GrosseMer2)
-        units(GrosseMer2$Aire)=NULL
-        Masques2=Masques2[-nMerADecouper,]
-        Masques2=rbind(Masques2,GrosseMer2[,colnames(Masques2)])
       }
       Masques2=Masques2[order(Masques2$Aire),]
       

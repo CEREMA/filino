@@ -360,207 +360,162 @@ if (Opt_Manuel==1)
         }
         cat("Fin des SUPP\n")
       }
-      
-      ####################################################################################################
-      ###### Affectation Manuelle de nouveaux types
-      iAutre=which(Manuel$FILINO=="COUPE" | Manuel$FILINO=="MSUPP" | Manuel$FILINO=="SUPP")
-      if (length(iAutre)<dim(Manuel)[1])
-      {
-        if (length(iAutre)>0){Manuel_Affec=Manuel[-iAutre,]}else{Manuel_Affec=Manuel}
-        st_write(Manuel_Affec,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("Manuel_Affecquicroise",".gpkg")), delete_layer=T, quiet=T)
-        cat("---------------------------------------------------------------\n")
+    }
+    ####################################################################################################
+    ###### Affectation Manuelle de nouveaux types
+    iAutre=which(Manuel$FILINO=="COUPE" | Manuel$FILINO=="MSUPP" | Manuel$FILINO=="SUPP")
 
-        cat(format(Sys.time(),format="%Y%m%d_%H%M%S"),"Intersection parfois longue pour affecter les nouveaux types - Début","\n")
-        M2SeuilFini_SansRegroupement=NaN
-        if (nrow(M2Seuil_RecupManu)>0)
+    if (length(iAutre)<dim(Manuel)[1])
+    {
+      if (length(iAutre)>0){Manuel_Affec=Manuel[-iAutre,]}else{Manuel_Affec=Manuel}
+      st_write(Manuel_Affec,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("Manuel_Affecquicroise",".gpkg")), delete_layer=T, quiet=T)
+      cat("---------------------------------------------------------------\n")
+      
+      cat(format(Sys.time(),format="%Y%m%d_%H%M%S"),"Intersection parfois longue pour affecter les nouveaux types - Début","\n")
+      M2SeuilFini_SansRegroupement=NaN
+      if (nrow(M2Seuil_RecupManu)>0)
+      {
+        nbMC=st_intersects(M2Seuil_RecupManu,st_geometry(Manuel_Affec))
+        cat(format(Sys.time(),format="%Y%m%d_%H%M%S"),"Intersection parfois longue pour affecter les nouveaux types - Fin","\n")
+        n_intMC = which(sapply(nbMC, length)>0)
+        
+        M2Seuil_BesoinRegroupement=NaN
+        # Si aucun croisement on garde tout
+        if (length(n_intMC)==0)
         {
-          nbMC=st_intersects(M2Seuil_RecupManu,st_geometry(Manuel_Affec))
-          cat(format(Sys.time(),format="%Y%m%d_%H%M%S"),"Intersection parfois longue pour affecter les nouveaux types - Fin","\n")
-          n_intMC = which(sapply(nbMC, length)>0)
+          M2SeuilFini_SansRegroupement=M2Seuil_RecupManu
+        }
+        # Si croisement, on garde ceux qui ne croisent pas
+        # et on mets ceux qui croisent avec les masques initiaux
+        
+        if (length(n_intMC)>0)
+        {
+          M2SeuilFini_SansRegroupement=M2Seuil_RecupManu[-n_intMC,]
+          if (dim(M2SeuilFini_SansRegroupement)[1]==0)
+          {
+            M2SeuilFini_SansRegroupement=NaN
+          }
           
-          M2Seuil_BesoinRegroupement=NaN
-          # Si aucun croisement on garde tout
-          if (length(n_intMC)==0)
-          {
-            M2SeuilFini_SansRegroupement=M2Seuil_RecupManu
-          }
-          # Si croisement, on garde ceux qui ne croisent pas
-          # et on mets ceux qui croisent avec les masques initiaux
-          
-          if (length(n_intMC)>0)
-          {
-            M2SeuilFini_SansRegroupement=M2Seuil_RecupManu[-n_intMC,]
-            if (dim(M2SeuilFini_SansRegroupement)[1]==0)
-            {
-              M2SeuilFini_SansRegroupement=NaN
-            }
-            
-            M2Seuil_BesoinRegroupement=M2Seuil_RecupManu[n_intMC,]
-          }
+          M2Seuil_BesoinRegroupement=M2Seuil_RecupManu[n_intMC,]
         }
-        
-        if (is.na(M2SeuilFini_SansRegroupement)[1]==F)
-        {
-          if (nrow(M2SeuilFini_SansRegroupement)>0)
-          {
-            if (verif==1)
-            {
-              st_write(M2SeuilFini_SansRegroupement,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("M2SeuilFini_SansRegroupement",".gpkg")), delete_layer=T, quiet=T)
-            }     
-            st_geometry(M2SeuilFini_SansRegroupement)="geometry"
-            M2Seuil=rbind(M2Seuil,M2SeuilFini_SansRegroupement)
-          }
-        }
-        
-        if (verif==1)
-        {
-          st_write(M2Seuil,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("M2Seuil",".gpkg")), delete_layer=T, quiet=T)
-        }
-        
-        # il faudrait aussi enlever les supp et msupp de m2direct
-        #supprimer avant intersection les supp et msupp
-        iAutreSupp=which(Manuel$FILINO=="MSUPP" | Manuel$FILINO=="SUPP")
-        if (length(iAutreSupp)>0)
-        {
-          M2_SUPP_COUPE=st_intersects(M2_RecupManu,st_geometry(Manuel[iAutreSupp,]))
-          nM2_SUPP_COUPE=which(sapply(M2_SUPP_COUPE, length)>0)
-          if (length(nM2_SUPP_COUPE)>0)
-          {
-            M2_RecupManu=M2_RecupManu[-nM2_SUPP_COUPE,]
-          }
-        }
-        
-        # Suppression des Masques2 originaux qui touchent les automatiques sans problème...
-        cat("---------------------------------------------------------------\n")
-        cat(format(Sys.time(),format="%Y%m%d_%H%M%S"),"Intersection parfois longue pour supprimer les masques 2 initiaux qui touchent les masques 2 seuil - Début","\n")
-        cat("Appeler FP au besoin\n")
-        nbenleveM2=st_intersects(M2_RecupManu,M2Seuil)
-        cat(format(Sys.time(),format="%Y%m%d_%H%M%S"),"Intersection parfois longue pour supprimer les masques 2 initiaux qui touchent les masques 2 seuil - Fin","\n")
-        
-        n_intenleveM2 = which(sapply(nbenleveM2, length)>0)
-        if (length(n_intenleveM2)>0)
+      }
+      
+      if (is.na(M2SeuilFini_SansRegroupement)[1]==F)
+      {
+        if (nrow(M2SeuilFini_SansRegroupement)>0)
         {
           if (verif==1)
           {
-            st_write(M2_RecupManu[n_intenleveM2,],file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("M2_RecupManu_lesmorceauxenlever",".gpkg")), delete_layer=T, quiet=T)
-            st_write(M2_RecupManu[-n_intenleveM2,],file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("M2_RecupManu_a_ajouter_pour_chgt_type",".gpkg")), delete_layer=T, quiet=T)
-          }
-          M2_RecupManu=M2_RecupManu[-n_intenleveM2,]
+            st_write(M2SeuilFini_SansRegroupement,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("M2SeuilFini_SansRegroupement",".gpkg")), delete_layer=T, quiet=T)
+          }     
+          st_geometry(M2SeuilFini_SansRegroupement)="geometry"
+          M2Seuil=rbind(M2Seuil,M2SeuilFini_SansRegroupement)
         }
-        
-        if (dim(M2_RecupManu)[1]==0)
+      }
+      
+      if (verif==1)
+      {
+        st_write(M2Seuil,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("M2Seuil",".gpkg")), delete_layer=T, quiet=T)
+      }
+      
+      # il faudrait aussi enlever les supp et msupp de m2direct
+      #supprimer avant intersection les supp et msupp
+      iAutreSupp=which(Manuel$FILINO=="MSUPP" | Manuel$FILINO=="SUPP")
+      if (length(iAutreSupp)>0)
+      {
+        M2_SUPP_COUPE=st_intersects(M2_RecupManu,st_geometry(Manuel[iAutreSupp,]))
+        nM2_SUPP_COUPE=which(sapply(M2_SUPP_COUPE, length)>0)
+        if (length(nM2_SUPP_COUPE)>0)
         {
-          M2_et_M2Seuil_RecupManu=M2Seuil_RecupManu[,colnames(M2_RecupManu)]
-        }else{
-          M2_et_M2Seuil_RecupManu=rbind(M2_RecupManu,M2Seuil_RecupManu[,colnames(M2_RecupManu)])
+          M2_RecupManu=M2_RecupManu[-nM2_SUPP_COUPE,]
         }
+      }
+      
+      # Suppression des Masques2 originaux qui touchent les automatiques sans problème...
+      cat("---------------------------------------------------------------\n")
+      cat(format(Sys.time(),format="%Y%m%d_%H%M%S"),"Intersection parfois longue pour supprimer les masques 2 initiaux qui touchent les masques 2 seuil - Début","\n")
+      cat("Appeler FP au besoin\n")
+      nbenleveM2=st_intersects(M2_RecupManu,M2Seuil)
+      cat(format(Sys.time(),format="%Y%m%d_%H%M%S"),"Intersection parfois longue pour supprimer les masques 2 initiaux qui touchent les masques 2 seuil - Fin","\n")
+      
+      n_intenleveM2 = which(sapply(nbenleveM2, length)>0)
+      if (length(n_intenleveM2)>0)
+      {
         if (verif==1)
         {
-          st_write(M2_et_M2Seuil_RecupManu,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("M2_et_M2Seuil_RecupManu",".gpkg")), delete_layer=T, quiet=T)
+          st_write(M2_RecupManu[n_intenleveM2,],file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("M2_RecupManu_lesmorceauxenlever",".gpkg")), delete_layer=T, quiet=T)
+          st_write(M2_RecupManu[-n_intenleveM2,],file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("M2_RecupManu_a_ajouter_pour_chgt_type",".gpkg")), delete_layer=T, quiet=T)
         }
-        
-        # Vérification qu'il n'y ait pas un objet de masques 2 touchés par plusieurs zones utilisateur
-        nbMC=st_intersects(M2_et_M2Seuil_RecupManu,st_geometry(Manuel_Affec))
-        n_intMC = which(sapply(nbMC, length)>1) # attention >1 pour en avoir 2
-        if (length(n_intMC)>0)
-        {
-          Masques2troptouche=M2_et_M2Seuil_RecupManu[n_intMC,1]
-          plot(Masques2troptouche)
-          st_write(Masques2troptouche,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("Masques2toucheBCPdeManuel",".gpkg")), delete_layer=T, quiet=T)
-          
-          # test d'eclatement des masques 2 MULTIPOLYGON touchés plusieurs fois en POLYGON pour voir si le problème persiste
-          
-          Masques2troptouche=st_cast(Masques2troptouche,"POLYGON")
-          nbMC_=st_intersects(Masques2troptouche,st_geometry(Manuel_Affec))
-          n_intMC_ = which(sapply(nbMC_, length)>1) # attention >1 pour en avoir 2
-          if (length(n_intMC_)>0)
-          {
-            nbMC=st_intersects(Manuel_Affec,Masques2troptouche)
-            n_intMC = which(sapply(nbMC, length)>0)
-            ManuelMauvais=Manuel_Affec[n_intMC,]
-            
-            plot(ManuelMauvais[,1])
-            st_write(ManuelMauvais,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("ManueltoucheTROPMasques2",".gpkg")), delete_layer=T, quiet=T)
-            
-            cat("les masques de ",file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("M2_et_M2Seuil_RecupManu","Coupe",".gpkg"))," \n")
-            cat("touchent plusieurs de vos zones ",file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("ManueltouchetropMasques2",".gpkg"))," \n")
-            BOOM=BOOOM
-          }else{
-            M2_et_M2Seuil_RecupManu=rbind(M2_et_M2Seuil_RecupManu[-n_intMC,1],Masques2troptouche)
-          }
-        }
+        M2_RecupManu=M2_RecupManu[-n_intenleveM2,]
       }
       
-      #########################################################################
-      ############## Affectation des nouveaux types pour Masques ? ######
-      #########################################################################
-      cat("---------------------------------------------------------------\n")
-      cat("Affectation des nouveaux types","\n")
-      motclesMRM=cbind("Eco","Pla","Can","Mer","MPl")
-      incAj=1
-      for (imotcle in motclesMRM)
+      if (dim(M2_RecupManu)[1]==0)
       {
-        
-        indMotcle=which(substr(Manuel$FILINO,1,3)==imotcle)
-        if (length(indMotcle)>0)
-        { 
-          cat("Affectation des nouveaux types: ",imotcle,"\n")
-          for (im in indMotcle)
-          {
-            nbMC=st_intersects(M2_et_M2Seuil_RecupManu,st_geometry(Manuel[im,]))
-            n_intMC = which(sapply(nbMC, length)>0)
-            if (length(n_intMC)>0)
-            {
-              
-              incAj=incAj+1
-              # On va fusionner tous les petits masques et leur mettre les bons attributs
-              MasqueIm=st_sf(data.frame(
-                cat="0",
-                Aire="-99",
-                Id=dim(M2Seuil)[1]+incAj,
-                PlanEau="-99",
-                Canal="-99",
-                Ecoulement="-99",
-                F_Sh="-99",
-                F_Sh_Tr="-99",
-                F_Sh_Tr_Me="-99",
-                F_Sh_Tr_Me_Co="-99",
-                VIGILANCE="-99",
-                Commentaires=nom_Manuel,
-                FILINO=Manuel[im,]$FILINO,
-                ValPlanEAU=Manuel[im,]$ValPlanEAU,
-                CE_BalPas=Manuel[im,]$CE_BalPas,
-                CE_BalFen=Manuel[im,]$CE_BalFen,
-                CE_PenteMax=Manuel[im,]$CE_PenteMax,
-                NumCourBox=Manuel[im,]$NumCourBox),
-                geometry=st_union(M2_et_M2Seuil_RecupManu[n_intMC,]))
-              
-              # Si c'est du multiplan, on éclate
-              if (imotcle=="MPl")
-              {
-                MasqueIm$FILINO="PlanM"
-                MasqueIm=st_cast(MasqueIm,"POLYGON")
-              }
-              
-              #GRAVE OU PAS
-              M2Seuil=rbind(M2Seuil,MasqueIm)
-            }
-          }
-        } 
-        
+        M2_et_M2Seuil_RecupManu=M2Seuil_RecupManu[,colnames(M2_RecupManu)]
+      }else{
+        M2_et_M2Seuil_RecupManu=rbind(M2_RecupManu,M2Seuil_RecupManu[,colnames(M2_RecupManu)])
       }
-      # browser()
-      
-      iAJOUT=which(Manuel$FILINO=="AJOUT")
-      if (length(iAJOUT>0))
+      if (verif==1)
       {
-        # Il faudrait garder que les ajouts qui sont dans la st_box de Masques1 et Masques2 +/- qqch
-        for (im in iAJOUT)
+        st_write(M2_et_M2Seuil_RecupManu,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("M2_et_M2Seuil_RecupManu",".gpkg")), delete_layer=T, quiet=T)
+      }
+      
+      # Vérification qu'il n'y ait pas un objet de masques 2 touchés par plusieurs zones utilisateur
+      nbMC=st_intersects(M2_et_M2Seuil_RecupManu,st_geometry(Manuel_Affec))
+      n_intMC = which(sapply(nbMC, length)>1) # attention >1 pour en avoir 2
+      if (length(n_intMC)>0)
+      {
+        Masques2troptouche=M2_et_M2Seuil_RecupManu[n_intMC,1]
+        plot(Masques2troptouche)
+        st_write(Masques2troptouche,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("Masques2toucheBCPdeManuel",".gpkg")), delete_layer=T, quiet=T)
+        
+        # test d'eclatement des masques 2 MULTIPOLYGON touchés plusieurs fois en POLYGON pour voir si le problème persiste
+        
+        Masques2troptouche=st_cast(Masques2troptouche,"POLYGON")
+        nbMC_=st_intersects(Masques2troptouche,st_geometry(Manuel_Affec))
+        n_intMC_ = which(sapply(nbMC_, length)>1) # attention >1 pour en avoir 2
+        if (length(n_intMC_)>0)
         {
-          if (Manuel[im,]$ValPlanEAU!=ValPlanEAU)
+          nbMC=st_intersects(Manuel_Affec,Masques2troptouche)
+          n_intMC = which(sapply(nbMC, length)>0)
+          ManuelMauvais=Manuel_Affec[n_intMC,]
+          
+          plot(ManuelMauvais[,1])
+          st_write(ManuelMauvais,file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("ManueltoucheTROPMasques2",".gpkg")), delete_layer=T, quiet=T)
+          
+          cat("les masques de ",file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("M2_et_M2Seuil_RecupManu","Coupe",".gpkg"))," \n")
+          cat("touchent plusieurs de vos zones ",file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,paste0("ManueltouchetropMasques2",".gpkg"))," \n")
+          BOOM=BOOOM
+        }else{
+          M2_et_M2Seuil_RecupManu=rbind(M2_et_M2Seuil_RecupManu[-n_intMC,1],Masques2troptouche)
+        }
+      }
+    }
+    
+    #########################################################################
+    ############## Affectation des nouveaux types pour Masques ? ######
+    #########################################################################
+    cat("---------------------------------------------------------------\n")
+    cat("Affectation des nouveaux types","\n")
+    motclesMRM=cbind("Eco","Pla","Can","Mer","MPl")
+    incAj=1
+
+    for (imotcle in motclesMRM)
+    {
+      
+      indMotcle=which(substr(Manuel$FILINO,1,3)==imotcle)
+      if (length(indMotcle)>0)
+      { 
+        cat("Affectation des nouveaux types: ",imotcle,"\n")
+        for (im in indMotcle)
+        {
+          nbMC=st_intersects(M2_et_M2Seuil_RecupManu,st_geometry(Manuel[im,]))
+          n_intMC = which(sapply(nbMC, length)>0)
+          if (length(n_intMC)>0)
           {
+            
             incAj=incAj+1
-            
+            # On va fusionner tous les petits masques et leur mettre les bons attributs
             MasqueIm=st_sf(data.frame(
               cat="0",
               Aire="-99",
@@ -573,32 +528,79 @@ if (Opt_Manuel==1)
               F_Sh_Tr_Me="-99",
               F_Sh_Tr_Me_Co="-99",
               VIGILANCE="-99",
-              Commentaires=paste0(nom_Manuel,"ajout"),
-              FILINO="Plan",
+              Commentaires=nom_Manuel,
+              FILINO=Manuel[im,]$FILINO,
               ValPlanEAU=Manuel[im,]$ValPlanEAU,
               CE_BalPas=Manuel[im,]$CE_BalPas,
               CE_BalFen=Manuel[im,]$CE_BalFen,
               CE_PenteMax=Manuel[im,]$CE_PenteMax,
               NumCourBox=Manuel[im,]$NumCourBox),
-              geometry=st_union(Manuel[im,]))
-            # print(M2Seuil)
-            # plot(MasqueIm[,1])
-            M2Seuil=rbind(M2Seuil,MasqueIm)
+              geometry=st_union(M2_et_M2Seuil_RecupManu[n_intMC,]))
             
-            # Creation d'un masque1
-            Masque1Im=st_sf(data.frame(
-              cat=1,
-              Id=dim(Masques1)[1]+1),
-              geometry=st_buffer(st_geometry(MasqueIm),-reso/10))
-            Masques1=rbind(Masques1[,colnames(Masque1Im)],Masque1Im)
+            # Si c'est du multiplan, on éclate
+            if (imotcle=="MPl")
+            {
+              MasqueIm$FILINO="PlanM"
+              MasqueIm=st_cast(MasqueIm,"POLYGON")
+            }
+            
+            #GRAVE OU PAS
+            M2Seuil=rbind(M2Seuil,MasqueIm)
           }
-        } 
-      }else{
-        
-      }
+        }
+      } 
+      
+    }
+    # browser()
+    
+    iAJOUT=which(Manuel$FILINO=="AJOUT")
+    if (length(iAJOUT>0))
+    {
+      # Il faudrait garder que les ajouts qui sont dans la st_box de Masques1 et Masques2 +/- qqch
+      for (im in iAJOUT)
+      {
+        if (Manuel[im,]$ValPlanEAU!=ValPlanEAU)
+        {
+          incAj=incAj+1
+          
+          MasqueIm=st_sf(data.frame(
+            cat="0",
+            Aire="-99",
+            Id=dim(M2Seuil)[1]+incAj,
+            PlanEau="-99",
+            Canal="-99",
+            Ecoulement="-99",
+            F_Sh="-99",
+            F_Sh_Tr="-99",
+            F_Sh_Tr_Me="-99",
+            F_Sh_Tr_Me_Co="-99",
+            VIGILANCE="-99",
+            Commentaires=paste0(nom_Manuel,"ajout"),
+            FILINO="Plan",
+            ValPlanEAU=Manuel[im,]$ValPlanEAU,
+            CE_BalPas=Manuel[im,]$CE_BalPas,
+            CE_BalFen=Manuel[im,]$CE_BalFen,
+            CE_PenteMax=Manuel[im,]$CE_PenteMax,
+            NumCourBox=Manuel[im,]$NumCourBox),
+            geometry=st_union(Manuel[im,]))
+          # print(M2Seuil)
+          # plot(MasqueIm[,1])
+          M2Seuil=rbind(M2Seuil,MasqueIm)
+          
+          # Creation d'un masque1
+          Masque1Im=st_sf(data.frame(
+            cat=1,
+            Id=dim(Masques1)[1]+1),
+            geometry=st_buffer(st_geometry(MasqueIm),-reso/10))
+          Masques1=rbind(Masques1[,colnames(Masque1Im)],Masque1Im)
+        }
+      } 
+    }else{
+      
     }
   }
 }
+
 
 # Export du masques 2 FILINO
 Masques2=M2Seuil

@@ -17,7 +17,8 @@ FILINO_LitOFB=function(cdstationhydro,date_mesure,dt,AltProche)
   library(rjson)
   
   # Liste des URL des fichiers TAR et leurs plages de lettres associées
-  folder_path="C:/AFFAIRES/INRAE/Hydrometrie"
+  folder_path=dirname(NomStHydro)#"C:\\BDD\\HYDROMETRIE"
+  
   
   tar_list <- data.frame(
     range = c("0-9", "A-E", "F-J", "K-O", "P-T", "U-Z"),
@@ -84,6 +85,7 @@ FILINO_LitOFB=function(cdstationhydro,date_mesure,dt,AltProche)
   # Fonction pour récupérer les données de hauteur et de débit
   get_hydro_data <- function(cdstationhydro, date_mesure) {
     cat("# Fonction pour récupérer les données de hauteur et de débit\n")
+
     # 1. Déterminer le bon fichier TAR et le dossier d'extraction
     tar_info <- get_tar_info(cdstationhydro)
     tar_url <- tar_info$tar_url
