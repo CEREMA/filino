@@ -13,6 +13,7 @@ library(xml2)
 library(readxl) 
 library(jpeg)
 library(png)
+
 library(foreach)
 library(doParallel)
 library(raster)
