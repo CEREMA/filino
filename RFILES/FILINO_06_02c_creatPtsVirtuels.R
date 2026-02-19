@@ -73,9 +73,36 @@ FILINO_06_02c_creatPtsVirtuels=function(nomcsv,rep_COURSEAU,Cas,raci_exp,nomPtsV
                               geometry=st_line_merge(st_cast(st_union(trhydro),"MULTILINESTRING")))
                 
                 trhydro=st_cast(st_line_merge(st_cast(trhydro,'MULTILINESTRING')),"LINESTRING")
+                
+                # 20260219 vérification qu'il n'y ait pas de défluence/confluence
+                # Si on a un confluence/défluence, cela coupe la rivière en 2 
+                # et le morceau le plus grand peut être en dehors de notre masque, 
+                # l'objectif est de ne garder qu'un coté de la défluence/confluence
+                CoordTr=st_coordinates(trhydro)
+                nsaut=which(CoordTr[-1,4]!=CoordTr[-nrow(CoordTr),4])
+                
+                if (length(nsaut)>0)# Il ya plusieurs polylignes
+                {
+                  DebFin=CoordTr[c(1,nsaut,nsaut+1,nrow(CoordTr)),]
+                  DebFin=DebFin[order(DebFin[, "L1"],DebFin[, "X"], DebFin[, "Y"], decreasing = FALSE), ]
+                  
+                  indic=seq(1,nrow(DebFin),2)
+                  Codage=paste(DebFin[indic, "X"], DebFin[indic, "Y"], DebFin[indic+1, "X"], DebFin[indic+1, "Y"], sep = "_")
+                  # Trouver les indices des doublons
+                  ndoublons=which(duplicated(Codage) | duplicated(Codage, fromLast = TRUE)==T)
+                  if (length(ndoublons)==2)
+                  {
+                    najeter=ndoublons[which(st_length(trhydro[ndoublons,])==max(st_length(trhydro[ndoublons,])))]
+                    trhydro=trhydro[-najeter,]
+                    trhydro=st_sf(data.frame(liens_vers_cours_d_eau =trhydro$liens_vers_cours_d_eau[1]),
+                                  geometry=st_line_merge(st_cast(st_union(trhydro),"MULTILINESTRING")))
+                  }
+                  
+                }
                 if (dim(trhydro)[1]>1)
                 {
                   trhydro=trhydro[st_length(trhydro)==max(st_length(trhydro)),]
+                  
                 }
               } # Il faudra gérer quand il y a plusieurs troncçons dans un masque, intersection par exemple
               st_write(trhydro,file.path(rep_COURSEAU,"Polyligne_Calcul.gpkg"),delete_layer=TRUE)
