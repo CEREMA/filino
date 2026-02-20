@@ -34,19 +34,25 @@ FILINO_11_07_Job=function(idalle,TA_Zone,NomDirMNTTIN,type,TA,TAPtsVirtu,listeMa
   
   
   # Il faut tester s'il y a qqch pour augmenter la zone de calcul du TIn dans le fichier TravailMANUEL_Filino.gpkg'
-  Manuel=st_read(nom_Manuel)
-  ici=which(Manuel$FILINO=="TIN")
-  if (length(ici)>0)
+  if (Opt_Manuel>0)
   {
-    nbmanuel=st_intersects(Manuel[ici,],Tampon)
-    n_intmanuel = which(sapply(nbmanuel, length)>0)
-    if (length(n_intmanuel)>0)
+    # Chemin vers le fichier de travail manuel
+    if (file.exists(nom_Manuel)==T)
     {
-      Manuel=Manuel[n_intmanuel,]
-      Tampon=st_union(Tampon,Manuel)
+      Manuel=st_read(nom_Manuel)
+      ici=which(Manuel$FILINO=="TIN")
+      if (length(ici)>0)
+      {
+        nbmanuel=st_intersects(Manuel[ici,],Tampon)
+        n_intmanuel = which(sapply(nbmanuel, length)>0)
+        if (length(n_intmanuel)>0)
+        {
+          Manuel=Manuel[n_intmanuel,]
+          Tampon=st_union(Tampon,Manuel)
+        }
+      }
     }
   }
-  
   # Création du polygone injecté dans PDAL pour limiter les calcul (CROP)
   Polygon_Contour_CE=st_as_text(st_geometry(Tampon))
   
