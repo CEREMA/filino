@@ -262,7 +262,7 @@ Creat_vrt=function(listeASC,nom_liste_pour_vrt,vrtfile)
   # Creation du fichier virtuel
   file.create(nom_liste_pour_vrt)
   write(listeASC, file = nom_liste_pour_vrt, append = T)
-  cmd = paste(shQuote(OSGeo4W_path),"gdalbuildvrt",vrtfile,"-input_file_list",nom_liste_pour_vrt)
+  cmd = paste(OSGeo4W_path,"gdalbuildvrt",vrtfile,"-input_file_list",nom_liste_pour_vrt)
   print(cmd);system(cmd)
   Sys.sleep(0.1);unlink(nom_liste_pour_vrt)
 }

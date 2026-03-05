@@ -42,7 +42,7 @@ FILINO_19_14_Herbe_Job=function(iZone,ZONE)
       cmd=paste0("r.out.gdal --quiet --overwrite -c -f input=",nomDiff," output=",nomsortie," type=Float32 format=GPKG nodata=-9999")
       print(cmd);system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd))
       
-      cmd = paste0(shQuote(OSGeo4W_path)," gdaladdo ","--config OGR_SQLITE_SYNCHRONOUS OFF ", "-r AVERAGE ",nomsortie," 2 4 8 16 32 64 128 256")
+      cmd = paste0(OSGeo4W_path," gdaladdo ","--config OGR_SQLITE_SYNCHRONOUS OFF ", "-r AVERAGE ",nomsortie," 2 4 8 16 32 64 128 256")
       print(cmd);system(cmd)
       
       file.copy(file.path(dsnlayer,NomDirSIGBase,"Champs.qml"),

@@ -46,7 +46,7 @@ for (ita in 1:dim(paramTARaster)[1])
       
       file.create(nom_vrt)
       write(listeRast, file = nom_vrt, append = T)
-      cmd = paste(shQuote(OSGeo4W_path),"gdalbuildvrt",vrtfile,"-input_file_list",nom_vrt)
+      cmd = paste(OSGeo4W_path,"gdalbuildvrt",vrtfile,"-input_file_list",nom_vrt)
       print(cmd);system(cmd)
       unlink(nom_vrt)
       

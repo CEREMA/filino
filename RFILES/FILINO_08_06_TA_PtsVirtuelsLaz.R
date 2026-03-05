@@ -4,7 +4,7 @@ FILINO_08_06_TA_PtsVirtuelsLaz_Job=function(iLAZ,nomlaz,nb_proc)
   tour=list()
   nomjson=paste0(basename(nomlaz))
   nomjson=paste0(substr(nomjson,1,nchar(nomjson)-4),iLAZ,".json")
-  cmd=paste0(shQuote(pdal_exe)," info ",shQuote(file.path(dsnlayer,nomlaz))," --summary")
+  cmd=paste0(pdal_exe," info ",shQuote(file.path(dsnlayer,nomlaz))," --summary")
   toto=system(cmd,intern=T)
   write(toto,nomjson)
   

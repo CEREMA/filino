@@ -358,7 +358,7 @@ FILINO_11_07_Job=function(idalle,TA_Zone,NomDirMNTTIN,type,TA,TAPtsVirtu,listeMa
       
       # fun_gpkg(felfile)
       
-      # cmd =  paste(shQuote(OSGeo4W_path), "gdal_calc","--calc",'"A-B"', "--format", "GTiff", "--type", "Float32", "-A", NomMNTC, "--A_band", 1, "-B",
+      # cmd =  paste(OSGeo4W_path, "gdal_calc","--calc",'"A-B"', "--format", "GTiff", "--type", "Float32", "-A", NomMNTC, "--A_band", 1, "-B",
       #              NomTIF, "--B_band", 1, "--co", "COMPRESS=DEFLATE", "--co", "PREDICTOR=2", "--co" ,"ZLEVEL=9", "--co","BIGTIFF=YES","--outfile", NomCuv)
       # system(cmd) 
       # file.copy(file.path(dsnlayer,NomDirSIGBase,"H_cuvettes.qml"),

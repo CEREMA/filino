@@ -296,7 +296,7 @@ ConvertGPKG=function(NomInput,tuilage)
   if (length(ici)>0)
   {
     NomInput2=paste0(substr(NomInput,1,nchar(NomInput)-4),"_Float32.vrt")
-    cmd = paste0(shQuote(OSGeo4W_path)," gdal_translate ", "-ot Float32 ",shQuote(NomInput)," ",shQuote(NomInput2))
+    cmd = paste0(OSGeo4W_path," gdal_translate ", "-ot Float32 ",shQuote(NomInput)," ",shQuote(NomInput2))
     print(cmd);system(cmd)
     # gdal_translate -ot Float32 "H:/FILINO_Travail/10_GpsTime/D34_LEZ_MOSSON_COMPLET_GpsTime_Diff.vrt" "H:/FILINO_Travail/10_GpsTime/D34_LEZ_MOSSON_COMPLET_GpsTime_Diff_Float32.vrt"
     NomInput=NomInput2
@@ -306,12 +306,12 @@ ConvertGPKG=function(NomInput,tuilage)
   
   if (file.exists(NomGPKG)){Sys.sleep(0.1);unlink(NomGPKG)}
   cat("#######################################################################\n")
-  cmd = paste0(shQuote(OSGeo4W_path)," gdal_translate ", "-of GPKG ","--config OGR_SQLITE_SYNCHRONOUS OFF ", "-co  APPEND_SUBDATASET=YES ", "-co TILE_FORMAT=PNG_JPEG ",shQuote(NomInput)," ",shQuote(NomGPKG))
+  cmd = paste0(OSGeo4W_path," gdal_translate ", "-of GPKG ","--config OGR_SQLITE_SYNCHRONOUS OFF ", "-co  APPEND_SUBDATASET=YES ", "-co TILE_FORMAT=PNG_JPEG ",shQuote(NomInput)," ",shQuote(NomGPKG))
   print(cmd);system(cmd)
   if (tuilage==1)
   {
     cat("#######################################################################\n")
-    cmd = paste0(shQuote(OSGeo4W_path)," gdaladdo ","--config OGR_SQLITE_SYNCHRONOUS OFF ", "-r AVERAGE ",NomGPKG," 2 4 8 16 32 64 128 256")
+    cmd = paste0(OSGeo4W_path," gdaladdo ","--config OGR_SQLITE_SYNCHRONOUS OFF ", "-r AVERAGE ",NomGPKG," 2 4 8 16 32 64 128 256")
     print(cmd);system(cmd)
   }
 }
@@ -367,7 +367,7 @@ FILINO_00c_TA_NbrePOINTS=function(chem_routine,ilaz,Gagne_MultiTA,Doss_ExpRastCo
   if (!file.exists(NomTIF))
   {
     nomlaz=file.path(Gagne_MultiTA$CHEMIN[ilaz],Gagne_MultiTA$NOM[ilaz])
-    cmd=paste0(shQuote(pdal_exe)," info ",nomlaz," --summary")
+    cmd=paste0(pdal_exe," info ",nomlaz," --summary")
     toto=system(cmd,intern=T)
     
     # Utiliser la fonction grep pour trouver la ligne contenant "num_points"

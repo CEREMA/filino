@@ -111,7 +111,7 @@ if (file.exists(file.path(chem_routine,nomXLSX))==T)
                 nom_vrt = file.path(RepQgs, "listepourvrt.txt")
                 file.create(nom_vrt)
                 write(listeRast, file = nom_vrt, append = T)
-                cmd = paste(shQuote(OSGeo4W_path),"gdalbuildvrt",vrtfile,"-input_file_list",nom_vrt)
+                cmd = paste(OSGeo4W_path,"gdalbuildvrt",vrtfile,"-input_file_list",nom_vrt)
                 print(cmd);system(cmd)
                 unlink(nom_vrt)
                 Imprpng=1
@@ -243,7 +243,7 @@ if (file.exists(file.path(chem_routine,nomXLSX))==T)
             ipng=ipng+1
             
             setwd(RepQgs)
-            cmd=paste0(shQuote(qgis_process),
+            cmd=paste0(qgis_process,
                        " run native:printlayouttoimage project_path=",
                        basename(nom_Proj_Qgis_tmp),
                        " LAYOUT=",
@@ -308,7 +308,7 @@ if (file.exists(file.path(chem_routine,nomXLSX))==T)
                   writePNG(image,temppng)
                   
                   setwd(RepQgs)
-                  cmd=paste0(shQuote(qgis_process),
+                  cmd=paste0(qgis_process,
                              " run native:printlayouttoimage project_path=",
                              basename(nom_Proj_Qgis_tmp),
                              " LAYOUT=",

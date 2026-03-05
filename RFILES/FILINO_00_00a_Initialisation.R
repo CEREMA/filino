@@ -3,21 +3,38 @@
 ##########################################################################################################
 
 # Fonction pour vérifier l'existanece des chemins entrés par l'utilisateur
-fun_check_exists=
-  function(dir) if(!file.exists(dir)) {cat("REPERTOIRE OU FICHIER ",dir," INTROUVABLE\n")}#;break}
+# fun_check_exists=
+#   function(dir) if(!file.exists(dir)) {cat("REPERTOIRE OU FICHIER ",dir," INTROUVABLE\n")}#;break}
 
-fun_check_exists(qgis_process)
-fun_check_exists(BatGRASS)
+fun_check_exists=function(dir)
+{
+  if(!file.exists(dir)) {cat("REPERTOIRE OU FICHIER ",dir," INTROUVABLE\n")}#;break}
+}
+cat("#######################################################################\n")
+cat("############ Début Vérification des liens des programmes ##############\n")
+cat("---------------- FILINO__User_LienOutilsPC.R --------------------------\n")
+fun_check_exists(OSGeo4W_path);OSGeo4W_path=shQuote(OSGeo4W_path)
+fun_check_exists(BatGRASS);#BatGRASS=shQuote(BatGRASS)
+fun_check_exists(pdal_exe);pdal_exe=shQuote(pdal_exe)
+fun_check_exists(qgis_process);qgis_process=shQuote(qgis_process)
+fun_check_exists(ffmpeg);ffmpeg=shQuote(ffmpeg)
+cat("--------------- ",listSect," -------------------------\n")
 fun_check_exists(dsnlayer)
+if (file.exists(SecteurGRASS_)==F){dir.create(SecteurGRASS_,recursive = T)}
+fun_check_exists(nomZONE)
+fun_check_exists(NomDirSIGBase)
 fun_check_exists(dsnDepartement)
+# paramTALidar
+for (ital in paramTALidar$DossLAZ){fun_check_exists(ital)}
+fun_check_exists(file.path(paramTALidar$DossLAZ[1],nomTA_SiteIGN))
 fun_check_exists(nomZICAD)
 fun_check_exists(nomDpt)
 fun_check_exists(nomBuf_pour_mer)
+if (Opt_Manuel==1){fun_check_exists(nom_Manuel)}
+if (exists("QueHydrometrie")){if (QueHydrometrie==1){fun_check_exists(NomStHydro)}}
+cat("############## Fin Vérification des liens des programmes ##############\n")
+cat("#######################################################################\n")
 setwd(dsnlayer)
-
-
-for (i in 1:dim(paramTALidar)[1])
-{fun_check_exists(paramTALidar$DossLAZ[i])}
 
 if (Auto[1]==0)
 {

@@ -69,10 +69,10 @@ FILINO_12_08_CreationMNT_Raster_Job=function(idalle)
       
       ConvertGPKG(NomTIF,1)
       
-      # cmd = paste0(shQuote(OSGeo4W_path)," gdal_translate ", "-of GPKG ","--config OGR_SQLITE_SYNCHRONOUS OFF ", "-co  APPEND_SUBDATASET=YES ", "-co TILE_FORMAT=PNG_JPEG ",shQuote(NomTIF)," ",shQuote(NomGPKG))
+      # cmd = paste0(OSGeo4W_path," gdal_translate ", "-of GPKG ","--config OGR_SQLITE_SYNCHRONOUS OFF ", "-co  APPEND_SUBDATASET=YES ", "-co TILE_FORMAT=PNG_JPEG ",shQuote(NomTIF)," ",shQuote(NomGPKG))
       # system(cmd)
       # 
-      # cmd = paste0(shQuote(OSGeo4W_path)," gdaladdo ","--config OGR_SQLITE_SYNCHRONOUS OFF ", "-r AVERAGE ",NomGPKG," 2 4 8 16 32 64 128 256")
+      # cmd = paste0(OSGeo4W_path," gdaladdo ","--config OGR_SQLITE_SYNCHRONOUS OFF ", "-r AVERAGE ",NomGPKG," 2 4 8 16 32 64 128 256")
       # system(cmd)
       
       Sys.sleep(0.1);unlink(NomTIF)

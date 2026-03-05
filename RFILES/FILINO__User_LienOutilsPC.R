@@ -26,7 +26,7 @@ OSGeo4W_path <- "C:/QGIS/OSGeo4W.bat"
 # 🌿 GRASS GIS
 # --------------------------
 # Chemin vers le fichier batch de GRASS (version 8.4)
-BatGRASS <- "C:\\QGIS\\bin\\grass84.bat"
+BatGRASS <- "C:/QGIS/bin/grass84.bat"
 
 # --------------------------
 # 🗺️ PDAL (Point Data Abstraction Library)
