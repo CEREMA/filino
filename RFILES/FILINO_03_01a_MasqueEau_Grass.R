@@ -37,8 +37,8 @@ FILINO1a_Vide_Grass =   function(iLAZ,NomLaz,nom_Rast_INV_VIDEetEAU,nom_RastEAU,
     # Test pour voir si tout s'est bien passé, certaines dalles rendent des NULL...
     # browser()
     cmd=paste0("r.univar --quiet --overwrite map=",nomMNT)
-    # print(cmd);toto=system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd),intern=T)
-    print(cmd);toto = system2(command = BatGRASS,args = c(SecteurGRASS, "--exec", cmd),stdout = TRUE,stderr = TRUE)
+    print(cmd);toto=system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd),intern=T)
+    # print(cmd);toto = system2(command = BatGRASS,args = c(SecteurGRASS, "--exec", cmd),stdout = TRUE,stderr = TRUE)
     nlig=grep(toto,pattern="n: ")[1]
     nvaleur=as.numeric(strsplit(toto[nlig],":")[[1]][2])
     cat(toto[nlig],"\n")
@@ -65,8 +65,8 @@ FILINO1a_Vide_Grass =   function(iLAZ,NomLaz,nom_Rast_INV_VIDEetEAU,nom_RastEAU,
       # unlink(NomUnivar)
       
       cmd=paste0("r.univar --quiet --overwrite map=",nomMNTMasque1)
-      # print(cmd);toto=system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd),intern=T)
-      print(cmd);toto = system2(command = BatGRASS,args = c(SecteurGRASS, "--exec", cmd),stdout = TRUE,stderr = TRUE)
+      print(cmd);toto=system(paste0(BatGRASS," ",SecteurGRASS," --exec ",cmd),intern=T)
+      # print(cmd);toto = system2(command = BatGRASS,args = c(SecteurGRASS, "--exec", cmd),stdout = TRUE,stderr = TRUE)
       nlig=grep(toto,pattern="n: ")[1]
       nvaleur2=as.numeric(strsplit(toto[nlig],":")[[1]][2])
       cat(toto[nlig],"\n")

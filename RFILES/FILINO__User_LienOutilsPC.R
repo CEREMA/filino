@@ -21,18 +21,21 @@
 # --------------------------
 # Chemin vers le fichier OSGeo4W.bat (nécessaire pour exécuter QGIS/GRASS en ligne de commande)
 OSGeo4W_path <- "C:/QGIS/OSGeo4W.bat"
+OSGeo4W_path <- "C:/Program Files/QGIS 3.44.7/OSGeo4W.bat"
 
 # --------------------------
 # 🌿 GRASS GIS
 # --------------------------
 # Chemin vers le fichier batch de GRASS (version 8.4)
 BatGRASS <- "C:/QGIS/bin/grass84.bat"
+BatGRASS <- "C:/Program Files/QGIS 3.44.7/bin/grass84.bat"
 
 # --------------------------
 # 🗺️ PDAL (Point Data Abstraction Library)
 # --------------------------
 # Chemin vers l'exécutable PDAL (pour le traitement des nuages de points LiDAR)
 pdal_exe <- "C:/QGIS/bin/pdal.exe"
+pdal_exe <- "C:/Program Files/QGIS 3.44.7/bin/pdal.exe"
 
 # --------------------------
 # 🖥️ QGIS (traitements en ligne de commande)
@@ -41,6 +44,7 @@ pdal_exe <- "C:/QGIS/bin/pdal.exe"
 # Deux versions possibles selon votre installation :
 # qgis_process <- "C:/QGIS/bin/qgis_process-qgis-ltr.bat"  # Version LTR (Long Term Release)
 qgis_process <- "C:/QGIS/bin/qgis_process-qgis-qt6.bat"  # Version Qt6
+qgis_process <- "C:/Program Files/QGIS 3.44.7/bin/qgis_process-qgis.bat"  # Version Qt6
 
 # --------------------------
 # 🎥 FFmpeg (pour les vidéos de démonstration)

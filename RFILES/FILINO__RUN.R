@@ -59,7 +59,6 @@ cat("#--------------------------------------------------------------------------
 
 cat("FILINO__User_Chemin_et_Nom choisi: ",listSect,"\n")
 source(file.path(chem_routine,listSect), encoding="utf-8")
-# Ancienne maniere 23/04/2025 source(file.path(chem_routine,"FILINO__User_Chemin_et_Nom.R"))
 
 source(file.path(chem_routine,"FILINO_Utils.R"))
 
@@ -84,7 +83,8 @@ ChoixFILINO = cbind(
   "18_13.      Raster GpsTime",
   "19_14.      Herbe sur champs à faible relief",
   "20_15.      Copie vers autre disques durs",
-  "21_16.      Ré-échantillonage Raster"
+  "21_16.      Ré-échantillonage Raster",
+  "22_17.      En développement - Ajouts Sections Manuelles ou profils géomètres"
 )
 titre="Menu principal FILINO"
 preselec=NULL
@@ -374,7 +374,6 @@ if (nFILINO[21]==1)
   ResoNew=c(5,25)
 }
 
-
 # Ce serait bien de ne pas ouvrir si pas de besoin...
 Choixmode=FILINO_BDD("Mode de calcul",preselect_nb_proc_Filino,colnames(nb_proc_Filino))
 nb_proc_Filino_=nb_proc_Filino[,which(Choixmode==1)[1]]
@@ -551,4 +550,24 @@ if (nFILINO[21]==1)
   {
     source(file.path(chem_routine,"FILINO_21_Re_Echantillonage_Pilotage.R"))
   }
+}
+
+# "22_17.      Ajouts Sections Manuelles ou profils géomètres"
+if (nFILINO[22]==1)
+{ 
+  cat("\n")
+  cat("\n")
+  cat("########################################################################################################\n")
+  cat("######################### FILINO A LIRE SVP ###############################################################\n")
+  cat("---------------- ETAPE En développement - Ajouts Sections Manuelles ou profils géomètres #######################################\n")
+  cat("\n")
+  cat("Vous devez renseigner des fichiers de paramétrages dans le dossier\n")
+  cat(file.path(chem_routine_,"Users"),"\n")
+  cat("\n")
+  cat("######################### Fin FILINO A LIRE ###############################################################\n")
+  cat("######################### Ne pas lire les messages d'avis ou warnings en dessous###########################\n")
+  cat("\n")
+  file.path(chem_routine_,"Users")
+  
+  source(file.path(chem_routine,"Topo_Mano","PreC2D_RUN_Topo_Manuel_pour_MNT.R"),encoding = "utf-8")
 }
