@@ -1,5 +1,5 @@
 #----------------------------------------------------------------------------------------
-FILINO_06_02ab_Job1=function(iLAZ,TA_tmp,TA,Masques2,NomDirTmp,raciTmp,ClassTmp)
+FILINO_06_02ab_Job1=function(iLAZ,TA_tmp,TA,Masques2,NomDirTmp,raciTmp,ClassTmp,Manuel_Eli)
 {
   # if (is.null(TA_tmp$CHEMIN))
   # {
@@ -15,6 +15,11 @@ FILINO_06_02ab_Job1=function(iLAZ,TA_tmp,TA,Masques2,NomDirTmp,raciTmp,ClassTmp)
   cat("###############################################################\n")
   cat("Passage R",iLAZ,"sur", dim(TA)[1],"\n")
   cat("#######################",TA_tmp$NOM,"\n")
+  
+  nb=st_intersects(Manuel_Eli,TA_tmp)
+  n_int = which(sapply(nb, length)>0)
+  Manuel_Eli=Manuel_Eli[n_int,]
+
   nb=st_intersects(Masques2,TA_tmp)
   n_int = which(sapply(nb, length)>0)
   
@@ -27,6 +32,7 @@ FILINO_06_02ab_Job1=function(iLAZ,TA_tmp,TA,Masques2,NomDirTmp,raciTmp,ClassTmp)
     ValUserData=99
     Masq_tmp$UserData=ValUserData
     Masq_tmp=Masq_tmp[,"UserData"]
+    
     
     cat(TA_tmp$NOM,"\n")
     
@@ -44,6 +50,13 @@ FILINO_06_02ab_Job1=function(iLAZ,TA_tmp,TA,Masques2,NomDirTmp,raciTmp,ClassTmp)
     NomLaz_tmp=file.path(rep_COURSEAU,NomLaz_tmp)
     if (file.exists(NomLaz_tmp)==F & file.exists(file.path(rep_COURSEAU,paste0(raci,".vide")))==F)
     {  
+      if (nrow(Manuel_Eli)>0)
+      {
+        # Nettoyage des mauvaises classifications (péniches...)
+        Masq_tmp=st_difference(Masq_tmp,st_union(Manuel_Eli))
+        Masq_tmp=Masq_tmp[,"UserData"]
+      }
+      
       FILINO_Creat_Dir(rep_COURSEAU) 
       st_write(Masq_tmp,nomMasq_tmp,driver = "GPKG",delete_dsn = TRUE,delete_layer = TRUE)
       
@@ -68,6 +81,7 @@ FILINO_06_02ab_Job1=function(iLAZ,TA_tmp,TA,Masques2,NomDirTmp,raciTmp,ClassTmp)
       # write(paste0("       ",shQuote("type"),":",shQuote("filters.crop"),","),nomjson,append=T)
       # write(paste0("       ",shQuote("polygon"),":",shQuote(st_as_text(st_geometry(st_union(Masq_tmp))))),nomjson,append=T)
       # write("    },",nomjson,append=T)
+      
       write("    {",nomjson,append=T)
       write(paste0("       ",shQuote("type"),":",shQuote("filters.overlay"),","),nomjson,append=T)
       write(paste0("       ",shQuote("column"),":",shQuote("UserData"),","),nomjson,append=T)
@@ -78,6 +92,7 @@ FILINO_06_02ab_Job1=function(iLAZ,TA_tmp,TA,Masques2,NomDirTmp,raciTmp,ClassTmp)
       write(paste0("       ",shQuote("type"),":",shQuote("filters.range"),","),nomjson,append=T)
       write(paste0("       ",shQuote("limits"),":",shQuote(paste0("UserData[",ValUserData,":",ValUserData,"]"))),nomjson,append=T)
       write("    },",nomjson,append=T)
+      
       write("    {",nomjson,append=T)
       write(paste0("       ",shQuote("type"),":",shQuote("writers.copc"),","),nomjson,append=T)
       write(paste0("       ",shQuote("filename"),":",shQuote(NomLaz_tmp),","),nomjson,append=T)

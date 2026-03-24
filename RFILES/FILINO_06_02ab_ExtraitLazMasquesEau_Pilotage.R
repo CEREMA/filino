@@ -40,6 +40,17 @@ if (length(n_int)>0)
   # Masques1=st_read(file.path(dsnlayer,NomDirMasqueVIDE,paste0("Masques1_FILINO","_",racilayerTA,".gpkg")))
   Masques1=st_read(file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques1_FILINO.gpkg"))
   
+  # Option manuelle pour éliminer des zones
+  if (Opt_Manuel>0)
+  {
+    # Chemin vers le fichier de travail manuel
+    if (file.exists(nom_Manuel)==T)
+    {
+      Manuel=st_read(nom_Manuel)
+      Manuel_Eli=Manuel[which(Manuel$FILINO=="NETTOIE"),]
+    }
+  }
+  
   nb=st_intersects(TA,Masques2)
   n_int = which(sapply(nb, length)>0)
   TA=TA[n_int,]
@@ -54,7 +65,7 @@ if (length(n_int)>0)
       for (iLAZ in 1:dim(TA)[1])
       {
         TA_tmp=TA[iLAZ,]
-        FILINO_06_02ab_Job1(iLAZ,TA_tmp,TA,Masques2,NomDirSurfEAU,raciSurfEau,ClassPourSurfEau)
+        FILINO_06_02ab_Job1(iLAZ,TA_tmp,TA,Masques2,NomDirSurfEAU,raciSurfEau,ClassPourSurfEau,Manuel_Eli)
       }
     }else{
       cat("------ ",nb_proc," CALCULS MODE PARALLELE -------------\n")
@@ -68,7 +79,7 @@ if (length(n_int)>0)
         {
           TA_tmp=TA[iLAZ,]
           # library(sf)
-          FILINO_06_02ab_Job1(iLAZ,TA_tmp,TA,Masques2,NomDirSurfEAU,raciSurfEau,ClassPourSurfEau)
+          FILINO_06_02ab_Job1(iLAZ,TA_tmp,TA,Masques2,NomDirSurfEAU,raciSurfEau,ClassPourSurfEau,Manuel_Eli)
         }
       stopCluster(cl)
     }

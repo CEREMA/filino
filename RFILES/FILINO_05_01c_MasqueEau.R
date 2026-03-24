@@ -60,10 +60,18 @@ if (Opt_Manuel==1)
     Manuel=st_read(nom_Manuel)
     nom_Manuel_tmp=nom_Manuel
     
-    # Intersection du Masque2Seuil avec la couche SIG de travail manuel
+    ici=which(Manuel$FILINO=="NETTOIE")
+    if (length(ici)>0){
+      nom_Manuel_tmp=paste0(substr(nom_Manuel_tmp,1,nchar(nom_Manuel_tmp)-5),format(Sys.time(),format="%Y%m%d_%H%M%S"),"_tmp_ajeter.gpkg")
+      st_write(Manuel[-ici,],nom_Manuel_tmp,delete_dsn=F,delete_layer=T,quiet=T)
+    }
+    
+        # Intersection du Masque2Seuil avec la couche SIG de travail manuel
     NomA=nomMasque2Seuil
     NomC=file.path(dsnlayer,NomDirMasqueVIDE,racilayerTA,"Masques2Vieux.csv")
     liaison=FILINO_Intersect_Qgis(NomA,nom_Manuel_tmp,NomC)
+    print(liaison$FILINO)
+
     
     NIDVieux=unique(liaison$Id)
     
@@ -364,7 +372,7 @@ if (Opt_Manuel==1)
     ####################################################################################################
     ###### Affectation Manuelle de nouveaux types
     iAutre=which(Manuel$FILINO=="COUPE" | Manuel$FILINO=="MSUPP" | Manuel$FILINO=="SUPP")
-
+    
     if (length(iAutre)<dim(Manuel)[1])
     {
       if (length(iAutre)>0){Manuel_Affec=Manuel[-iAutre,]}else{Manuel_Affec=Manuel}
@@ -499,7 +507,7 @@ if (Opt_Manuel==1)
     cat("Affectation des nouveaux types","\n")
     motclesMRM=cbind("Eco","Pla","Can","Mer","MPl")
     incAj=1
-
+    
     for (imotcle in motclesMRM)
     {
       

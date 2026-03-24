@@ -13,7 +13,9 @@ FILINO_11_07_Job=function(idalle,TA_Zone,NomDirMNTTIN,type,TA,TAPtsVirtu,listeMa
   NomGPKG   =file.path(dsnlayer,NomDirMNTTIN,racilayerTA,NomDossDalles,paste0(racidalle_,"_",type,".gpkg"))
   NomTXT    =file.path(dsnlayer,NomDirMNTTIN,racilayerTA,NomDossDalles,paste0(racidalle_,"_Cerema.txt"))
   NomTXT_old=file.path(dsnlayer,NomDirMNTTIN,racilayerTA,NomDossDalles,paste0(racidalle_,"_Cerema_old.txt"))
+  NomMasq   =file.path(dsnlayer,NomDirMNTTIN,racilayerTA,NomDossDalles,paste0(racidalle_,"_NETTOIE.gpkg"))
   Alancer=0
+  OptMasq=0
   # if (file.exists(NomTIF)==F)
   #   {
   #   Alancer=1
@@ -51,6 +53,7 @@ FILINO_11_07_Job=function(idalle,TA_Zone,NomDirMNTTIN,type,TA,TAPtsVirtu,listeMa
           Tampon=st_union(Tampon,Manuel)
         }
       }
+      
     }
   }
   # Création du polygone injecté dans PDAL pour limiter les calcul (CROP)
@@ -190,6 +193,50 @@ FILINO_11_07_Job=function(idalle,TA_Zone,NomDirMNTTIN,type,TA,TAPtsVirtu,listeMa
     #   write("    },",nomjson,append=T)
     # }
     
+    ############# NETTOIE - Suppression des points 20260324
+    # Le filter.crop est moins précis que le overlay, bcp plus de points débordent du masque2...
+    if (Opt_Manuel>0)
+    {
+      # browser()
+      ici=which(Manuel$FILINO=="NETTOIE")
+      if (length(ici)>0)
+      {
+        Masq=Manuel[ici,]
+        nb=st_intersects(Masq,Tampon)
+        n_int = which(sapply(nb, length)>0)
+        if (length(n_int)>0)
+        {
+          Masq_tmp=st_difference(st_buffer(TA_Zone[idalle,1],1000),st_union(Masq[n_int,1]))
+          ValUserData=99
+          Masq_tmp$UserData=ValUserData
+          OptMasq=1
+          st_write(Masq_tmp,NomMasq,delete_dsn=F,delete_layer=T,quiet=T)
+        }
+        
+        if (OptMasq==1)
+        {
+          # write("    {",nomjson,append=T)
+          # write(paste0("       ",shQuote("type"),":",shQuote("filters.crop"),","),nomjson,append=T)
+          # write(paste0("       ",shQuote("polygon"),":",shQuote(st_as_text(st_geometry(st_union(Masq_tmp)))),","),nomjson,append=T)
+          # write(paste0("       ",shQuote("outside"),":",shQuote("true")),nomjson,append=T)
+          # write("    },",nomjson,append=T)
+          
+          write("    {",nomjson,append=T)
+          write(paste0("       ",shQuote("type"),":",shQuote("filters.overlay"),","),nomjson,append=T)
+          write(paste0("       ",shQuote("column"),":",shQuote("UserData"),","),nomjson,append=T)
+          write(paste0("       ",shQuote("datasource"),":",shQuote(NomMasq),","),nomjson,append=T)
+          write(paste0("       ",shQuote("dimension"),":",shQuote("UserData")),nomjson,append=T)
+          write("    },",nomjson,append=T)
+          
+          ############## On ne garde que les classification sol, les 60 et + de 'IGN et 80 et plus du Cerema
+          write("    {",nomjson,append=T)
+          write(paste0("       ",shQuote("type"),":",shQuote("filters.range"),","),nomjson,append=T)
+          write(paste0("       ",shQuote("limits"),":",shQuote(paste0("UserData[",ValUserData,":",ValUserData,"]"))),nomjson,append=T)
+          write("    },",nomjson,append=T)
+        }
+      }
+    }
+    
     ################ Import des fichiers Laz virtuels Cerema
     # for (NOMLAZ in file.path(TAPtsVirtu[n_intVirt,]$CHEMIN,TAPtsVirtu[n_intVirt,]$NOM))
     for (NOMLAZ in NomBouclePtsVirtuels)
@@ -210,6 +257,7 @@ FILINO_11_07_Job=function(idalle,TA_Zone,NomDirMNTTIN,type,TA,TAPtsVirtu,listeMa
       write("    },",nomjson,append=T)
     }
     
+   
     ############### Filtre delaunay
     write("    {",nomjson,append=T)
     write(paste0("       ",shQuote("type"),":",shQuote("filters.delaunay")),nomjson,append=T)

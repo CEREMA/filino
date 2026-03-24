@@ -501,7 +501,7 @@ FILINO_06_02c_creatPtsVirtuels=function(nomcsv,rep_COURSEAU,Cas,raci_exp,nomPtsV
                 if (Cas==4)
                 {
                   NUNIEAU$Pente1=sapply(1:dim(NUNIEAU)[1], function(x) {min(NUNIEAU[1:x,1+Masque2$NumCourBox], na.rm = TRUE)})
-                  
+                  browser()
                 }
                 # {NUNIEAU$Pente1=sapply(1:dim(NUNIEAU)[1], function(x) {min(NUNIEAU$stats1[1:x], na.rm = TRUE)})}
                 
